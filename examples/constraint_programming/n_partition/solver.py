@@ -55,6 +55,8 @@ class PartitionSolverCpSat():
         if status in (OPTIMAL, FEASIBLE):
             solution = list()
             for p in partitions:
+                # Obtain the assigned values from the solver. An integer is contained in the partition if the associated
+                # boolean value is 'True'
                 values = [i for (i, v) in zip(self.integers, p) if solver.BooleanValue(v)]
                 solution.append(sorted(values))
             return solution
