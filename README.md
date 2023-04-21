@@ -32,3 +32,11 @@ We will help you select one.
 * Basic knowledge on algorithms. _Algorithms and Datastructures 1_ is mandatory. _Algorithms and Datastructures 2_ and _Network Algorithms_ are recommendable. If you already attended _Algorithm Engineering (Keldenich/Krupke)_ you may be overqualifyed for the first part and can directly start with a project.
 * A unix system (can be a virtual machine) and basic knowledge on how to use it. It is possible to run most things also on Windows, but we cannot provide support.
 * Basic skills with Git. This is actually something you can quickly learn, but you have to do it on your own.
+
+## Lectures to go next
+
+This lab is just a quick peek into solving NP-hard problems in practice, there is more!
+
+* _Algorithm Engineering (Master, infrequently)_ will teach you a superset of this lab, with more details.
+* _Mathematische Methode der Algorithmik (Master)_ will teach you the theoretical background of Linear Programming and Mixed Integer Programming.
+* _Approximation Algorithms (Master)_ will teach you theoretical aspects of how to approximate NP-hard problems with guarantees. While this takes a theoretical point of view, the theoretical understanding can improve your practical skills on understanding and solving such problems.
