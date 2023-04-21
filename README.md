@@ -8,7 +8,7 @@ But is this really there really no hope for an optimal algorithm?
 During this lab, we will investiage three techniques that can actually compute optimal solutions in reasonable time for instances of reasonable size for many problems.
 These techniques are:
 * [Constraint Programming](https://en.wikipedia.org/wiki/Constraint_programming) with [CP-SAT](https://developers.google.com/optimization/cp/cp_solver). A very generic technique that allows you to specify the constraints of the problem and it will try to solve it by a portfolio of techniques, especially the next mentioned two.
-* [SAT Solver](https://en.wikipedia.org/wiki/SAT_solver) that can often solve very large logical formulas, and by a clever application can also be tricked to solve optimization problems.
+* [SAT Solver](https://en.wikipedia.org/wiki/SAT_solver) that can often solve very large logical formulas, and by a clever application can also be tricked into solving optimization problems.
 * [Mixed Integer Programming](https://en.wikipedia.org/wiki/Integer_programming) that can be used to solve optimization problems expressable by integer and fractional variables and linear constraints.
 
 A trained algorithm engineer or operations researcher is actually able to model most combinatorial optimization problems with one of these techniques, even if they contain complex constraints or objective functions.
@@ -21,3 +21,12 @@ The lab consists of four sheets and a final project.
 * The third sheet makes you use a SAT-solver, which are more rudimentary but can actually deal with much more variables than CP-SAT.
 * The fourth sheet then makes you use a Mixed Integer Programming solver, which are especially powerful, e.g., for network problems.
 
+In a final project, your team has to get creative and develop a solver for an NP-hard optimization problem of your choice.
+We will help you select one.
+
+## Requirements
+
+* Good programming skills in Python, as the whole course will be in Python and there won't be time for us to teach you Python.
+* Basic knowledge on algorithms. _Algorithms and Datastructures 1_ is mandatory. _Algorithms and Datastructures 2_ and _Network Algorithms_ are recommendable. If you already heard _Algorithm Engineering (Keldenich/Krupke)_ you may be overqualifyed for the first part and can directly start with a project.
+* A unix system (can be a virtual machine) and basic knowledge on how to use it. It is possible to run most things also on Windows, but we cannot provide support.
+* Basic skills with Git. This is actually something you can quickly learn, but you have to do it on your own.
