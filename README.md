@@ -15,6 +15,8 @@ A trained algorithm engineer or operations researcher is actually able to model 
 At the end of the semester, you will be able to solve many problems with these tools, too.
 Of course it is not just about how well a problem can be modelled but also, how effective the underlying engine can solve it; these are NP-hard problems after all.
 
+## Content
+
 The lab consists of four sheets and a final project.
 * In the first sheet, you will set up the programming environment and take a peek into some actual code.
 * The second sheet will have you use CP-SAT, the most generic technique.
@@ -27,6 +29,6 @@ We will help you select one.
 ## Requirements
 
 * Good programming skills in Python, as the whole course will be in Python and there won't be time for us to teach you Python.
-* Basic knowledge on algorithms. _Algorithms and Datastructures 1_ is mandatory. _Algorithms and Datastructures 2_ and _Network Algorithms_ are recommendable. If you already heard _Algorithm Engineering (Keldenich/Krupke)_ you may be overqualifyed for the first part and can directly start with a project.
+* Basic knowledge on algorithms. _Algorithms and Datastructures 1_ is mandatory. _Algorithms and Datastructures 2_ and _Network Algorithms_ are recommendable. If you already attended _Algorithm Engineering (Keldenich/Krupke)_ you may be overqualifyed for the first part and can directly start with a project.
 * A unix system (can be a virtual machine) and basic knowledge on how to use it. It is possible to run most things also on Windows, but we cannot provide support.
 * Basic skills with Git. This is actually something you can quickly learn, but you have to do it on your own.
