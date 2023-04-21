@@ -109,7 +109,7 @@ As an example, let us take a look on the Minimum Spanning Tree problem.
 We are given a graph `G=(V,E)` with edge weight `w: E-> float`.
 Let us use the boolean variables `x[e] for all e in E` with `x[e]==1` if e is in the MST, and `x[e]==0` otherwise.
 As we are using the Minimum Spanning Tree, the objective is `SUM[e in E] w(e)*x[e]`.
-The constraints are `SUM[e in E] x[e] == |V|-1` to enforce exactly `|V|-1` edges, and for every real and not-empty subset E' of E, `SUM[uv with u in E' and w not in E'] x[uv] >= 1` to make sure that every component is connected to the remaining graph.
+The constraints are `SUM[e in E] x[e] == |V|-1` to enforce exactly `|V|-1` edges, and for every real and not-empty subset V' of V, `SUM[uv with u in V' and w not in V'] x[uv] >= 1` to make sure that every component is connected to the remaining graph.
 We could actually skip the first constraint, as the objective will make sure we will not use more edges than necessary.
 
 We will ask you to give us a quick informal defintion of the problems (which can be an example) and the show us the mathematical definition (with a rough idea what it states).
