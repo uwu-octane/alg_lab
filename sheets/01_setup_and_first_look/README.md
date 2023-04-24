@@ -128,6 +128,19 @@ Taking a look into their documentation, however, may be useful.
 
 ## Resources
 
+You can find the documentation for the used optimization tools here:
+
 * [PySAT](https://pysathq.github.io/): The (cardinality) SAT-suite we are using.
 * [CP-SAT](https://developers.google.com/optimization/cp/cp_solver): The constraint programming solver (portfolio with lazy clause generation as backbone) by Google.
 * [Gurobi](https://www.gurobi.com/documentation/): Commercial mixed integer programming solver.
+
+Useful Python libraries we use for various things are:
+* [NumPy](https://numpy.org/): Linear Algebra and dealing with large amounts of numeric data. Highly efficient thanks to native code.
+* [Pandas](https://pandas.pydata.org/): Working with tables and data comfortably (based on NumPy).
+* [Matplotlib](https://matplotlib.org/): Plotting the data.
+* [Seaborn](https://seaborn.pydata.org/): Wrapper around matplotlib to create beautiful plots directly from Pandas data.
+* [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/): Interactive notebooks that allow you to mix code and output. Great for analyzing data.
+* [NetworkX](https://networkx.org/): A very simple and extensive library for working with graphs. Not very efficient but as we are working with NP-hard problems, we don't have to deal with huge graphs that would require highly efficient implementations anyway.
+
+Some books that can be interesting:
+* In Pursuit Of The Traveling Salesman
