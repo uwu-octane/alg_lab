@@ -44,7 +44,18 @@ We will help you select one.
     * How will this lab be organized?
     * What will be the first task?
     * Team assignments. Special treatment for master or already experienced students.
-* 
+
+The folling dates are not final, yet. We will dynamically adapt based on your needs:
+* 2. May: Handout second sheet, for the fast teams.
+* 8. May: Deadline/Presentation first sheet.
+* 15. May: Handout third sheet.
+* 22. May: Deadline/Presentation second sheet.
+* 29. May: Hadnout fourth sheet.
+* 5. Juni: Deadline/Presentation third sheet.
+* 26. Juni: Deadline/Presentation fourth sheet. Start of project.
+* 15. September: Deadline for project.
+
+
 
 ## Lectures to go next
 
