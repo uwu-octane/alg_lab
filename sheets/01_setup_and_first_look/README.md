@@ -115,7 +115,8 @@ As we are using the Minimum Spanning Tree, the objective is $$\min \sum_{e \in E
 The constraints are $$\sum_{e \in E} x_e = |V|-1$$ to enforce exactly $|V|-1$ edges, and for every real and not-empty subset $V' \subsetneq V$, $$\sum_{uv\in E, u \in V', w \not\in V'} x_{uv} \geq 1$$ to make sure that every component is connected to the remaining graph.
 We could actually skip the first constraint, as the objective will make sure we will not use more edges than necessary.
 
-* We will ask you to give us a quick informal defintion of the problems (which can be an example) and then show us the mathematical definition (with a rough idea what it states).
+* Can you give us a quick informal definition of the problems? Potentially by example.
+* Can you provide a mathemtical definition of the the problems? 
 
 ### 2. Get a grasp on how the examples use the corresponding solver.
 
