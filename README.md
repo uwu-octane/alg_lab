@@ -18,7 +18,7 @@ Of course it is not just about how well a problem can be modelled but also, how 
 ## Content
 
 The lab consists of four sheets and a final project.
-* In the [first sheet](./sheets/01_setup_and_first_look/README.md), you will set up the programming environment and take a peek into some actual code.
+* In the [first sheet](./sheets/01_setup_and_first_look/), you will set up the programming environment and take a peek into some actual code.
 * The second sheet will have you use CP-SAT, the most generic technique.
 * The third sheet makes you use a SAT-solver, which are more rudimentary but can actually deal with much more variables than CP-SAT.
 * The fourth sheet then makes you use a Mixed Integer Programming solver, which are especially powerful, e.g., for network problems.
