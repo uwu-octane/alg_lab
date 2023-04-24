@@ -89,7 +89,7 @@ We implemented three examples, one for every technique, for you.
 These are first meant to check that your environment is actually working, and second, to take a peek into one uses these.
 Every technique is used for a different, but relatively easy to describe, optimization problem.
 
-* [Solving N-Partition with CP-SAT](./examples/constraint_programming/n_partition). Here we are using the most generic solver to solve the [problem](https://en.wikipedia.org/wiki/Multiway_number_partitioning) that is easiest to model mathematically.
+* [Solving N-Partition with CP-SAT](./examples/constraint_programming/n_partition). Ironically, here we are using the most generic solver to solve the [problem](https://en.wikipedia.org/wiki/Multiway_number_partitioning) that is easiest to model mathematically.
 * [Solving Feedback Vertex Cover with a SAT-solver](./examples/cardinality_sat/feedback_vertex_cover). Here we use a simple SAT-solver to optimize the graph problem [Feedback Vertex Set](https://en.wikipedia.org/wiki/Feedback_vertex_set).
 * [Solving the Steiner Tree Problem with a Mixed Integer Programming solver](./examples/mixed_integer_programming/steiner_tree). Here we use Mixed Integer Programming to compute a minimal [Steiner Tree in Graphs](https://en.wikipedia.org/wiki/Feedback_vertex_set).
 
@@ -112,15 +112,16 @@ As we are using the Minimum Spanning Tree, the objective is `SUM[e in E] w(e)*x[
 The constraints are `SUM[e in E] x[e] == |V|-1` to enforce exactly `|V|-1` edges, and for every real and not-empty subset V' of V, `SUM[uv with u in V' and w not in V'] x[uv] >= 1` to make sure that every component is connected to the remaining graph.
 We could actually skip the first constraint, as the objective will make sure we will not use more edges than necessary.
 
-We will ask you to give us a quick informal defintion of the problems (which can be an example) and the show us the mathematical definition (with a rough idea what it states).
+* We will ask you to give us a quick informal defintion of the problems (which can be an example) and then show us the mathematical definition (with a rough idea what it states).
 
 ### 2. Get a grasp on how the examples use the corresponding solver.
 
 Look into the code of the examples.
 They are reasonably short and extensively documented.
-How is the problem communicated to the individual solvers (CP-SAT, SAT, MIP)?
+
+* How is the problem communicated to the individual solvers (CP-SAT, SAT, MIP)?
 Can you identify the constraints?
-What are the commonalities, what are the differences of their usage?
+* What are the commonalities, what are the differences of their usage?
 
 You do not have to look into CP-SAT, SAT, or MIP but can treat them as a black box.
 Taking a look into their documentation, however, may be useful.
