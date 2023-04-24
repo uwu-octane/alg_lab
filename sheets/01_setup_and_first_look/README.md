@@ -1,7 +1,7 @@
 # First Sheet: Setup and a first look into examples
 
 This first sheet will only let you set up a working development environment and take a first look into some examples.
-You won't have to code anything on your own, yet, just getting ready.
+You won't have to code anything (serious) on your own, yet, just getting ready.
 
 ## Task 1: Set up your environment
 
@@ -112,7 +112,7 @@ As an example, let us take a look on the Minimum Spanning Tree problem.
 We are given a graph $G=(V,E)$ with edge weight $w: E \rightarrow \mathbb{R}^+_0$.
 Let us use the boolean variables $x_e, e \in E$ with $x_e=1$ if $e$ is in the MST, and $x_e=0$ otherwise.
 As we are using the Minimum Spanning Tree, the objective is $$\min \sum_{e \in E} w(e)\cdot x_e$$
-The constraints are $$\sum_{e \in E} x_e = |V|-1$$ to enforce exactly $|V|-1$ edges, and for every real and not-empty subset $V' \subsetneq V$, $$\sum_{uv\in E, u \in V', w \not\in V'} x_{uv} \geq 1$$ to make sure that every component is connected to the remaining graph.
+The constraints are $$\sum_{e \in E} x_e = |V|-1$$ to enforce exactly $|V|-1$ edges, and for every real and not-empty subset $V' \subsetneq V$, $$\sum_{uv\in E, u \in V', v \not\in V'} x_{uv} \geq 1$$ to make sure that every component is connected to the remaining graph.
 We could actually skip the first constraint, as the objective will make sure we will not use more edges than necessary.
 
 * Can you give us a quick informal definition of the problems? Potentially by example.
