@@ -81,7 +81,7 @@ If you have errors, try to encode them and check if you did anything wrong durin
 
 With PyCharm and Visual Studio Code, there are integrated plugins and you won't need to run `jupyterlab` or use your browser.
 
-| Every participant has to show individually that he/she has a working environment, as this is of fundamental importance. We will do this remotely via screen sharing, such that you can also use your desktop computer.
+> Every participant has to show individually that he/she has a working environment, as this is of fundamental importance. We will do this remotely via screen sharing, such that you can also use your desktop computer.
 
 ## Task 2: Take a look into the code of the examples
 
@@ -106,10 +106,10 @@ You can also extract it from the code.
 The definition for these problems should be just some _variables_, a few rules, or as we call them, _constraints_, and an _objective function_.
 
 As an example, let us take a look on the Minimum Spanning Tree problem.
-We are given a graph `G=(V,E)` with edge weight `w: E-> float`.
-Let us use the boolean variables `x[e] for all e in E` with `x[e]==1` if e is in the MST, and `x[e]==0` otherwise.
-As we are using the Minimum Spanning Tree, the objective is `SUM[e in E] w(e)*x[e]`.
-The constraints are `SUM[e in E] x[e] == |V|-1` to enforce exactly `|V|-1` edges, and for every real and not-empty subset V' of V, `SUM[uv with u in V' and w not in V'] x[uv] >= 1` to make sure that every component is connected to the remaining graph.
+We are given a graph $G=(V,E)$ with edge weight $w: E \rightarrow \mathbb{R}^+_0$.
+Let us use the boolean variables $x_e, e \in E$ with $x_e=1$ if $e$ is in the MST, and $x_e=0$ otherwise.
+As we are using the Minimum Spanning Tree, the objective is $$\min \sum_{e \in E} w(e)\cdot x_e$$.
+The constraints are $$\sum{e \in E} x_e == |V|-1$$ to enforce exactly $|V|-1$ edges, and for every real and not-empty subset $V' \subsetneq V$, $$\sum_{uv, u \in V' w \not\in V'} x_{uv} \geq 1$$ to make sure that every component is connected to the remaining graph.
 We could actually skip the first constraint, as the objective will make sure we will not use more edges than necessary.
 
 * We will ask you to give us a quick informal defintion of the problems (which can be an example) and then show us the mathematical definition (with a rough idea what it states).
@@ -126,3 +126,8 @@ Can you identify the constraints?
 You do not have to look into CP-SAT, SAT, or MIP but can treat them as a black box.
 Taking a look into their documentation, however, may be useful.
 
+## Resources
+
+* [PySAT](https://pysathq.github.io/): The (cardinality) SAT-suite we are using.
+* [CP-SAT](https://developers.google.com/optimization/cp/cp_solver): The constraint programming solver (portfolio with lazy clause generation as backbone) by Google.
+* [Gurobi](https://www.gurobi.com/documentation/): Commercial mixed integer programming solver.

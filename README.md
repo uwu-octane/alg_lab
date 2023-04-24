@@ -26,8 +26,8 @@ The lab consists of four sheets and a final project.
 In a final project, your team has to get creative and develop a solver for an NP-hard optimization problem of your choice.
 We will help you select one.
 
-| We are always looking for excellent students that can help us as student assistents (HiWi) with research projects (and potentially even start a research career here).
-| Students showing their skills with excellent projects may get offered to continue their project (if it is academically interesting) or to work with us on other projects.
+> We are always looking for excellent students that can help us as student assistents (HiWi) with research projects (and potentially even start a research career here).
+> Students showing their skills with excellent projects may get offered to continue their project (if it is academically interesting) or to work with us on other projects.
 
 ## Requirements
 
