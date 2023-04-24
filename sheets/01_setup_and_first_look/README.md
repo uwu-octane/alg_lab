@@ -75,13 +75,13 @@ We recommand PyCharm or Visual Studio Code (with corresponding plugins).
 ### Check you environment
 
 Check you environment by running the [jupyter](https://jupyter.org/) notebooks of all three examples.
-Just download the folder with all three examples and run `jupyterlab .` in it (everything of course in the conda environment `alglab`).
+Just download the folder with all three examples and run `jupyter-lab .` in it (everything of course in the conda environment `alglab`).
 Then a brower tab will open and you can navigate to the corresponding file and select `run all`.
 You will see the cells refresh, hopefully without any errors.
 If you are confused, there are lots of tutorials on Jupyter out there.
 If you have errors, try to encode them and check if you did anything wrong during the installation (after this fails, ask your teammates, and if even they cannot help you, ask us).
 
-With PyCharm and Visual Studio Code, there are integrated plugins and you won't need to run `jupyterlab` or use your browser.
+With PyCharm and Visual Studio Code, there are integrated plugins and you won't need to run `jupyter-lab` or use your browser.
 
 > Every participant has to show individually that he/she has a working environment, as this is of fundamental importance. We will do this remotely via screen sharing, such that you can also use your desktop computer.
 
