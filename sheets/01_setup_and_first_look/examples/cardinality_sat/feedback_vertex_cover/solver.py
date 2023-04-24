@@ -103,8 +103,8 @@ class FeedbackVertexSetSolverSAT():
         k = len(best_solution)
         print(f"A greedy solution of size {k} was found!")
 
-        ub = k # the lowest number of vertices that are proven to build a FVS
-        lb = 0 # the lowest number of vertices that might still build a FVS (not proven wrong)
+        ub = k # the lowest number of vertices that are proven to form a FVS
+        lb = 0 # the lowest number of vertices that might still form a FVS (not proven wrong)
 
         while lb < ub:
             k = (lb + ub) // 2 # integer division (discards floating point decimals)
