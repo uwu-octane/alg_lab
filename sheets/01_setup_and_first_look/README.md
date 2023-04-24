@@ -143,4 +143,7 @@ Useful Python libraries we use for various things are:
 * [NetworkX](https://networkx.org/): A very simple and extensive library for working with graphs. Not very efficient but as we are working with NP-hard problems, we don't have to deal with huge graphs that would require highly efficient implementations anyway.
 
 Some books that can be interesting:
-* In Pursuit Of The Traveling Salesman
+* [In Pursuit Of The Traveling Salesman by Bill Cook](https://press.princeton.edu/books/paperback/9780691163529/in-pursuit-of-the-traveling-salesman): The probably best beginner's lecture on solving hard optimization problems in practice.
+* [Model Building in Mathematical Programming by H. Paul Williams](https://www.wiley.com/en-us/Model+Building+in+Mathematical+Programming%2C+5th+Edition-p-9781118443330):
+    * A book about modelling practical problems. Quite comprehensive with lots of tricks I didn't know about earlier. Be aware that too clever models are often hard to solve, so maybe it is not always a good thing to know too many tricks. A nice thing about this book is that the second half gives you a lot of real world examples and solutions.
+    * Be aware that this book is about modelling, not solving. The latest edition is from 2013, the earliest from 1978. The math hasn't changed, but the capabilities and techniques of the solvers quite a lot.
