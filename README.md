@@ -36,6 +36,16 @@ We will help you select one.
 * A unix system (can be a virtual machine) and basic knowledge on how to use it. It is possible to run most things also on Windows, but we cannot provide support.
 * Basic skills with Git. This is actually something you can quickly learn, but you have to do it on your own.
 
+## Timeline
+
+* 24. April: Kickoff
+    * Who are we?
+    * Who are you?
+    * How will this lab be organized?
+    * What will be the first task?
+    * Team assignments. Special treatment for master or already experienced students.
+* 
+
 ## Lectures to go next
 
 This lab is just a quick peek into solving NP-hard problems in practice, there is more!

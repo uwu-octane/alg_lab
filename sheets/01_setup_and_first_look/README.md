@@ -59,6 +59,8 @@ conda install -c gurobi gurobi
 pip install -U ortools python-sat
 ```
 
+> Installing python-sat can take a  long time, as it does some compiling.
+
 ### Get a Gurobi license
 
 We are going to use the commercial Mixed Integer Programming solver [Gurobi](https://www.gurobi.com/).
@@ -95,7 +97,7 @@ Every technique is used for a different, but relatively easy to describe, optimi
 
 This task may look like much but actually we just want you to spent a few hours looking onto the examples and how one can communicate a problem to these tools.
 It is not about being able to do it yourself, just about having a rough idea of what may be going on.
-You will pass this task if you can convince us that you tried to answer the following questions (and dicussed it in the group).
+You will pass this task if you can convince us that you at least put some hours into trying to answer the following questions (and dicussed it in the group).
 
 ### 1. Try to give a mathematical definition of the three problems.
 
@@ -109,7 +111,7 @@ As an example, let us take a look on the Minimum Spanning Tree problem.
 We are given a graph $G=(V,E)$ with edge weight $w: E \rightarrow \mathbb{R}^+_0$.
 Let us use the boolean variables $x_e, e \in E$ with $x_e=1$ if $e$ is in the MST, and $x_e=0$ otherwise.
 As we are using the Minimum Spanning Tree, the objective is $$\min \sum_{e \in E} w(e)\cdot x_e$$.
-The constraints are $$\sum{e \in E} x_e == |V|-1$$ to enforce exactly $|V|-1$ edges, and for every real and not-empty subset $V' \subsetneq V$, $$\sum_{uv, u \in V' w \not\in V'} x_{uv} \geq 1$$ to make sure that every component is connected to the remaining graph.
+The constraints are $$\sum{e \in E} x_e == |V|-1$$ to enforce exactly $|V|-1$ edges, and for every real and not-empty subset $V' \subsetneq V$, $$\sum_{uv\in E, u \in V', w \not\in V'} x_{uv} \geq 1$$ to make sure that every component is connected to the remaining graph.
 We could actually skip the first constraint, as the objective will make sure we will not use more edges than necessary.
 
 * We will ask you to give us a quick informal defintion of the problems (which can be an example) and then show us the mathematical definition (with a rough idea what it states).
@@ -123,8 +125,18 @@ They are reasonably short and extensively documented.
 Can you identify the constraints?
 * What are the commonalities, what are the differences of their usage?
 
+
 You do not have to look into CP-SAT, SAT, or MIP but can treat them as a black box.
 Taking a look into their documentation, however, may be useful.
+
+### 3. How powerful are these small examples already?
+
+Finally, let us look on how complex instances for these examples we can still solve easily.
+The examples come with some example instances, that should be reasonably easy to understand and change.
+Modify the instances to become larger and more difficult.
+
+* What is the largest instance you can still solve in 5 minutes?
+* What is the smallest instances you cannot solve in 5 minutes?
 
 ## Resources
 
