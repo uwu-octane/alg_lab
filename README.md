@@ -41,6 +41,7 @@ We will help you select one.
 * 24. April: Kickoff
     * Who are we?
     * Who are you?
+    * What is this lab about?
     * How will this lab be organized?
     * What will be the first task?
     * Team assignments. Special treatment for master or already experienced students.
