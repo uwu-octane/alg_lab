@@ -52,7 +52,7 @@ In the end, you can leave it again with `conda deactivate`.
 Run in the `alglab` environment the following commands.
 ```sh
 # Basics
-conda install ipython numpy scipy networkx jupyterlab
+conda install ipython numpy scipy networkx jupyterlab matplotlib pandas seaborn
 # Gurobi
 conda install -c gurobi gurobi
 # Pip only packages
@@ -66,6 +66,8 @@ pip install -U ortools python-sat
 We are going to use the commercial Mixed Integer Programming solver [Gurobi](https://www.gurobi.com/).
 While we prefer open source tools, Gurobi is in our experience simply far ahead of the open source competition and we want to use the easiest and most powerful tools in this lab.
 You need to get a [free academic license](https://www.gurobi.com/academia/academic-program-and-licenses/) by creating an account and then using `grbgetkey` which has already been installed in the previous step.
+
+*You may need to be in the campus network for the activation. You can use a VPN for this. The usage should be possible without VPN.*
 
 ### Get a proper IDE
 
