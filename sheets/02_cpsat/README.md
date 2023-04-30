@@ -120,14 +120,14 @@ During the sheet-based phase of the lab, we will solve the Bottleneck TSP with v
 ### Problem Definition
 
 The *Bottleneck Traveling Salesman Problem (BTSP)* is a close relative of the famous [Traveling Salesman Problem (TSP)](https://en.wikipedia.org/wiki/Travelling_salesman_problem).
-In both problems, we are given as set $V$ of $n$ cities that we want to visit in any order and then return to the origin.
+In both problems, we are given a set $V$ of $n$ cities that we want to visit in any order and then return to the origin.
 Going from on city $v$ to another city $w$ induces the costs $d(v,w)$.
 We can imagine the cities as vertices in a complete graph, where every edge $vw$ has the weight $d(v,w)$.
 The cities could be positions in the euclidean plane, with $d(v,w)$ being the euclidean distance between $v$ and $w$.
 
 The classical TSP tries to find a tour that contains every vertex exactly once and is as short as possible (i.e., the sum of weights is minimal).
 Thus, the overall travel costs are minimized.
-The Bottleneck TSP has a different objective and instead minimizes most expensive edge we use in the tour.
+The Bottleneck TSP has a different objective and instead minimizes the cost of the most expensive edge we use in the tour.
 A motivation for this could be that we want to minimize the largest distance we travel in a single day to visit the next city.
 
 Both problems are NP-hard and solutions often look similar, but they can differ as the following image shows.
@@ -137,10 +137,10 @@ Both problems are NP-hard and solutions often look similar, but they can differ 
 
 Your task in this sheet is to solve the problem with CP-SAT.
 
-1. Model the DBST as Constraint Program by stating the necessary variables, the objective function, and the constraints.
+1. Model the BTSP as a Constraint Program by stating the necessary variables, the objective function, and the constraints.
 2. Implement this model using CP-SAT. You can reuse code from the DBST-solver.
 3. Create some tests based on handcrafted instances with known unique optimal solution.
-4. Create a benchmark with at least 100 instances of various sizes to evaluate the performance of your solver and to allow comparisons with others solvers (by checking, which solver can solve more instances with a timelimit of one minute per instance). You can use random positions but adding some structure and symmetry can yield more difficult instances.
+4. Create a benchmark with at least 100 instances of various sizes to evaluate the performance of your solver and to allow comparisons with other solver implementations (by checking, which solver can solve more instances with a timelimit of one minute per instance). You can use random positions but adding some structure and symmetry can yield more difficult instances.
 5. Create a version of your solver that enforces a single tour via assigning vertices the corresponing index as variable, with $x_{vw}=1 \Rightarrow index(w)=index(v)+1$ (except for the origin), and one that uses CP-SAT's [`AddCircuit` constraint](https://google.github.io/or-tools/python/ortools/sat/python/cp_model.html#CpModel.AddCircuit). Compare both versions with your benchmark.
 6. Give an sound estimate on how well this problem can be solved with CP-SAT based on your experiments. Up to which size would you consider this problem to be easily solvable?
 
