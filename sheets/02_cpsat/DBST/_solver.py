@@ -1,87 +1,96 @@
 from ortools.sat.python import cp_model
 import itertools
 
+def squared_distance(p1, p2):
+    """
+    Calculate the squared euclidian distance (in order to minimze the use of the sqrt() operation).
+    """
+    return (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2
+
 class DBSTSolverCP:
-    def __squared_distance(self, vi, wi):
+    def __calculate_distances(self) -> int:
         """
-        Gegeben zwei Punkt-Indizes, berechne die (ganzzahlige)
-        quadrierte Distanz zwischen den Punkten.
+        Precalculate the costs of all edges. The side effect of this method
+        is the calculated max_distance, which is necessary in order to specify
+        our bottleneck variable's upper bound.
         """
-        v, w = self.points[vi], self.points[wi]
-        return (v[0] - w[0])**2 + (v[1] - w[1])**2
-    
-    def __compute_distances(self):
-        """
-        Berechne eine Matrix der Distanzen.
-        """
-        self.distances = {(v,w): self.__squared_distance(v, w) for v,w in\
-                          itertools.product(range(self.n), range(self.n))}
+        self.distances = {(i, j): squared_distance(self.points[i], self.points[j]) 
+            for (i, j) in itertools.permutations(range(len(self.points)), 2)}
         self.max_distance = max(self.distances.values())
     
     def __make_vars(self):
         """
-        Erzeuge die Variablen und setze die Zielfunktion.
+        Create all involved variables and set the minimization objective.
         """
-        self.edge_vars = {(v,w): self.model.NewBoolVar(f'x_{v},{w}') for v,w in itertools.combinations(range(self.n), 2)}
-        self.edge_vars.update({(w,v): self.model.NewBoolVar(f'x_{w},{v}') for v,w in self.edge_vars})
+        self.edge_vars = {(v,w): self.model.NewBoolVar(f'x_{v},{w}') 
+                            for v,w in itertools.permutations(range(self.n), 2)}
         self.depth_vars = {v: self.model.NewIntVar(0, self.n-1, f'd_{v}') for v in range(self.n)}
         self.bottleneck_var = self.model.NewIntVar(0, self.max_distance, 'b')
         self.model.Minimize(self.bottleneck_var)
     
+    def __add_depth_constraints(self):
+        """
+        Add the depth constraints x_{v,w} -> d_w = d_v + 1 which guarantee the
+        validity of the arborescence.
+        """
+
+        # without loss of generality, force one node to be the root.
+        self.model.Add(self.depth_vars[0] == 0)
+
+        # spanning tree has exactly n-1 edges.
+        self.model.Add(sum(self.edge_vars.values()) == self.n-1)
+
+        # If the edge v -> w is selected, d(v) + 1 == d(w) must hold.
+        for (v, w), x_vw in self.edge_vars.items():
+            self.model.Add(self.depth_vars[w] == self.depth_vars[v] + 1).OnlyEnforceIf(x_vw)
+
     def __add_degree_constraints(self):
         """
-        Füge die Gradbedingungen hinzu.
+        Add an upper limit to the degree of every node.
         """
+
+        # Handle the root node: No edge must lead to the root + enforce degree constraint.
         v0out = 0
         for v in range(1, self.n):
             self.model.Add(self.edge_vars[v,0] == 0)  # x_vv0 = 0
             v0out += self.edge_vars[0,v]
-        self.model.Add(v0out <= self.max_degree)  # Grad d für v0
+        self.model.Add(v0out <= self.max_degree)
+
+        # Handle all other nodes.
         for v in range(1, self.n):
+            # "Count" the number of incoming and outgoing edges.
             vin, vout = 0, 0
             for w in range(0, self.n):
                 if v != w:
                     vin += self.edge_vars[w,v]
                     vout += self.edge_vars[v,w]
-            self.model.Add(vin == 1)  # genau 1 eingehende Kante für v
-            self.model.Add(vout <= self.max_degree - 1)  # <= d-1 ausgehende Kanten für v
+            self.model.Add(vin == 1)  # exactly one incoming edge
+            self.model.Add(vout <= self.max_degree - 1)  # <= at most k-1 outgoing edges
     
     def __forbid_bidirectional_edges(self):
         """
-        Füge die (streng genommen redundanten) Constraints x_{v,w} -> !x_{w, v} hinzu.
+        Add the (redundant) constraints x_{v,w} -> !x_{w, v}.
         """
         for v,w in itertools.combinations(range(self.n), 2):
             self.model.AddBoolOr([self.edge_vars[v,w].Not(), self.edge_vars[w,v].Not()])
-    
-    def __add_depth_constraints(self):
-        """
-        Füge die Tiefenconstraints x_{v,w} -> d_w = d_v + 1 hinzu.
-        """
-        self.model.Add(self.depth_vars[0] == 0)
-        all_edges = 0
-        for (v, w), x_vw in self.edge_vars.items():
-            self.model.Add(self.depth_vars[w] == self.depth_vars[v] + 1).OnlyEnforceIf(x_vw)
-            all_edges += x_vw
-        self.model.Add(all_edges == self.n-1)
         
     def __add_bottleneck_constraints(self):
         """
-        Füge die Constraints b >= d(v,w) * x_{v,w} hinzu.
+        Add the constraints to ensure that only edges as cheap or cheaper than 
+        the bottleneck can be selected (b >= d(v,w) * x_{v,w}).
         """
         for (v, w), x_vw in self.edge_vars.items():
             self.model.Add(self.bottleneck_var >= self.distances[v,w] * x_vw)
     
     def __init__(self, points, max_degree):
         """
-        Erzeuge das Modell.
-        :param points: Liste der Punkte (ganzzahlig, in der Ebene, als (x,y)-Tupel).
-        :param max_degree: Der höchste zulässige Grad in unserem Spannbaum.
+        Initialize the model.
         """
         self.points = points
         self.n = len(self.points)
         self.max_degree = max_degree
         self.model = cp_model.CpModel()
-        self.__compute_distances()
+        self.__calculate_distances()
         self.__make_vars()
         self.__forbid_bidirectional_edges()
         self.__add_degree_constraints()
@@ -90,11 +99,13 @@ class DBSTSolverCP:
         
     def solve(self):
         """
-        Suche die optimale Lösung für das konstruierte Modell und gebe eine Lösung
-        (Liste von Kanten als ((x1,y1),(x2,y2))-Tupel) zurück.
+        Find the optimal solution to the initialized instance.
+        Returns the DBST edges as a list of coordinate tuple tuples ((x1,y1),(x2,y2)).
         """
         solver = cp_model.CpSolver()
         status = solver.Solve(self.model)
+        if status == cp_model.INFEASIBLE:
+            raise RuntimeError("The model was classified infeasible by the solver!")
         if status != cp_model.OPTIMAL:
             raise RuntimeError("Unexpected status after running solver!")
         return [(self.points[v], self.points[w]) for (v,w),x_vw in self.edge_vars.items() if solver.Value(x_vw) != 0]
