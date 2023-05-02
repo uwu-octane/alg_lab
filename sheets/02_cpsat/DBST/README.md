@@ -2,14 +2,16 @@
 
 ## Problem Definition
 
-In the NP-hard *Degree-Constrained Bottleneck Spanning Tree (DBST)*, we are given a complete graph $G=(V,E)$ with distance/weight function $dist: E \rightarrow \mathbb{N}^+_0$.
+In the NP-hard *Degree-Constrained Bottleneck Spanning Tree (DBST)*,
+we are given a complete graph $G=(V,E)$ with distance/weight function $dist: E \rightarrow \mathbb{N}^+_0$.
 The set $V$ can be a set of point on the plane, and $dist(v,w)$ the euclidean distance between $v\in V$ and $w\in V$.
 Additionally, we have a degree constraint $d\geq 2$.
 The objective is to find a tree $T$ in $G$ in which no vertex has a degree greater the degree constraint, i.e., $\forall v\in V: deg_T(v)\leq d$, and the weight of the longest edge is minimized.
 
 ## Modelling the Problem with CP-SAT
 
-
+Here we model the problem declerative to be solved with CP-SAT.
+The code can be found in [_solver.py](./_solver.py).
 
 ### Selection of Variables for the Model
 
@@ -31,7 +33,7 @@ See `__make_vars` in the code.
 
 The objective function is in this case trivial as we created the auxiliary variable $y$.
 As long as we ensure that $y$ actually gets assigned the value of the most expensive selected edge, we just have to specify
-$$\min y$
+$$\min y$$
 to obtain the feasible solution with the smallest possible $y$-value.
 
 ### Constraints
@@ -42,12 +44,12 @@ Next, we have to make sure it actually obeys the rules as otherwise we just get 
 Let us start with some simple constraints that don't need much explanation:
 
 * Only one direction of an edge can be chosen: $\forall \{v,w\}\in E: x_{vw}+x_{wv}\leq 1$ (see `__forbid_bidirectional_edges`)
-* We set a random vertex $v_0$ as root and enforce that every other vertex has a parent.
+* We set a random vertex $v_0$ as root and enforce that every other vertex have a parent. (See `__add_degree_constraints`)
     * $d_{v_0}=0$
     * $\forall v\not= v_0\in V: \sum_{w \in Nbr(v)} x_{vw} =1$
 * The degree constraints are also simple (see `__add_degree_constraints`)
-    * For $v_0$: $\sum_{w \in Nbr(v_0)} x_{v_0w}<=d$
-    * For $v\not=v_0\in V$: $\sum_{w\in Nbr(v)} x_{vw}<=d-1$ (because we already have one parent)
+    * For $v_0: \sum_{w \in Nbr(v_0)} x_{v_0w}<=d$
+    * For $v\not=v_0\in V: \sum_{w\in Nbr(v)} x_{vw}<=d-1$ (because we already have one parent)
 
 #### y-Variable represents most expensive selected edge.
 
