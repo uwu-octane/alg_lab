@@ -2,7 +2,16 @@
 
 ## Problem Definition
 
-## Selection of Variables for the Model
+In the NP-hard *Degree-Constrained Bottleneck Spanning Tree (DBST)*, we are given a complete graph $G=(V,E)$ with distance/weight function $w: E \rightarrow \mathbb{N}^+_0$.
+The set $V$ can be a set of point on the plane, and $w(v,w)$ the euclidean distance between $v\in V$ and $w\in V$.
+Additionally, we have a degree constraint $d\geq 2$.
+The objective is to find a tree $T$ in $G$ in which no vertex has a degree greater the degree constraint, i.e., $\forall v\in V: deg_T(v)\leq d$, and the weight of the longest edge is minimized.
+
+## Modelling the Problem with CP-SAT
+
+
+
+### Selection of Variables for the Model
 
 The most trivial variable selection would be to choose a boolean variable for every edge, that represents if the edge is in the solution.
 Unfortunately, with this representation it is difficult to efficiently contrain the edge set to be a tree.
@@ -16,39 +25,49 @@ In the beginning, a lot may seem unelegant or random.
 * Bottleneck variable $y\in \{0,1,\ldots,\max_{\{v,w\}in E}(d(v,w))\}$ that represent the weight of the most expensive used edge/arc.
 * Depth variables $d_v \in \{0, 1, \ldots, |V|-1\}$ for every vertex $v\in V$ representing how deep the vertex is in the arborescence.
 
-## Objective Function
+See `__make_vars` in the code.
+
+### Objective Function
 
 The objective function is in this case trivial as we created the auxiliary variable $y$.
 As long as we ensure that $y$ actually gets assigned the value of the most expensive selected edge, we just have to specify
 $$\min y$
 to obtain the feasible solution with the smallest possible $y$-value.
 
-## Constraints
+### Constraints
 
 We have specified what a solution looks like and how to measure its quality.
 Next, we have to make sure it actually obeys the rules as otherwise we just get the trivial zero solution that is of perfect zero-weight, but unfortunately not a feasible solution.
 
 Let us start with some simple constraints that don't need much explanation:
 
-* Only one direction of an edge can be chosen: $\forall \{v,w\}\in E: x_{vw}+x_{wv}\leq 1$
-* We need to select $|V|-1$ edges for a tree: $\sum_{\{v,w\}\in E}x_{vw}+x_{wv} = |V|-1$
-* 
+* Only one direction of an edge can be chosen: $\forall \{v,w\}\in E: x_{vw}+x_{wv}\leq 1$ (see `__forbid_bidirectional_edges`)
+* We need to select $|V|-1$ edges for a tree: $\sum_{\{v,w\}\in E}x_{vw}+x_{wv} = |V|-1$ (see `__add_depth_constraints``)
+* We set a random vertex $v_0$ as root and enforce that every other vertex has a parent.
+    * $d_{v_0}=0$
+    * $\forall v\not= v_0\in V: \sum_{w \in Nbr(v)} x_{vw} =1$
+* The degree constraints are also simple (see `__add_degree_constraints`)
+    * For $v_0$: $\sum_{w \in Nbr(v_0)} x_{v_0w}<=d$
+    * For $v\not=v_0\in V$: $\sum_{w\in Nbr(v)} x_{vw}<=d-1$ (because we already have one parent)
 
-### y-Variable represents most expensive selected edge.
+#### y-Variable represents most expensive selected edge.
 
 An edge $\{v,w\}$ is selected if $x_{vw}=1$ or $x_{wv}=1$.
 Thus, if $x_{vw}=1$, $y\geq d(v,w)$.
 $$y \geq d(v,w) \quad \text{if }x_{vw}=1 \quad \forall vw \text{ with } \{v, w\}\in E$$
 The objective will make sure that it is not larger than necessary, setting it equal to the most expensive selected edge.
 
+See `__add_bottleneck_constraints`.
 
-### Tree constraint
+#### Tree constraint
 
 A tree needs to have $|V|-1$ edges, so we enforce
 $$ \sum_{\{v, w\}\in E} x_{vw}+x_{wv} = |V|-1$$
 
-To make sure it does not have cycles, 
+To make sure it does not have cycles, we enforce
+$$\forall v,w \in V: x_{vw} \Rightarrow d_w == d_v +1$$
 
-### Degree constraint
+A cycle would enforce that all vertices have an infite depth.
 
+See `__add_depth_constraints`.
 
