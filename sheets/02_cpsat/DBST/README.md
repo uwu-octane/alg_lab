@@ -42,7 +42,6 @@ Next, we have to make sure it actually obeys the rules as otherwise we just get 
 Let us start with some simple constraints that don't need much explanation:
 
 * Only one direction of an edge can be chosen: $\forall \{v,w\}\in E: x_{vw}+x_{wv}\leq 1$ (see `__forbid_bidirectional_edges`)
-* We need to select $|V|-1$ edges for a tree: $\sum_{\{v,w\}\in E}x_{vw}+x_{wv} = |V|-1$ (see `__add_depth_constraints`)
 * We set a random vertex $v_0$ as root and enforce that every other vertex has a parent.
     * $d_{v_0}=0$
     * $\forall v\not= v_0\in V: \sum_{w \in Nbr(v)} x_{vw} =1$
@@ -57,7 +56,7 @@ Thus, if $x_{vw}=1$, $y\geq dist(v,w)$.
 $$\forall vw \text{ with } \{v, w\}\in E: x_{vw}=1 \Rightarrow y \geq dist(v,w) $$
 The objective will make sure that it is not larger than necessary, setting it equal to the most expensive selected edge.
 
-See `__add_bottleneck_constraints`.
+See `__add_bottleneck_constraints` for the implementation.
 
 #### Tree constraint
 
@@ -69,5 +68,5 @@ $$\forall v,w \in V: x_{vw} \Rightarrow d_w == d_v +1$$
 
 A cycle would enforce that all vertices have an infite depth.
 
-See `__add_depth_constraints`.
+See `__add_depth_constraints` for the implementation.
 
