@@ -142,5 +142,5 @@ Your task in this sheet is to solve the problem with CP-SAT.
 3. Create some tests based on handcrafted instances for which you can argue the optimal value.
 4. Create a benchmark with at least 100 instances of various sizes to evaluate the performance of your solver and to allow comparisons with other solver implementations (by checking, which solver can solve more instances with a timelimit of one minute per instance). You can use random positions but adding some structure and symmetry can yield more difficult instances.
 5. Create a version of your solver that enforces a single tour via assigning vertices the corresponing index as variable, with $x_{vw}=1 \Rightarrow index(w)=index(v)+1$ (except for the origin), and one that uses CP-SAT's [`AddCircuit` constraint](https://google.github.io/or-tools/python/ortools/sat/python/cp_model.html#CpModel.AddCircuit). Compare both versions with your benchmark.
-6. Give an sound estimate on how well this problem can be solved with CP-SAT based on your experiments. Up to which size would you consider this problem to be easily solvable?
+6. Give a sound estimate on how well this problem can be solved with CP-SAT based on your experiments. Up to which size would you consider this problem to be easily solvable?
 
