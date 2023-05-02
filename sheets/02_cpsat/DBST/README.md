@@ -2,8 +2,8 @@
 
 ## Problem Definition
 
-In the NP-hard *Degree-Constrained Bottleneck Spanning Tree (DBST)*, we are given a complete graph $G=(V,E)$ with distance/weight function $w: E \rightarrow \mathbb{N}^+_0$.
-The set $V$ can be a set of point on the plane, and $w(v,w)$ the euclidean distance between $v\in V$ and $w\in V$.
+In the NP-hard *Degree-Constrained Bottleneck Spanning Tree (DBST)*, we are given a complete graph $G=(V,E)$ with distance/weight function $dist: E \rightarrow \mathbb{N}^+_0$.
+The set $V$ can be a set of point on the plane, and $dist(v,w)$ the euclidean distance between $v\in V$ and $w\in V$.
 Additionally, we have a degree constraint $d\geq 2$.
 The objective is to find a tree $T$ in $G$ in which no vertex has a degree greater the degree constraint, i.e., $\forall v\in V: deg_T(v)\leq d$, and the weight of the longest edge is minimized.
 
@@ -22,7 +22,7 @@ In the beginning, a lot may seem unelegant or random.
 
 * Arc variables $x_{vw}\in \{0,1\}$ and $x_{wv}\in \{0,1\}$ for every edge $\{v, w\} \in E$ that represent with $x_{vw}=1$ if the arc is used for the arborescence.
     * An edge $\{v,w\}$ will be in the solution if either $x_{vw}=1$ or $x_{wv}=1$.
-* Bottleneck variable $y\in \{0,1,\ldots,\max_{\{v,w\}in E}(d(v,w))\}$ that represent the weight of the most expensive used edge/arc.
+* Bottleneck variable $y\in \{0,1,\ldots,\max_{\{v,w\}in E}(dist(v,w))\}$ that represent the weight of the most expensive used edge/arc.
 * Depth variables $d_v \in \{0, 1, \ldots, |V|-1\}$ for every vertex $v\in V$ representing how deep the vertex is in the arborescence.
 
 See `__make_vars` in the code.
@@ -42,7 +42,7 @@ Next, we have to make sure it actually obeys the rules as otherwise we just get 
 Let us start with some simple constraints that don't need much explanation:
 
 * Only one direction of an edge can be chosen: $\forall \{v,w\}\in E: x_{vw}+x_{wv}\leq 1$ (see `__forbid_bidirectional_edges`)
-* We need to select $|V|-1$ edges for a tree: $\sum_{\{v,w\}\in E}x_{vw}+x_{wv} = |V|-1$ (see `__add_depth_constraints``)
+* We need to select $|V|-1$ edges for a tree: $\sum_{\{v,w\}\in E}x_{vw}+x_{wv} = |V|-1$ (see `__add_depth_constraints`)
 * We set a random vertex $v_0$ as root and enforce that every other vertex has a parent.
     * $d_{v_0}=0$
     * $\forall v\not= v_0\in V: \sum_{w \in Nbr(v)} x_{vw} =1$
@@ -53,8 +53,8 @@ Let us start with some simple constraints that don't need much explanation:
 #### y-Variable represents most expensive selected edge.
 
 An edge $\{v,w\}$ is selected if $x_{vw}=1$ or $x_{wv}=1$.
-Thus, if $x_{vw}=1$, $y\geq d(v,w)$.
-$$y \geq d(v,w) \quad \text{if }x_{vw}=1 \quad \forall vw \text{ with } \{v, w\}\in E$$
+Thus, if $x_{vw}=1$, $y\geq dist(v,w)$.
+$$\forall vw \text{ with } \{v, w\}\in E: x_{vw}=1 \Rightarrow y \geq dist(v,w) $$
 The objective will make sure that it is not larger than necessary, setting it equal to the most expensive selected edge.
 
 See `__add_bottleneck_constraints`.
