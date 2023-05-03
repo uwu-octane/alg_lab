@@ -16,7 +16,7 @@ The code can be found in [_solver.py](./_solver.py).
 ### Selection of Variables for the Model
 
 The most trivial variable selection would be to choose a boolean variable for every edge, that represents if the edge is in the solution.
-Unfortunately, with this representation it is difficult to efficiently contrain the edge set to be a tree.
+Unfortunately, with this representation it is difficult to efficiently constrain the edge set to be a tree.
 Instead we will work on an [arborescence](https://en.wikipedia.org/wiki/Arborescence_(graph_theory)) (instead of an undirected tree) and keep track of how deep a vertex is in this arborescence.
 You will often need to create auxiliary variables or constructs that allow you to enforce your constraints more efficiently.
 After some time, you acquire a set of such techniques that allow you to model nearly anything without much thinking.
