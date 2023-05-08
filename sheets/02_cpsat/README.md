@@ -137,10 +137,11 @@ Both problems are NP-hard and solutions often look similar, but they can differ 
 
 Your task in this sheet is to solve the problem with CP-SAT.
 
-1. Model the BTSP as a Constraint Program by stating the necessary variables, the objective function, and the constraints. This should be similiar to the DBST example.
+1. Model the BTSP as a Constraint Program (on paper / using latex) by stating the necessary variables, the objective function, and the constraints. This should be similiar to the DBST example.
 2. Implement this model using CP-SAT. You can reuse code from the DBST-solver.
 3. Create some tests based on handcrafted instances for which you can argue the optimal value.
 4. Create a benchmark with at least 100 instances of various sizes to evaluate the performance of your solver and to allow comparisons with other solver implementations (by checking, which solver can solve more instances with a timelimit of one minute per instance). You can use random positions but adding some structure and symmetry can yield more difficult instances.
 5. Create a version of your solver that enforces a single tour via assigning vertices the corresponing index as variable, with $x_{vw}=1 \Rightarrow index(w)=index(v)+1$ (except for the origin), and one that uses CP-SAT's [`AddCircuit` constraint](https://google.github.io/or-tools/python/ortools/sat/python/cp_model.html#CpModel.AddCircuit). Compare both versions with your benchmark.
 6. Give a sound estimate on how well this problem can be solved with CP-SAT based on your experiments. Up to which size would you consider this problem to be easily solvable?
+7. (Optional, will be mandatory on next sheet) Develop and implement an efficient greedy algorithm for the BTSP problem. Evaluate its performance (speed, solution quality) on some instances. How does the performance compare to the exact solver? How could a greedy solution be used in order to reduce the runtime of the exact solver? (Hint: try to reduce the model's size) 
 
