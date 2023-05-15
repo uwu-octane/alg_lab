@@ -1,4 +1,4 @@
-# Sheet 02: Constraint Programming with CP-SAT
+ # Sheet 02: Constraint Programming with CP-SAT
 
 You probably already know SQL as a way to declaratively work with data: Describe which data you want, and the database system will try to provide them as quickly as possible.
 Now imagine the same for optimization problems: Describe the variables, an objective (a score for how good a solution is), and constraints that have to be satisfied, and the system tries to provide you with the best variable assignment (i.e., solution) satisfying all constraints.

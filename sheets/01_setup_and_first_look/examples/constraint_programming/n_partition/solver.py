@@ -5,10 +5,11 @@ import math
 
 Partition = List[int]
 
+
 class PartitionSolverCpSat():
     def __init__(self, integers: List[int]) -> None:
         self.integers = integers
-    
+
     def solve(self, k: int) -> Optional[List[Partition]]:
         """
         Solve the k-partition problem with the integers associated with this solver.
@@ -29,7 +30,7 @@ class PartitionSolverCpSat():
         # Only allow each integer to be assigned to exactly one partition.
         for i in range(len(self.integers)):
             variables = [p[i] for p in partitions]
-            m.AddExactlyOne(variables) # equivalent to m.Add(sum(variables) == 1)
+            m.AddExactlyOne(variables)  # equivalent to m.Add(sum(variables) == 1)
 
         # This constraint is a symmetry breaker. Without changing the validity of the partitions,
         # one single element can be assigned to one of the partitions. This is done to eliminate
@@ -46,7 +47,7 @@ class PartitionSolverCpSat():
         # Force the equality of all sums (sum[0] == sum[1] == sum[2] == ...).
         for sum1, sum2 in zip(sums, sums[1:]):
             m.Add(sum1 == sum2)
-        
+
         # Call the solver, print solving statistics.
         status = solver.Solve(m)
         print(solver.ResponseStats())

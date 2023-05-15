@@ -16,7 +16,9 @@ class FeedbackVertexSetSolverSAT():
         # New cycles that have not been found before are added lazily later on.
         self.cycles = nx.cycle_basis(self.graph)
         print(f"Number of cycles in cycle basis: {len(self.cycles)}")
-        # dictionary for the variables in the SAT formula 
+        # dictionary for the variables in the SAT formula
+        # maps each vertex to a variable number
+        # How is the problem communicated to the individual solvers (CP-SAT, SAT, MIP)?
         self.node_variables: Dict[Node, int] = dict()
     
     def get_node_var(self, v: Node):
@@ -53,6 +55,8 @@ class FeedbackVertexSetSolverSAT():
             # fetch the variables associated with the vertices in the cycle
             cycle_vertex_vars = [self.get_node_var(v) for v in cycle]
             # force at least one of them to be selected
+            # it adds a clause to the SAT solver that forces at least one of the SAT variables in
+            # cycle_vertex_vars to be true.
             solver.add_clause(cycle_vertex_vars)
         
         def limit_positive_variables():

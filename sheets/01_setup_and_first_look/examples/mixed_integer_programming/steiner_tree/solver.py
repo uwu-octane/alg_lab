@@ -5,12 +5,13 @@ import gurobipy as gp
 import random
 from gurobipy import GRB
 
+
 class SteinerTreeSolver():
 
     def __init__(self, graph: nx.Graph) -> None:
         # For an elegant modelation, convert the graph to a directed graph
         self.graph = graph.to_directed()
-    
+
     def assert_acyclic_callback(self, where, model, edgevars):
         """
         This is a callback method, used to lazily add constraints to the model
@@ -48,7 +49,6 @@ class SteinerTreeSolver():
             model.cbLazy(sum(edgevars[e] for e in cycle_edges) <= len(cycle_edges) - 1)
             print("A cycle was forbidden!")
 
-
     def solve(self, terminals: List[Node]) -> nx.DiGraph():
         """
         This method finds the cost-minimal Steiner Tree with respect to the given terminals.
@@ -60,7 +60,7 @@ class SteinerTreeSolver():
         m.Params.lazyConstraints = 1
 
         # Allocate a boolean variable for every directed edge.
-        edgevars = {e: m.addVar(vtype = GRB.BINARY) for e in self.graph.edges()}
+        edgevars = {e: m.addVar(vtype=GRB.BINARY) for e in self.graph.edges()}
 
         # Enforce that every edge can only be used in one direction.
         for (p, q) in self.graph.edges():
@@ -80,7 +80,7 @@ class SteinerTreeSolver():
                 m.addConstr(num_incoming == 0)
             else:
                 m.addConstr(num_incoming == 1)
-        
+
         # Enforce that outgoing edges are only possible when the node is visited (incoming edges are selected)
         for v in self.graph.nodes():
             incoming_edges = list(self.graph.in_edges(v))
@@ -94,10 +94,10 @@ class SteinerTreeSolver():
                 for e in outgoing_edges:
                     # The number of incoming edges must be >= 1 (= 1) in order to allow an outgoing edge.
                     m.addConstr(edgevars[e] <= num_incoming)
-        
+
         # Build the linear expression that describes the total cost of the Steiner Tree's edges.
         total_cost = sum(edgevars[e] * self.graph[e[0]][e[1]]["weight"] for e in self.graph.edges())
-        
+
         # Set the minimization objective.
         m.setObjective(total_cost, GRB.MINIMIZE)
 
