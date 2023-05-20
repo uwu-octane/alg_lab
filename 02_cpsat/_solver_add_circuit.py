@@ -1,5 +1,13 @@
+import traceback
+
 from ortools.sat.python import cp_model
 import itertools
+
+import networkx as nx
+import random
+import matplotlib
+import matplotlib.pyplot as plt
+import signal
 
 
 def squared_distance(p1, p2):
@@ -27,7 +35,6 @@ class BTSPSolverCP:
         self.edge_vars = {(v, w): self.model.NewBoolVar(f'x_{v},{w}')
                           for v, w in itertools.permutations(range(self.n), 2)}
         self.bottleneck_var = self.model.NewIntVar(0, self.max_distance, 'b')
-        self.depth_vars = {v: self.model.NewIntVar(0, self.n - 1, f'd_{v}') for v in range(self.n)}
         self.model.Minimize(self.bottleneck_var)
 
     def __forbid_bidirectional_edges(self):
@@ -90,10 +97,13 @@ class BTSPSolverCP:
         self.model = cp_model.CpModel()
         self.__calculate_distances()
         self.__make_vars()
-        self.__forbid_bidirectional_edges()
         self.__add_bottleneck_constraints()
-        self.__add_degree_constraints()
-        self.__add_depth_constraints()
+        arcs = list()
+        for (v, w), x_vw in self.edge_vars.items():
+            arc = (v, w, x_vw)
+            arcs.append(arc)
+
+        self.model.AddCircuit(arcs)
 
     def solve(self):
         """
@@ -107,3 +117,50 @@ class BTSPSolverCP:
         if status != cp_model.OPTIMAL:
             raise RuntimeError("Unexpected status after running solver!")
         return [(self.points[v], self.points[w]) for (v, w), x_vw in self.edge_vars.items() if solver.Value(x_vw) != 0]
+
+
+def random_points(n, w=10_000, h=10_000):
+    """
+    Generate a list of n randomly placed points on the w x h grid.
+    """
+    return [(random.randint(0, w), random.randint(0, h)) for _ in range(n)]
+
+
+def draw_btsp_edges(edges):
+    """
+    Draw the edges of a DBST. The bottleneck edge(s) automatically get highlighted.
+    """
+    points = set([e[0] for e in edges] + [e[1] for e in edges])
+    draw_graph = nx.empty_graph()
+    draw_graph.add_nodes_from(points)
+    draw_graph.add_edges_from(edges)
+    g_edges = draw_graph.edges()
+    max_length = max((squared_distance(*e) for e in g_edges))
+    color = [('red' if squared_distance(*e) == max_length else 'black') for e in g_edges]
+    width = [(1.0 if squared_distance(*e) == max_length else 0.5) for e in g_edges]
+    plt.clf()
+    fig, ax = plt.gcf(), plt.gca()
+    fig.set_size_inches(8, 8)
+    ax.set_aspect(1.0)  # 1:1 aspect ratio
+    nx.draw_networkx(draw_graph, pos={p: p for p in points}, node_size=8,
+                     with_labels=False, edgelist=g_edges, edge_color=color, width=width, ax=ax)
+    plt.show()
+
+
+if __name__ == '__main__':
+    import time
+    random.seed(1234567)  # remove if you want random instances
+    signal.signal(signal.SIGALRM, lambda signum,
+                                         frame: print('\nYour time got over'))
+
+    signal.alarm(60)
+    start = time.time()
+    try:
+        for i in range(100):
+            num_of_points = random.randint(10, 100)
+            print(f'Iteration: {i}, points: {num_of_points}')
+            BTSPSolverCP(random_points(num_of_points))
+    except Exception as e:
+        print(e)
+    signal.alarm(0)
+    print(f'TIme taken: {round(time.time() - start, 4)}')
