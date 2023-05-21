@@ -105,7 +105,11 @@ class BTSPSolverCP:
             else:
                 self.model.Add(self.depth_vars[w] == self.depth_vars[v] + 1).OnlyEnforceIf(x_vw)
 
-    def __init__(self, points):
+    def __add_circle_constraints(self):
+        edges = [(key[0], key[1], value) for key, value in self.edge_vars.items()]
+        self.model.AddCircuit(edges)
+
+    def __init__(self, points, using_circle_constraints):
         """
         Initialize the model.
         """
@@ -115,7 +119,10 @@ class BTSPSolverCP:
         self.__calculate_distances()
         self.__make_vars()
         self.__forbid_bidirectional_edges()
-        self.__add_depth_constraints()
+        if not using_circle_constraints:
+            self.__add_depth_constraints()
+        else:
+            self.__add_circle_constraints()
         self.__add_bottleneck_constraints()
         self.__add_hamiltonian_cycle_constraints()
 
