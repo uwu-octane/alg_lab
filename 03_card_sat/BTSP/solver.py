@@ -142,8 +142,28 @@ class BTSPSolverSAT:
         Return the index of the longest edge in a given solution.
         """
         return max((self.edge_to_var[e] - 1 for e in solution))
-        
-    def solve(self):
+    
+    def linear_search_ascending(self):
+        """
+        Linear search for the shortest bottleneck edge under degree constraint self.degree in ascending order
+        """
+        start = 0 # Starting edge index
+        if self.best_solution is not None:
+            start = self.__max_index(self.best_solution)
+        for index, edge in enumerate(self.all_edges[start:]):
+            self.__index_of_solution_with_threshold(index)
+            
+    def linear_search_descending(self):
+        """
+        Linear search for the shortest bottleneck edge under degree constraint self.degree in descending order
+        """
+        start = 0 # Starting edge index
+        if self.best_solution is not None:
+            start = self.__max_index(self.best_solution)
+        for index, edge in enumerate(reversed(self.all_edges[start:])):
+            self.__index_of_solution_with_threshold(index)
+
+    def binary_search(self):
         """
         Binary search for the shortest bottleneck edge under degree constraint self.degree
         """
@@ -158,4 +178,16 @@ class BTSPSolverSAT:
                 ub = actual_index
             else:
                 lb = mid
+    
+    def solve(self, method: int):
+        if method == 0:
+            self.binary_search()
+        elif method == 1:
+            self.linear_search_descending()
+        elif method == 2:
+            self.linear_search_ascending()
+        else:
+            print("method invalid")
+            return None
+        
         return self.best_solution
