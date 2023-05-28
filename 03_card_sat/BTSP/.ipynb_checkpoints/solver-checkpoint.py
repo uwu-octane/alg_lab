@@ -53,7 +53,7 @@ class BTSPSolverSAT:
         self.all_edges = all_edges_sorted(points)
         self.graph = nx.Graph(self.all_edges)
         self.best_solution = solution
-        self.solver = Solver(solver, with_proof=False)
+        self.solver = Solver(solver, with_proof=False, use_timer=True)
         self.__make_edge_variables()
         self.__add_degree_constraints()
         self.__add_edge_count_constraint()
@@ -190,4 +190,4 @@ class BTSPSolverSAT:
             print("method invalid")
             return None
         
-        return self.best_solution
+        return self.best_solution, self.solver.time_accum()
