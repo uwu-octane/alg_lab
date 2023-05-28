@@ -5,6 +5,8 @@ import itertools
 import random
 from json import dumps, loads, JSONEncoder, JSONDecoder
 import pickle
+from contextlib import contextmanager
+import sys, os
 
 Node = Tuple[int, int]
 Edge = Tuple[Node, Node]
@@ -71,3 +73,13 @@ def as_python_object(dct):
 def import_instance(filename) -> Set[Node]:
     with open("instances/"+filename, "r") as f:
         return loads(f.read(), object_hook=as_python_object)
+    
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:  
+            yield
+        finally:
+            sys.stdout = old_stdout
