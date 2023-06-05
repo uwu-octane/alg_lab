@@ -11,20 +11,23 @@ import sys, os
 Node = Tuple[int, int]
 Edge = Tuple[Node, Node]
 
+
 def squared_distance(p1: Node, p2: Node):
     """
     Calculate the squared euclidian distance between two points p1, p2.
     """
-    return (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2
+    return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
+
 
 def all_edges_sorted(points: Iterable[Node]) -> List[Node]:
     """
     Create a list containing all edges between each two points of the given
     point set/list and returns them in sorted, ascending order. 
     """
-    edges = [(v,w) for v, w in itertools.combinations(points, 2)]
+    edges = [(v, w) for v, w in itertools.combinations(points, 2)]
     edges.sort(key=lambda e: squared_distance(*e))  # *e is like e[0], e[1]
     return edges
+
 
 def draw_edges(edges):
     """
@@ -38,11 +41,12 @@ def draw_edges(edges):
     width = [(1.0 if squared_distance(*e) == max_length else 0.5) for e in g_edges]
     plt.clf()
     fig, ax = plt.gcf(), plt.gca()
-    fig.set_size_inches(8,6)
+    fig.set_size_inches(8, 6)
     nx.draw_networkx(draw_graph, pos={p: p for p in draw_graph.nodes}, node_size=8,
                      with_labels=False, edgelist=g_edges, edge_color=color, width=width, ax=ax)
     plt.show()
-    
+
+
 def random_points(n, w=10_000, h=10_000) -> Set[Node]:
     """
     n random points with integer coordinates within the w * h rectangle.
@@ -51,7 +55,7 @@ def random_points(n, w=10_000, h=10_000) -> Set[Node]:
     :param h: The height of the rectangle.
     :return: A set of points as (x,y)-tuples.
     """
-    return set((random.randint(0,w), random.randint(0,h)) for _ in range(n))
+    return set((random.randint(0, w), random.randint(0, h)) for _ in range(n))
 
 
 class PythonObjectEncoder(JSONEncoder):
@@ -60,26 +64,30 @@ class PythonObjectEncoder(JSONEncoder):
             return {'_python_object': pickle.dumps(obj).decode('latin-1')}
         except pickle.PickleError:
             return super().default(obj)
-    
+
+
 def export_instance(filename, points):
-    with open("instances/"+filename, "w") as f:
+    with open("instances/" + filename, "w") as f:
         f.write(dumps(points, cls=PythonObjectEncoder))
-        
+
+
 def as_python_object(dct):
     if '_python_object' in dct:
         return pickle.loads(dct['_python_object'].encode('latin-1'))
     return dct
 
+
 def import_instance(filename) -> Set[Node]:
-    with open("instances/"+filename, "r") as f:
+    with open("instances/" + filename, "r") as f:
         return loads(f.read(), object_hook=as_python_object)
-    
+
+
 @contextmanager
 def suppress_stdout():
     with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
         sys.stdout = devnull
-        try:  
+        try:
             yield
         finally:
             sys.stdout = old_stdout
