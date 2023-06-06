@@ -4,6 +4,7 @@ import math
 
 from util import Node, Edge, Iterable, List, Set, Optional, all_edges_sorted
 
+
 class BTSPSolverSAT:
     def __make_edge_variables(self):
         """
@@ -20,17 +21,19 @@ class BTSPSolverSAT:
         self.var_to_edge = {v: e for e, v in self.edge_to_var.items()}
 
         # as edges are undirected, the swapped version of the edge should point to the same variable
-        self.edge_to_var.update({(w,v): i for (v,w), i in self.edge_to_var.items()})
-        
+        self.edge_to_var.update({(w, v): i for (v, w), i in self.edge_to_var.items()})
+
     def __add_degree_constraints(self):
         """
         Add constraints that assure 1 <= |N(v)| <= d for all v in V.
         """
         for v in self.graph.nodes:
-            edge_vars = [self.edge_to_var[v,w] for w in self.graph.neighbors(v)]
-            self.solver.add_clause(edge_vars)  # at least one edge must be selected
+            edge_vars = [self.edge_to_var[v, w] for w in self.graph.neighbors(v)]
+            # every node has exactly degree 2
+            negative_edge_vars = [-v for v in edge_vars]
+            self.solver.add_atmost(negative_edge_vars, len(edge_vars) - 2)  # at least two edges must be selected
             self.solver.add_atmost(edge_vars, self.degree)  # at most d can be selected
-    
+
     def __add_edge_count_constraint(self):
         """
         Add constraint that exactly n edges are selected.
@@ -40,7 +43,7 @@ class BTSPSolverSAT:
         n = len(self.points)
         self.solver.add_atmost(positive_edges, n)  # at most n edges
         self.solver.add_atmost(negative_edges, len(self.all_edges) - n)  # at most |E| - n non-edges
-    
+
     def __init__(self, points: Iterable[Node], degree: int, solver: str = "Gluecard4", solution: List[Edge] = None):
         """
         Initialize the solver.
@@ -72,8 +75,8 @@ class BTSPSolverSAT:
         Create list of assumptions, which deactivate all edges longer than the
         edge at a given threshold index.
         """
-        return [-self.edge_to_var[e] for e in self.all_edges[threshold+1:]]
-    
+        return [-self.edge_to_var[e] for e in self.all_edges[threshold + 1:]]
+
     def __handle_components(self, components):
         """
         Add 'lazy constraints' for solutions which feature more than one connected component.
@@ -106,8 +109,8 @@ class BTSPSolverSAT:
                 print(f"The bottleneck {math.dist(*self.all_edges[threshold])} is infeasible!")
                 return None
             edges = self.__model_to_solution()
-            #draw_edges(edges)
-            #plt.show()
+            # draw_edges(edges)
+            # plt.show()
             edge_set = set(edges)
             g = self.graph.edge_subgraph(edges)
             components = list(nx.connected_components(g))
@@ -118,14 +121,14 @@ class BTSPSolverSAT:
                 print(f"New best bottleneck: {math.dist(*self.all_edges[threshold])}!")
                 self.best_solution = edges
                 return threshold
-    
+
     def __model_to_solution(self) -> List[Edge]:
         """
         Turn a valid SAT-assignment (solution) to a list of edges.
         """
         model = self.solver.get_model()
         return [self.var_to_edge[lit] for lit in model if lit > 0]
-    
+
     def __index_of_solution_with_threshold(self, threshold: int) -> Optional[int]:
         """
         Return the index of the longest used edge in the solution.
@@ -142,22 +145,22 @@ class BTSPSolverSAT:
         Return the index of the longest edge in a given solution.
         """
         return max((self.edge_to_var[e] - 1 for e in solution))
-    
+
     def linear_search_ascending(self):
         """
         Linear search for the shortest bottleneck edge under degree constraint self.degree in ascending order
         """
-        start = 0 # Starting edge index
+        start = 0  # Starting edge index
         if self.best_solution is not None:
             start = self.__max_index(self.best_solution)
         for index, edge in enumerate(self.all_edges[start:]):
             self.__index_of_solution_with_threshold(index)
-            
+
     def linear_search_descending(self):
         """
         Linear search for the shortest bottleneck edge under degree constraint self.degree in descending order
         """
-        start = 0 # Starting edge index
+        start = 0  # Starting edge index
         if self.best_solution is not None:
             start = self.__max_index(self.best_solution)
         for index, edge in enumerate(reversed(self.all_edges[start:])):
@@ -178,7 +181,7 @@ class BTSPSolverSAT:
                 ub = actual_index
             else:
                 lb = mid
-    
+
     def solve(self, method: int):
         if method == 0:
             self.binary_search()
@@ -189,5 +192,5 @@ class BTSPSolverSAT:
         else:
             print("method invalid")
             return None
-        
+
         return self.best_solution, self.solver.time_accum()
