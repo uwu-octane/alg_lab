@@ -4,13 +4,14 @@ import networkx as nx
 from networkx.classes.graphviews import subgraph_view
 import math
 
+
 class DBSTSolverIP:
     def __make_vars(self):
         # Create binary variables for every *undirected* edge
         self.bnvars = {e: self.model_bottleneck.addVar(lb=0, ub=1, vtype=grb.GRB.BINARY) for e in self.all_edges}
         # Create a fractional variable (vtype=grb.GRB.CONTINUOUS) for the bottleneck length
         self.l = self.model_bottleneck.addVar(lb=0, ub=math.dist(*self.all_edges[-1]), vtype=grb.GRB.CONTINUOUS)
-        
+
     def __add_degree_bounds(self, model, varmap: dict):
         """
         Enforce the degree constraint.
@@ -24,12 +25,12 @@ class DBSTSolverIP:
                     edgevars += varmap[e]
             model.addConstr(edgevars >= 1)
             model.addConstr(edgevars <= self.degree)
-            
+
     def __add_total_edges(self, model, varmap: dict):
         """
         Enforce the constraint sum(x_e) = n-1
         """
-        model.addConstr(sum(varmap.values()) == len(self.points)-1)
+        model.addConstr(sum(varmap.values()) == len(self.points) - 1)
 
     def __make_edges(self):
         edges_of = {p: list() for p in self.points}
@@ -37,14 +38,14 @@ class DBSTSolverIP:
             edges_of[e[0]].append(e)
             edges_of[e[1]].append(e)
         return edges_of
-    
+
     def __add_bottleneck_constraints(self):
         """
         Enforce the bottleneck constraints.
         """
         for e, x_e in self.bnvars.items():
             self.model_bottleneck.addConstr(self.l >= math.dist(*e) * x_e)
-    
+
     def __get_integral_solution(self, model, varmap: dict) -> nx.Graph:
         """
         Constructs a graph from the current solution of the given model.
@@ -60,7 +61,7 @@ class DBSTSolverIP:
             if v >= 0.5:  # the values are not always 0 or 1 due to numerical errors
                 graph.add_edge(e[0], e[1])
         return graph
-    
+
     def __forbid_component(self, model, varmap: dict, component):
         """
         Forbid the occurence of multiple, disconnected components, by enforcing
@@ -75,7 +76,7 @@ class DBSTSolverIP:
                         crossing_edges += varmap[e]
         # The constraint is added using "cbLazy" instaed of "addConstr" in a callback.
         model.cbLazy(crossing_edges >= 1)
-    
+
     def __callback_integral(self, model, varmap):
         # Check whether the solution is connected
         graph = self.__get_integral_solution(model, varmap)
@@ -102,7 +103,7 @@ class DBSTSolverIP:
             # we have an integral solution (potentially valid solution)
             self.__callback_integral(model, varmap)
         elif where == grb.GRB.Callback.MIPNODE and \
-            model.cbGet(grb.GRB.Callback.MIPNODE_STATUS) == grb.GRB.OPTIMAL:
+                model.cbGet(grb.GRB.Callback.MIPNODE_STATUS) == grb.GRB.OPTIMAL:
             # we have a fractional solution
             # (intermediate solution with fractional values for all booleans)
             self.__callback_fractional(model, varmap)
@@ -113,7 +114,7 @@ class DBSTSolverIP:
         self.degree = degree
         self.edges_of = self.__make_edges()
         self.model_bottleneck = grb.Model()  # "First stage" model for finding the bottleneck edge
-        self.model_minsum = grb.Model() # "Second stage" model for finding the cost-minimal DBST with fixed bottleneck.
+        self.model_minsum = grb.Model()  # "Second stage" model for finding the cost-minimal DBST with fixed bottleneck.
         self.remaining_edges = None
         self.msvars = None
         self.__make_vars()
@@ -124,7 +125,7 @@ class DBSTSolverIP:
         self.model_bottleneck.Params.lazyConstraints = 1
         # Set the first objective
         self.model_bottleneck.setObjective(self.l, grb.GRB.MINIMIZE)
-    
+
     def __init_minsum_model(self):
         """
         Set up variables, constraints and objective function for the
@@ -138,7 +139,7 @@ class DBSTSolverIP:
         self.model_minsum.Params.lazyConstraints = 1
         obj = sum((math.dist(*e) * x_e for e, x_e in self.msvars.items()))
         self.model_minsum.setObjective(obj, grb.GRB.MINIMIZE)
-    
+
     def __solve_bottleneck(self):
         # Find the optimal bottleneck (first stage)
         cb_bn = lambda model, where: self.callback(where, model, self.bnvars)
@@ -149,7 +150,7 @@ class DBSTSolverIP:
         print(f"[DBST SOLVER]: Found the optimal bottleneck! Bottleneck length is {bottleneck}")
         self.remaining_edges = [e for e in self.all_edges if math.dist(*e) <= bottleneck]
         return [e for e, x_e in self.bnvars.items() if x_e.x >= 0.5]
-        
+
     def __solve_minsum(self):
         # Find the optimal tree (second stage)
         self.__init_minsum_model()
