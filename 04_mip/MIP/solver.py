@@ -108,7 +108,7 @@ class BTSPSolverIP:
             # (intermediate solution with fractional values for all booleans)
             self.__callback_fractional(model, varmap)
 
-    def __init__(self, points, edges, degree):
+    def __init__(self, points, edges):
         self.points = points
         self.all_edges = edges
         self.edges_of = self.__make_edges()
@@ -134,5 +134,7 @@ class BTSPSolverIP:
         self.remaining_edges = [e for e in self.all_edges if math.dist(*e) <= bottleneck]
         return [e for e, x_e in self.bnvars.items() if x_e.x >= 0.5]
 
-    def solve(self, minsum: bool = False):
+    def solve(self):
         dbst_edges = self.__solve_bottleneck()
+        print('test')
+        return dbst_edges
