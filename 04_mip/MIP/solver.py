@@ -1,8 +1,8 @@
 import gurobipy as grb
 import itertools
 import networkx as nx
-from networkx.classes.graphviews import subgraph_view
 import math
+from MIP import util
 
 
 class BTSPSolverIP:
@@ -113,6 +113,7 @@ class BTSPSolverIP:
         self.all_edges = edges
         self.edges_of = self.__make_edges()
         self.model_bottleneck = grb.Model()  # "First stage" model for finding the bottleneck edge
+        self.model_min_tour = grb.Model()  # "Second stage" model for finding the cost-minimal TSP tour with fixed bottleneck.
         self.remaining_edges = None
         self.__make_vars()
         self.__add_degree_bounds(self.model_bottleneck, self.bnvars)
@@ -122,17 +123,31 @@ class BTSPSolverIP:
         self.model_bottleneck.Params.lazyConstraints = 1
         # Set the first objective
         self.model_bottleneck.setObjective(self.l, grb.GRB.MINIMIZE)
-        
+
+    def __init_min_tour_model(self):
+        """
+        Set up variables, constraints and objective function for the
+        second stage model.
+        """
+        # Create binary variables (vtype=grb.GRB.BINARY) for all edges
+        self.msvars = {e: self.model_min_tour.addVar(lb=0, ub=1, vtype=grb.GRB.BINARY)
+                       for e in self.remaining_edges}
+        self.__add_degree_bounds(self.model_min_tour, self.msvars)
+        self.__add_total_edges(self.model_min_tour, self.msvars)
+        self.model_min_tour.Params.lazyConstraints = 1
+        obj = sum((math.dist(*e) * x_e for e, x_e in self.msvars.items()))
+        self.model_min_tour.setObjective(obj, grb.GRB.MINIMIZE)
+
     def __solve_bottleneck_greedy(self, start, bottleneck):
         # use greedy start solution if available
         self.model_bottleneck.NumStart = 1
         self.model_bottleneck.update()
         self.model_bottleneck.params.StartNumber = 0
         vars = self.model_bottleneck.getVars()
-        for i,v in enumerate(vars[:len(vars)-2]):
+        for i, v in enumerate(vars[:len(vars) - 2]):
             v.Start = start[i]
-        vars[len(vars)-1].Start = bottleneck
-            
+        vars[len(vars) - 1].Start = bottleneck
+
         return self.__solve_bottleneck()
 
     def __solve_bottleneck(self):
@@ -148,9 +163,27 @@ class BTSPSolverIP:
         self.remaining_edges = [e for e in self.all_edges if math.dist(*e) <= bottleneck]
         return [e for e, x_e in self.bnvars.items() if x_e.x >= 0.5]
 
-    def solve(self, start = [], bottleneck = -1):
+    def __solve_min_tour(self):
+        # Find the optimal tree (second stage)
+        self.__init_min_tour_model()
+        cb_ms = lambda model, where: self.callback(where, model, self.msvars)
+        self.model_min_tour.optimize(cb_ms)
+        if self.model_bottleneck.status != grb.GRB.OPTIMAL:
+            raise RuntimeError("Unexpected status after optimization!")
+        # Return all edges with value >= 0.5 (numerical reasons)
+        print(f"[DBST SOLVER]: Found the optimal tour! Total cost: {self.model_min_tour.objVal}")
+        return [e for e, x_e in self.msvars.items() if x_e.x >= 0.5]
+
+    def solve(self, start=None, bottleneck=-1, min_tour=False):
         if start:
-            dbst_edges = self.__solve_bottleneck_greedy(start,bottleneck)
+            btsp_edges = self.__solve_bottleneck_greedy(start, bottleneck)
         else:
-            dbst_edges = self.__solve_bottleneck()
-        return dbst_edges, self.model_bottleneck.getAttr(grb.GRB.Attr.Runtime)
+            btsp_edges = self.__solve_bottleneck()
+        bottleneck_time = self.model_bottleneck.getAttr(grb.GRB.Attr.Runtime)
+        if min_tour:
+            util.draw_edges(btsp_edges)
+            min_tour_sol = self.__solve_min_tour()
+            min_tour_time = self.model_min_tour.getAttr(
+                grb.GRB.Attr.Runtime)
+            return min_tour_sol, bottleneck_time, min_tour_time
+        return btsp_edges, bottleneck_time
