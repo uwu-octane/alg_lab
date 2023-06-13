@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import itertools
 import random
+from json import dumps, loads, JSONEncoder, JSONDecoder
+import pickle
+from contextlib import contextmanager
+import sys, os
 
 Node = Tuple[int, int]
 Edge = Tuple[Node, Node]
@@ -52,3 +56,38 @@ def random_points(n, w=10_000, h=10_000) -> Set[Node]:
     :return: A set of points as (x,y)-tuples.
     """
     return set((random.randint(0, w), random.randint(0, h)) for _ in range(n))
+
+
+class PythonObjectEncoder(JSONEncoder):
+    def default(self, obj):
+        try:
+            return {'_python_object': pickle.dumps(obj).decode('latin-1')}
+        except pickle.PickleError:
+            return super().default(obj)
+
+
+def export_instance(filename, points):
+    with open("instances/" + filename, "w") as f:
+        f.write(dumps(points, cls=PythonObjectEncoder))
+
+
+def as_python_object(dct):
+    if '_python_object' in dct:
+        return pickle.loads(dct['_python_object'].encode('latin-1'))
+    return dct
+
+
+def import_instance(filename) -> Set[Node]:
+    with open("instances/" + filename, "r") as f:
+        return loads(f.read(), object_hook=as_python_object)
+
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
