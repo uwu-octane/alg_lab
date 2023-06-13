@@ -127,14 +127,15 @@ class BTSPSolverIP:
         # Find the optimal bottleneck (first stage)
         cb_bn = lambda model, where: self.callback(where, model, self.bnvars)
         self.model_bottleneck.optimize(cb_bn)
+        if self.model_bottleneck.status == grb.GRB.TIME_LIMIT:
+            raise TimeoutError('Time limit reached')
         if self.model_bottleneck.status != grb.GRB.OPTIMAL:
-            raise RuntimeError("Unexpected status after optimization!")
+            raise RuntimeError(f"Unexpected status: {self.model_bottleneck.status} after optimization!")
         bottleneck = self.model_bottleneck.objVal
         print(f"[DBST SOLVER]: Found the optimal bottleneck! Bottleneck length is {bottleneck}")
         self.remaining_edges = [e for e in self.all_edges if math.dist(*e) <= bottleneck]
-        return [e for e, x_e in self.bnvars.items() if x_e.x >= 0.5]
+        return [e for e, x_e in self.bnvars.items() if x_e.x >= 0.5], self.model_bottleneck.getAttr(grb.GRB.Attr.Runtime)
 
     def solve(self):
         dbst_edges = self.__solve_bottleneck()
-        print('test')
         return dbst_edges
