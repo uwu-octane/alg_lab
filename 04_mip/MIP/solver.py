@@ -134,8 +134,8 @@ class BTSPSolverIP:
         bottleneck = self.model_bottleneck.objVal
         print(f"[DBST SOLVER]: Found the optimal bottleneck! Bottleneck length is {bottleneck}")
         self.remaining_edges = [e for e in self.all_edges if math.dist(*e) <= bottleneck]
-        return [e for e, x_e in self.bnvars.items() if x_e.x >= 0.5], self.model_bottleneck.getAttr(grb.GRB.Attr.Runtime)
+        return [e for e, x_e in self.bnvars.items() if x_e.x >= 0.5]
 
     def solve(self):
         dbst_edges = self.__solve_bottleneck()
-        return dbst_edges
+        return dbst_edges, self.model_bottleneck.getAttr(grb.GRB.Attr.Runtime)
