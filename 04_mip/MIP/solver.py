@@ -122,6 +122,18 @@ class BTSPSolverIP:
         self.model_bottleneck.Params.lazyConstraints = 1
         # Set the first objective
         self.model_bottleneck.setObjective(self.l, grb.GRB.MINIMIZE)
+        
+    def __solve_bottleneck_greedy(self, start, bottleneck):
+        # use greedy start solution if available
+        self.model_bottleneck.NumStart = 1
+        self.model_bottleneck.update()
+        self.model_bottleneck.params.StartNumber = 0
+        vars = self.model_bottleneck.getVars()
+        for i,v in enumerate(vars[:len(vars)-2]):
+            v.Start = start[i]
+        vars[len(vars)-1].Start = bottleneck
+            
+        return self.__solve_bottleneck()
 
     def __solve_bottleneck(self):
         # Find the optimal bottleneck (first stage)
@@ -136,6 +148,9 @@ class BTSPSolverIP:
         self.remaining_edges = [e for e in self.all_edges if math.dist(*e) <= bottleneck]
         return [e for e, x_e in self.bnvars.items() if x_e.x >= 0.5]
 
-    def solve(self):
-        dbst_edges = self.__solve_bottleneck()
+    def solve(self, start = [], bottleneck = -1):
+        if start:
+            dbst_edges = self.__solve_bottleneck_greedy(start,bottleneck)
+        else:
+            dbst_edges = self.__solve_bottleneck()
         return dbst_edges, self.model_bottleneck.getAttr(grb.GRB.Attr.Runtime)

@@ -1,5 +1,5 @@
 from .util import Node, Edge, Set, draw_edges, squared_distance
 
-from .greedy import GreedyDBST
+from .greedy import Greedy_Btsp
 
 from .solver import BTSPSolverIP
