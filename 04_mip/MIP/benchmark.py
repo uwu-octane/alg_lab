@@ -44,11 +44,3 @@ def benchmark_time_limit(time_limit, start_points, step):
     print(f'Last solvable instance has {num_points - step} points, time taken: {time_taken}')
     draw_edges(last_solvable_instance)
     print(f'First unsolvable instance has {num_points} points:')
-
-
-# benchmark_time_limit(300, 205, 5)
-random.seed('123456')
-benchmark_average_time(num_points=100, iterations=5, use_greedy=False)
-print('############################')
-random.seed('123456')
-benchmark_average_time(num_points=100, iterations=5, use_greedy=True)

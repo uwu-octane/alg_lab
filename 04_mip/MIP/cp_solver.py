@@ -102,14 +102,14 @@ class BTSPSolverCP:
     def __init_minsum(self):
         self.ms_vars = {(v,w): self.model_minsum.NewBoolVar(f'x_{v},{w}') 
                             for (v,w) in self.remaining_edges}
-        self.minsum = self.model_minsum.NewIntVar(0, self.max_distance*len(self.remaining_edges), 's')
-        self.model_minsum.Add(self.minsum >= sum(x_vw*self.distances[v,w] for (v, w), x_vw in self.ms_vars.items()))
+        #self.minsum = self.model_minsum.NewIntVar(0, self.max_distance*len(self.remaining_edges), 's')
+        #self.model_minsum.Add(self.minsum >= sum(x_vw*self.distances[v,w] for (v, w), x_vw in self.ms_vars.items()))
         self.depth_vars = {v: self.model_minsum.NewIntVar(0, self.n - 1, f'd_{v}') for v in range(self.n)}
         
         self.__forbid_bidirectional_edges(self.model_minsum, self.ms_vars)
         self.__add_degree_constraints(self.model_minsum, self.ms_vars)
         self.__add_depth_constraints(self.model_minsum, self.ms_vars)
-        self.model_minsum.Minimize(self.minsum)
+        self.model_minsum.Minimize(sum(x_vw*self.distances[v,w] for (v, w), x_vw in self.ms_vars.items()))
         
     def solve(self):
         """
