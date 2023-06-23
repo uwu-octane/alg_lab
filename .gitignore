@@ -163,3 +163,4 @@ cython_debug/
 
 # Misc
 03_card_sat/BTSP/instances/*
+__pycache__/
