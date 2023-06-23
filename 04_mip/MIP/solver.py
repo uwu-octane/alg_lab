@@ -23,8 +23,7 @@ class BTSPSolverIP:
             for e in self.edges_of[v]:
                 if e in varmap:
                     edgevars += varmap[e]
-            model.addConstr(edgevars >= 1)
-            model.addConstr(edgevars <= 2)
+            model.addConstr(edgevars == 2)
 
     def __add_total_edges(self, model, varmap: dict):
         """
@@ -135,8 +134,8 @@ class BTSPSolverIP:
         self.__add_degree_bounds(self.model_min_tour, self.msvars)
         self.__add_total_edges(self.model_min_tour, self.msvars)
         self.model_min_tour.Params.lazyConstraints = 1
-        obj = sum((math.dist(*e) * x_e for e, x_e in self.msvars.items()))
-        self.model_min_tour.setObjective(obj, grb.GRB.MINIMIZE)
+        self.minsum = sum((math.dist(*e) * x_e for e, x_e in self.msvars.items()))
+        self.model_min_tour.setObjective(self.minsum, grb.GRB.MINIMIZE)
 
     def __solve_bottleneck_greedy(self, start, bottleneck):
         # use greedy start solution if available

@@ -127,8 +127,10 @@ class BTSPSolverCP:
             
         # Find solution which minimizes the tour lenght under the bottleneck constraint
         self.remaining_edges = [e for e, x_e in self.edge_vars.items() if math.dist([e[0]],[e[1]]) <= solver.Value(self.bottleneck_var)]    
+        #print(math.sqrt(solver.Value(self.bottleneck_var)))
         self.__init_minsum()
         status = solver.Solve(self.model_minsum)
+        print(solver.ResponseStats())
         if status == cp_model.INFEASIBLE:
             raise RuntimeError("The model was classified infeasible by the solver!")
         if status != cp_model.OPTIMAL:
