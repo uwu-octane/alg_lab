@@ -8,7 +8,8 @@ class GameSolver:
 
     def __make_vars(self):
         # graph.nodes
-        self.vars = {n: tuple(self.model.NewBoolVar(f'{n}_{i}') for i in range(self.num_of_paths)) for n in list(self.graph.nodes)}
+        self.vars = {n: tuple(self.model.NewBoolVar(f'{n}_{i}') for i in range(self.num_of_paths)) for n in
+                     list(self.graph.nodes)}
 
         # Start points which have to be connected
         for i in range(self.num_of_paths):
@@ -22,15 +23,15 @@ class GameSolver:
         """
         for v in nx.nodes(self.graph):
             self.model.Add(sum(self.vars[v]) == 1)
-            # self.model.Add(cp_model.LinearExpr.Sum(cp_model.NewIntVar(self.vars[v][i]) for i in range(len(self.vars[v]))) == 1)
+            # self.model.Add(cp_model.LinearExpr.Sum(cp_model.NewIntVar(self.vars[v][i]) for i in range(len(
+            # self.vars[v]))) == 1)
 
     def __connectivity_constraint(self):
         """ 
         Each path has to be continuous
         """
         for e in nx.edges(self.graph):
-            for i in range(self.num_of_paths):
-                self.model.Add(self.vars[e[0]][i] + self.vars[e[1]][i] == 2)
+            self.model.Add((sum(self.vars[e[0]]) + sum(self.vars[e[1]])) == 2)
 
     def __degree_constraint(self):
         """ 
