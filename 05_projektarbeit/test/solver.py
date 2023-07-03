@@ -9,9 +9,10 @@ class GameSolver:
         self.vars = {n : tuple(self.model.NewBoolVar(f'x_{i}') for i in range(self.k)) for n in list(self.graph)}
 
         # Start points which have to be connected
-        for i in range(self.k):
-            self.vars[start[i][0]] = 1
-            self.vars[start[i][1]] = 1
+        for i in range(self.num_of_paths):
+            n1, n2 = start[i]
+            self.model.Add(self.vars[n1][i] == 1)
+            self.model.Add(self.vars[n2][i] == 1)
 
     def __single_selection_constraint(self):
         """ 
