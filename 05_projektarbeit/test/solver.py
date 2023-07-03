@@ -18,8 +18,8 @@ class GameSolver:
         Enforce that each node can only be once
         """ 
         for v in nx.nodes(self.graph):
-            self.model.Add(cp_model.LinearExpr.Sum(self.vars[v]) == 1)
-            #self.model.Add(cp_model.LinearExpr.Sum(cp_model.NewIntVar(self.vars[v][i]) for i in range(len(self.vars[v]))) == 1)
+            self.model.Add(sum(self.vars[v]) == 1)
+            # self.model.Add(cp_model.LinearExpr.Sum(cp_model.NewIntVar(self.vars[v][i]) for i in range(len(self.vars[v]))) == 1)
 
     def __connectivity_constraint(self):
         """ 
@@ -36,13 +36,14 @@ class GameSolver:
         for v in list(self.graph):
             # Check if v is a start node
             if v not in [n for t in self.start for n in t]:
-                for i in range(self.k):
-                    self.model.Add(cp_model.LinearExpr.Sum(self.vars[w][i] for w in nx.all_neighbors(self.graph,v)) == 2)
+                for i in range(self.num_of_paths):
+                    self.model.Add(
+                        sum(self.vars[w][i] for w in nx.all_neighbors(self.graph, v)) == 2)
             else:
-                for i in range(self.k):
-                    self.model.Add(cp_model.LinearExpr.Sum(self.vars[w][i] for w in nx.all_neighbors(self.graph,v)) == 1)
+                for i in range(self.num_of_paths):
+                    self.model.Add(
+                        sum(self.vars[w][i] for w in nx.all_neighbors(self.graph, v)) == 1)
 
-        
     def __init__(self, graph, start):
         self.graph = graph
         self.start = start
