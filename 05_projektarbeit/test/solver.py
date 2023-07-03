@@ -55,12 +55,12 @@ class GameSolver:
         self.__degree_constraint()
 
     def solve(self):
-        solver = self.model.CpSolver()
+        solver = cp_model.CpSolver()
         status = solver.Solve(self.model)
-        if status == self.model.INFEASIBLE:
+        if status == cp_model.INFEASIBLE:
             raise RuntimeError("The model was classified infeasible by the solver!")
-        if status != self.model.OPTIMAL:
-            raise RuntimeError("Unexpected status after running solver!") 
+        if status != cp_model.OPTIMAL:
+            raise RuntimeError("Unexpected status after running solver!")
 
         return [n for n,b in self.vars.items if solver.Value(b) != 0]
 
