@@ -59,14 +59,14 @@ class GameSolver:
         self.__degree_constraint()
 
     def solve(self):
-        solver = cp_model.CpSolver()
-        status = solver.Solve(self.model)
+        _solver = cp_model.CpSolver()
+        status = _solver.Solve(self.model)
         if status == cp_model.INFEASIBLE:
             raise RuntimeError("The model was classified infeasible by the solver!")
         if status != cp_model.OPTIMAL:
             raise RuntimeError("Unexpected status after running solver!")
 
-        return [n for n, b in self.vars.items if solver.Value(b) != 0]
+        return [n for n, b in self.vars.items if _solver.Value(b) != 0]
 
 
 G = nx.grid_2d_graph(5, 5)
