@@ -36,8 +36,10 @@ class GameSolver:
         """ 
         Each path has to be continuous
         """
-        for e in nx.edges(self.graph):
-            self.model.Add((sum(self.vars[e[0]]) + sum(self.vars[e[1]])) == 2)
+        for e in self.graph.edges:
+            for path in range(self.num_of_paths):
+                self.model.Add(self.node_vars[e[0]][path] + self.node_vars[e[1]][path] == 2) \
+                    .OnlyEnforceIf(self.edge_vars[e][path])
 
     def __degree_constraint(self):
         """ 
