@@ -24,9 +24,13 @@ class GameSolver:
         Enforce that each node can only be used once
         """
         for v in nx.nodes(self.graph):
-            self.model.Add(sum(self.vars[v]) == 1)
-            # self.model.Add(cp_model.LinearExpr.Sum(cp_model.NewIntVar(self.vars[v][i]) for i in range(len(
-            # self.vars[v]))) == 1)
+            self.model.Add(sum(self.node_vars[v]) == 1)
+
+        """
+        Enforce that each edge can only be used once
+        """
+        for e in nx.edges(self.graph):
+            self.model.Add(sum(self.edge_vars[e]) == 1)
 
     def __connectivity_constraint(self):
         """ 
