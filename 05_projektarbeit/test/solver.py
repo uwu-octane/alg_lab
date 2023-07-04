@@ -45,16 +45,19 @@ class GameSolver:
         """ 
         Enforce degree on each node
         """
+        # Todo: maybe add OnlyEnforceIf(node_vars[v][i])
         for v in list(self.graph.nodes):
             # Check if v is a start node
             if v not in [n for t in self.start for n in t]:
-                for i in range(self.num_of_paths):
-                    self.model.Add(
-                        sum(self.vars[w][i] for w in nx.all_neighbors(self.graph, v)) == 2)
+                for path in range(self.num_of_paths):
+                    v_in = sum(self.edge_vars[e][path] for e in self.graph.in_edges(v))
+                    v_out = sum(self.edge_vars[e][path] for e in self.graph.out_edges(v))
+                    self.model.Add(v_in + v_out == 2)
             else:
-                for i in range(self.num_of_paths):
-                    self.model.Add(
-                        sum(self.vars[w][i] for w in nx.all_neighbors(self.graph, v)) == 1)
+                for path in range(self.num_of_paths):
+                    v_in = sum(self.edge_vars[e][path] for e in self.graph.in_edges(v))
+                    v_out = sum(self.edge_vars[e][path] for e in self.graph.out_edges(v))
+                    self.model.Add(v_in + v_out == 1)
 
     def __init__(self, graph, start):
         self.graph = graph
