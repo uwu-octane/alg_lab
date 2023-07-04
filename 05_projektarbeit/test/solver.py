@@ -21,7 +21,7 @@ class GameSolver:
 
     def __single_selection_constraint(self):
         """ 
-        Enforce that each node can only be used once
+        Enforce that each node has be used once
         """
         for v in nx.nodes(self.graph):
             self.model.Add(sum(self.node_vars[v]) == 1)
@@ -30,7 +30,7 @@ class GameSolver:
         Enforce that each edge can only be used once
         """
         for e in nx.edges(self.graph):
-            self.model.Add(sum(self.edge_vars[e]) == 1)
+            self.model.Add(sum(self.edge_vars[e]) <= 1)
 
     def __connectivity_constraint(self):
         """ 
