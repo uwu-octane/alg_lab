@@ -8,8 +8,10 @@ class GameSolver:
 
     def __make_vars(self):
         # graph.nodes
-        self.vars = {n: tuple(self.model.NewBoolVar(f'{n}_{i}') for i in range(self.num_of_paths)) for n in
-                     list(self.graph.nodes)}
+        self.node_vars = {n: tuple(self.model.NewBoolVar(f'{n}_{i}') for i in range(self.num_of_paths)) for n in
+                          list(self.graph.nodes)}
+        self.edge_vars = {e: tuple(self.model.NewBoolVar(f'{e}_{i}') for i in range(self.num_of_paths)) for e in
+                          list(self.graph.edges)}
 
         # Start points which have to be connected
         for i in range(self.num_of_paths):
