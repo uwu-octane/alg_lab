@@ -4,6 +4,24 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 
+def draw_btsp_edges(edges):
+    """
+    Draw the edges of a DBST. The bottleneck edge(s) automatically get highlighted.
+    """
+    points = set([e[0] for e in edges] + [e[1] for e in edges])
+    draw_graph = nx.empty_graph()
+    draw_graph.add_nodes_from(points)
+    draw_graph.add_edges_from(edges)
+    g_edges = draw_graph.edges()
+    plt.clf()
+    fig, ax = plt.gcf(), plt.gca()
+    fig.set_size_inches(8,8)
+    ax.set_aspect(1.0)  # 1:1 aspect ratio
+    nx.draw_networkx(draw_graph, pos={p: p for p in points}, node_size=8,
+                     with_labels=False, edgelist=g_edges, ax=ax)
+    plt.show()
+
+
 class GameSolver:
 
     def __make_vars(self):
@@ -77,15 +95,21 @@ class GameSolver:
         if status != cp_model.OPTIMAL:
             raise RuntimeError("Unexpected status after running solver!")
 
-        return [n for n, b in self.node_vars.items() if _solver.Value(b) != 0]
+        for v, v_p in self.node_vars.items():
+            print(f'Node {v}')
+            for i, p in enumerate(v_p):
+                print(f'Value for path_{i}: {_solver.Value(p)}')
+        return [_solver.Value(*b) for n, b in self.node_vars.items()], [e for e in self.graph.edges if _solver.Value(self.edge_vars[e][0]) == 1]
 
 
 G = nx.grid_2d_graph(2, 4).to_directed()
 pos = {p: p for p in G.nodes}
 nx.draw_networkx(G, pos=pos)
 # plt.show()
-print(list(G.nodes))
-start = [(list(G)[0], list(G)[4]), (list(G)[3], list(G)[7])]
-print(start)
+# print(list(G.nodes))
+start = [(list(G)[0], list(G)[4])]
+# print(start)
 solver = GameSolver(G, start)
-print(solver.solve())
+nodes, edges = solver.solve()
+print(edges)
+draw_btsp_edges(edges)
