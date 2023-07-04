@@ -2,9 +2,10 @@ from ortools.sat.python import cp_model
 
 import matplotlib.pyplot as plt
 import networkx as nx
+import itertools
 
 
-def draw_btsp_edges(edges):
+def draw_edges(edges):
     """
     Draw the edges of a DBST. The bottleneck edge(s) automatically get highlighted.
     """
@@ -30,6 +31,7 @@ class GameSolver:
                           list(self.graph.nodes)}
         self.edge_vars = {e: tuple(self.model.NewBoolVar(f'{e}_{i}') for i in range(self.num_of_paths)) for e in
                           list(self.graph.edges)}
+        self.depth_vars = {v: self.model.NewIntVar(0, len(self.graph.nodes) - 1, f'd_{v}') for v in range(self.num_nodes)}
 
         # Start points which have to be connected
         for i in range(self.num_of_paths):
@@ -80,6 +82,7 @@ class GameSolver:
     def __init__(self, graph, start):
         self.graph = graph
         self.start = start
+        self.num_nodes = len(self.graph.nodes)
         self.num_of_paths = len(start)
         self.model = cp_model.CpModel()
         self.__make_vars()
@@ -112,4 +115,4 @@ start = [(list(G)[0], list(G)[4])]
 solver = GameSolver(G, start)
 nodes, edges = solver.solve()
 print(edges)
-draw_btsp_edges(edges)
+draw_edges(edges)
