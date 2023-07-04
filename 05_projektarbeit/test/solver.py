@@ -79,6 +79,31 @@ class GameSolver:
                     v_out = sum(self.edge_vars[e][path] for e in self.graph.out_edges(v))
                     self.model.Add(v_in + v_out == 1)
 
+    def __forbid_bidirectional_edges(self):
+        """
+        Add the (redundant) constraints x_{v,w} -> !x_{w, v}.
+        """
+        for v, w in itertools.combinations(self.graph.edges, 2):
+            # if the two edges are "reverse" from each other
+            if v[0] == w[1] or v[1] == w[0]:
+                for path in range(self.num_of_paths):
+                    self.model.AddBoolOr([self.edge_vars[v][path].Not(), self.edge_vars[w][path].Not()])
+
+    def __add_depth_constraints(self):
+        """
+        Add the depth constraints x_{v,w} -> d_w = d_v + 1 which guarantee the
+        validity of the arborescence.
+        """
+        # without loss of generality, force one node to be the root.
+        self.model.Add(self.depth_vars[0] == 0)
+        # Todo:
+        # spanning tree has exactly n-1 edges.
+        self.model.Add(sum() == self.num_nodes - 1)
+        # Todo:
+        # If the edge v -> w is selected, d(v) + 1 == d(w) must hold.
+        for (v, w), x_vw in self.edge_vars.items():
+            self.model.Add(self.depth_vars[w] == self.depth_vars[v] + 1).OnlyEnforceIf(x_vw)
+
     def __init__(self, graph, start):
         self.graph = graph
         self.start = start
@@ -89,6 +114,7 @@ class GameSolver:
         self.__single_selection_constraint()
         self.__connectivity_constraint()
         self.__degree_constraint()
+        self.__forbid_bidirectional_edges()
 
     def solve(self):
         _solver = cp_model.CpSolver()
