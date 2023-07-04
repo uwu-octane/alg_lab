@@ -16,8 +16,8 @@ class GameSolver:
         # Start points which have to be connected
         for i in range(self.num_of_paths):
             n1, n2 = start[i]
-            self.model.Add(self.vars[n1][i] == 1)
-            self.model.Add(self.vars[n2][i] == 1)
+            self.model.Add(self.node_vars[n1][i] == 1)
+            self.model.Add(self.node_vars[n2][i] == 1)
 
     def __single_selection_constraint(self):
         """ 
@@ -77,13 +77,15 @@ class GameSolver:
         if status != cp_model.OPTIMAL:
             raise RuntimeError("Unexpected status after running solver!")
 
-        return [n for n, b in self.vars.items if _solver.Value(b) != 0]
+        return [n for n, b in self.node_vars.items() if _solver.Value(b) != 0]
 
 
-G = nx.grid_2d_graph(5, 5)
-
+G = nx.grid_2d_graph(2, 4).to_directed()
+pos = {p: p for p in G.nodes}
+nx.draw_networkx(G, pos=pos)
+# plt.show()
 print(list(G.nodes))
-start = [(list(G)[0], list(G)[20])]
+start = [(list(G)[0], list(G)[4]), (list(G)[3], list(G)[7])]
 print(start)
 solver = GameSolver(G, start)
 print(solver.solve())
