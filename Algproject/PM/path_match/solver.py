@@ -7,42 +7,25 @@ import itertools
 
 class GameSolver:
     def __make_vars(self):
-        # graph.nodes
-
-        # self.edge_vars = {(v, w): self.model.NewBoolVar(f'x_{v},{w}')
-        #                  for v, w in self.edges}
 
         self.edge_vars = {(v, w): self.model.NewBoolVar(f'x_{v},{w}')
                           for v in self.nodes for w in list(self.graph.neighbors(v))}
 
         self.node_vars = {v: self.model.NewBoolVar(f'x_{v}') for v in self.nodes}
 
+        # not working
         self.node_to_path = {n: tuple(self.model.NewBoolVar(f'{n}_{i}')
                                       for i in range(self.num_paths)) for n in self.nodes}
 
         self.depth_vars = {v: self.model.NewIntVar(0, self.num_nodes - 1, f'd_{v}') for v in self.nodes}
 
-        """
-        
-        
-        self.node_vars = {v: self.model.NewBoolVar(f'x_{v}') for v in range(self.num_nodes)}
-        self.edge_vars = {e: self.model.NewBoolVar(f'x_{e}') for e in range(len(self.edges))}
-        self.depth_vars = {v: self.model.NewIntVar(0, self.num_nodes - 1, f'd_{v}') for v in self.nodes}
-        self.node_to_path = {n: tuple(self.model.NewBoolVar(f'{n}_{i}') for i in range(self.num_paths)) for n in
-                             range(self.num_nodes)}
-        """
-
     def constraints_test(self):
         # print(self.node_to_path)
-        self.model.Add(self.node_to_path[(0, 0)][0] == 1)
-        for v in self.nodes:
-            # "Count" the number of incoming and outgoing edges.
-            vin, vout = 0, 0
-            v_neighbors = list(self.graph.neighbors(v))
-            neighbors_edges = list(self.graph.edges(v))
-            # print("v_neighbor for ", v, " : ", v_neighbors)
-            print("neighbors_edges for ", v, " : ", neighbors_edges)
-        # print(self.edge_vars)
+        solver = cp_model.CpSolver()
+        status = solver.Solve(self.model)
+
+        for v in self.start_points:
+            print(v, solver.Value(self.depth_vars[v]))
 
     def __single_selection_constraint(self):
         """
@@ -50,6 +33,11 @@ class GameSolver:
         """
         self.model.Add(sum(self.node_vars.values()) == self.num_nodes)
 
+        """
+        Cause every node has to be used once, and the path num is known, so we can get the number of edges in graph
+        let |path| be the number of nodes in a path, then |path| - 1 = |edges| in this case
+        |path_1| -1 + |path_2| -1 + ... + |path_n| -1 = num_nodes - num_paths
+        """
         self.model.Add(sum(self.edge_vars.values()) == self.num_nodes - self.num_paths)
 
     def __path_selection_constraint(self):
@@ -59,6 +47,19 @@ class GameSolver:
         for v in self.nodes:
             self.model.Add(sum(self.node_to_path[v][i] for i in range(self.num_paths)) == 1)
 
+        for i in range(self.num_paths):
+            for (v, w), x_vw in self.edge_vars.items():
+                self.model.Add(
+                    self.node_to_path[v][i] == self.node_to_path[w][i]).OnlyEnforceIf(x_vw)
+
+       # self.model.Add(self.node_to_path[self.start_points[0]][0] == 1)
+        """
+        for i in range(len(self.start_points)):
+            index = 0
+            if i % 2 == 0:
+                self.model.Add(self.node_to_path[self.start_points[i]][index] == 1)
+                index += 1
+        """
     def __add_degree_constraints(self):
         """
         Add an upper limit to the degree of every node.
@@ -67,10 +68,16 @@ class GameSolver:
         for v in self.nodes:
             # "Count" the number of incoming and outgoing edges.
             vin, vout = 0, 0
+            """
+            its easier to only consider the neighbors of v, cause this is a grid graph
+            """
             for w in list(self.graph.neighbors(v)):
                 vin += self.edge_vars[w, v]
                 vout += self.edge_vars[v, w]
 
+            """
+            in start_points, they are ethier the start or end of a path, so they have only one incident edge
+            """
             if v in self.start_points:
                 self.model.Add(vin + vout == 1)
             else:
@@ -96,10 +103,13 @@ class GameSolver:
         """
 
         # without loss of generality, force one node to be the root.
-        for i in range(len(self.start_points), 2):
-            self.model.Add(self.depth_vars[self.start_points[i]] == 0)
-            for w in self.nodes:
-                self.model.Add(self.edge_vars[w, self.start_points[i]].Not())
+        """
+        for every 2 nodes in start_points we set the depth to 0, so every path starts independently with this points
+        change the choice of start_points may change the resulted path 
+        """
+        for i in range(len(self.start_points)):
+            if i % 2 == 0:
+                self.model.Add(self.depth_vars[self.start_points[i]] == 0)
 
         # If the edge v -> w is selected, d(v) + 1 == d(w) must hold.
         for (v, w), x_vw in self.edge_vars.items():
@@ -128,6 +138,8 @@ class GameSolver:
         self.__add_depth_constraints()
         self.__path_selection_constraint()
 
+    def get_start_points(self):
+        return self.start_points
 
     def solve(self):
         """
@@ -140,25 +152,32 @@ class GameSolver:
             raise RuntimeError("The model was classified infeasible by the solver!")
         if status != cp_model.OPTIMAL:
             raise RuntimeError("Unexpected status after running solver!")
-        """
-        for v, v_p in self.node_vars.items():
-            print(f'Node {v}')
-        """
+
         edges = [(v, w) for (v, w), x_vw in self.edge_vars.items() if solver.Value(x_vw) != 0]
-        paths_nodes = []
-        for i in range(self.num_paths):
-            path_node = []
-            for v in self.nodes:
-                if solver.Value(self.node_to_path[v][i]) != 0:
-                    path_node.append(v)
-            paths_nodes.append(path_node)
+
         """
-        make points sequence to edges
+        use nx.connected_components to find the connected components of the graph, which are the paths we want
+        it returns a set of nodes, cause it is a set, so we have to resort the nodes according to the depth
         """
+
+        nodes_paths = [sorted(nodes_path, key=lambda x: solver.Value(self.depth_vars[x])) for nodes_path in
+                       nx.connected_components(nx.Graph(edges))]
+        paths = [[(sorted_node_path[i], sorted_node_path[i + 1]) for i in range(len(sorted_node_path) - 1)] for
+                 sorted_node_path in nodes_paths]
+        """
+        nodes_paths = list(nx.connected_components(nx.Graph(edges)))
+        sorted_node_paths = []
+        for nodes_path in nodes_paths:
+            nodes_path = list(nodes_path)
+            sorted_node_path = sorted(nodes_path, key=lambda x: solver.Value(self.depth_vars[x]))
+            sorted_node_paths.append(sorted_node_path)
+        
         paths = []
-        for path_node in paths_nodes:
+        for sorted_node_path in sorted_node_paths:
             path = []
-            for i in range(len(path_node) - 1):
-                path.append((path_node[i], path_node[i + 1]))
+            sorted_node_path = list(sorted_node_path)
+            for i in range(len(sorted_node_path) - 1):
+                path.append((sorted_node_path[i], sorted_node_path[i + 1]))
             paths.append(path)
+        """
         return edges, paths

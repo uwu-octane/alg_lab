@@ -31,9 +31,9 @@ def gen_grid(grid_width, grid_height):
 
 
 def generate_random_rgb():
-    r = random.randint(0, 1)
-    g = random.randint(0, 1)
-    b = random.randint(0, 1)
+    r = random.random()
+    g = random.random()
+    b = random.random()
     return r, g, b
 
 
@@ -47,11 +47,24 @@ def draw_result_colorful(edges, paths, grid_graph):
 
     nx.draw_networkx_nodes(grid_graph, pos, node_color='skyblue', node_size=100)  # draw nodes
     nx.draw_networkx_labels(grid_graph, pos)
-    # nx.draw_networkx_edges(grid_graph, pos, edgelist=edges, edge_color='red', width=2.0)  # draw edges we want to show
-    colors = []
-    for i in range(len(paths)):
-        colors.append(generate_random_rgb())
-        nx.draw_networkx_edges(grid_graph, pos, edgelist=paths[i], edge_color=colors[i], width=2.0)
+
+    for path in paths:
+        """
+        for every path generate a random color
+        """
+        color = generate_random_rgb()
+        nx.draw_networkx_edges(grid_graph, pos, edgelist=path, edge_color=color, width=2.0)
+
+        """
+        highlight the start and end node
+        """
+        start_node = path[0][0]
+        end_node = path[-1][1]
+        nx.draw_networkx_nodes(grid_graph, pos, nodelist=[start_node, end_node], node_color="red", node_size=100)
+
+    """
+    hide other edges
+    """
     nx.draw_networkx_edges(grid_graph, pos, edgelist=list(set(grid_graph.edges()) - set(edges)),
                            edge_color='none')  # hide other edges
 
