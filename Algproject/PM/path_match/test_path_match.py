@@ -45,7 +45,7 @@ def test_solver_constarint():
 
 
 class MyTestCase(unittest.TestCase):
-    pass
+    test_solver()
 
 
 if __name__ == '__main__':
