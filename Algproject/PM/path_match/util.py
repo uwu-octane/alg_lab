@@ -37,7 +37,7 @@ def generate_random_rgb():
     return r, g, b
 
 
-def draw_result_colorful(edges, paths, grid_graph):
+def draw_result_colorful(edges, paths, grid_graph, with_laber=False):
     """
     draw grid graph
     """
@@ -45,8 +45,9 @@ def draw_result_colorful(edges, paths, grid_graph):
     # color = [('red' if e in edges else 'none') for e in G.nodes()]
     plt.clf()
 
-    nx.draw_networkx_nodes(grid_graph, pos, node_color='skyblue', node_size=100)  # draw nodes
-    nx.draw_networkx_labels(grid_graph, pos)
+    nx.draw_networkx_nodes(grid_graph, pos, node_color='skyblue', node_size=1)  # draw nodes
+    if with_laber:
+        nx.draw_networkx_labels(grid_graph, pos)
 
     for path in paths:
         """
