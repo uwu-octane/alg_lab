@@ -12,9 +12,9 @@ def test_gen_start_points():
     print(list(start[0])[1])
 
 
-def test_solver():
-    G = gen_grid(20, 20)
-    start = gen_start_points(20, G)
+def test_solver(num_points, width=10, height=10):
+    G = gen_grid(width, height)
+    start = gen_start_points(num_points, G)
     #start = [(0, 1), (1, 1)]
     #start = [(0, 0), (3,0), (0,1),(3,1),(0,2),(3,2),(0,3),(3,3)]
     #print(start[1])
@@ -45,7 +45,7 @@ def test_solver_constarint():
 
 
 class MyTestCase(unittest.TestCase):
-    test_solver()
+    test_solver(num_points=10, width=5, height=10)
 
 
 if __name__ == '__main__':
