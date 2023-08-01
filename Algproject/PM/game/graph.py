@@ -16,17 +16,24 @@ class Graph:
 
         self.cells = [[pygame.Rect(i * self.cell_width, j * self.cell_height, self.cell_width, self.cell_height)
                        for j in range(self.nodes[1])] for i in range(self.nodes[0])]
+        self.edges = []
 
     def draw(self):
+        self.surface.lock()
         for i in range(self.nodes[0]):
             for j in range(self.nodes[1]):
                 pygame.draw.rect(self.surface, (0, 0, 0), self.cells[i][j], 1)
                 pygame.draw.circle(self.surface, (0, 0, 0), (i * self.cell_width + self.cell_width / 2,
                                                              j * self.cell_height + self.cell_height / 2), 5)
+        for e in self.edges:
+            start = self.get_cell_coordination(e[0])
+            end = self.get_cell_coordination(e[1])
+            pygame.draw.line(self.surface, (255, 0, 0), (self.get_cell_center(start[0], start[1])),
+                              self.get_cell_center(end[0], end[1]), 2)
+        self.surface.unlock()
 
-    def draw_edge(self, start, end, color=(0, 0, 0)):
-        pygame.draw.line(self.surface, color, (self.get_cell_center(start[0], start[1])),
-                         self.get_cell_center(end[0], end[1]), 1)
+    def add_edge(self, start, end):
+        self.edges.append((start, end))
 
     def get_graph_size(self):
         return self.width, self.height

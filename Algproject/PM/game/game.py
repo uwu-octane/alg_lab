@@ -27,17 +27,14 @@ def main():
     graph_surface = pygame.Surface((800, HEIGHT))
     graph_surface.fill((255, 255, 255))
     g = graph.Graph(graph_surface, (10, 10))
-    g.draw()
     # UI
     ui_surface = pygame.Surface((400, HEIGHT))
     ui_surface.fill((100, 100, 100))
     tp.init(ui_surface, tp.theme_human)
-    button = tp.Button("Nani!!???")
+    button = tp.Button("Test")
+    button.center_on(ui_surface)
     updater = button.get_updater()
 
-    # Drawing
-    screen.blit(ui_surface, (0, 0))
-    screen.blit(graph_surface, (400, 0))
 
     running = True
     clock = pygame.time.Clock()
@@ -67,13 +64,17 @@ def main():
                     end_pos = convert_to_game_coordinates(event.pos, g.get_graph_size())
                     g.mouse_click(end_pos)
                     if start_pos and end_pos:
-                        print("draw")
-                        #not working ! ?
-                        g.draw_edge(start_pos, end_pos)
+                        g.add_edge(start_pos, end_pos)
                     start_pos = None
                     end_pos = None
         updater.update(events=events, mouse_rel=mouse_rel)
+
+        # Drawing
+        screen.blit(ui_surface, (0, 0))
+        screen.blit(graph_surface, (400, 0))
+        g.draw()
         pygame.display.flip()
+        pygame.display.update()
 
 
 if __name__ == "__main__":
