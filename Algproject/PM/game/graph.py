@@ -38,6 +38,9 @@ class Graph:
     def get_graph_size(self):
         return self.width, self.height
 
+    def get_graph_nodes(self):
+        return self.nodes
+
     def get_cell_center(self, i, j):
         center_x = i * self.cell_width + self.cell_width / 2
         center_y = j * self.cell_height + self.cell_height / 2
