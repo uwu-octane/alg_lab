@@ -36,6 +36,9 @@ class MyTestCase(unittest.TestCase):
         # draw_result_edges(edges, G)
         project_dir = os.getcwd()
         store_in_json(G, start[1], edges, paths, os.path.join(project_dir, "instances.jsonl"))
+        for path in paths:
+            print(path)
+            print("------------------")
         draw_result_colorful(edges, paths, G, False)
 
     def test_solver_constarint(self):
@@ -45,6 +48,7 @@ class MyTestCase(unittest.TestCase):
         solver.constraints_test()
 
     def test_read_jsonl(self):
+        print(os.getcwd())
         data_list = read_json_lines("instances.jsonl")
         for data in data_list:
             print(data)

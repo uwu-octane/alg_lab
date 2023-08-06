@@ -42,7 +42,7 @@ def generate_random_rgb():
     colors_with_rgb = mcolors.CSS4_COLORS
     color = random.choice(list(mcolors.CSS4_COLORS.values()))
     # 打印所有颜色及其对应的RGB值
-    print(color)
+    # print(color)
 
     return color
 
@@ -162,7 +162,7 @@ def store_in_json(grid, start_points, edges, paths, instance_file_path):
 
     start_points = [{'x': x, 'y': y} for x, y in start_points]
     edges = [{'source': v, 'target': w} for v, w in edges]
-    path = [[{'x': x, 'y': y} for x, y in p] for p in paths]
+    path = [[{'source': x, 'target': y} for x, y in p] for p in paths]
     instance = {
         "grid": [{'width': width, 'height': height}],
         "start_points": start_points,
@@ -191,3 +191,25 @@ def read_json_lines(file_path):
             data_list.append(data)
 
     return data_list
+
+
+def handel_json_data():
+    data_list = read_json_lines("../instances.jsonl")
+    instances = []
+    for data in data_list:
+        grid_data = data['grid']
+        points_data = data['start_points']
+        start_points = [(point['x'], point['y']) for point in points_data]
+
+        edges_data = data['edges']
+        edges = [(edge['source'], edge['target']) for edge in edges_data]
+        edges = tuple((tuple(coord1), tuple(coord2)) for coord1, coord2 in edges)
+
+        paths_data = data['paths']
+        paths = []
+        for path in paths_data:
+            path_edges = [(edge['source'], edge['target']) for edge in path]
+            path_edges = [(tuple(coord1), tuple(coord2)) for coord1, coord2 in path_edges]
+            paths.append(path_edges)
+        instance = (grid_data, start_points, edges, paths)
+        instances.append(instance)

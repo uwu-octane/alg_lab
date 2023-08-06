@@ -15,6 +15,7 @@ class Game:
     this function is to adjust the click positions, because the graph is not in the left top corner of the window,
     but the game position is based on the left top corner of the window
     """
+
     def convert_to_game_coordinates(self, click_pos):
         game_x = click_pos[0] - (WIDTH - self.g.get_graph_size()[0])
         game_y = click_pos[1] - (HEIGHT - self.g.get_graph_size()[1])
@@ -23,6 +24,7 @@ class Game:
     """
     create some game instances
     """
+
     def __gen_game_instance(self, instance_num):
         grid = gen_grid(self.g.get_graph_nodes()[0], self.g.get_graph_nodes()[1])
         start_points = gen_start_points(8, grid)
@@ -34,10 +36,13 @@ class Game:
                 instance.append((start_points[1], edges, paths))
                 instance_num -= 1
             except RuntimeError:
-                #print("RuntimeError")
+                # print("RuntimeError")
                 start_points = gen_start_points(8, grid)
                 continue
-        return instance
+        self.game_instance = instance
+
+    def read_game_instance(self):
+        self.game_instance_in_cache = handel_json_data()
 
     def __init__(self):
         # initialize the pygame module
@@ -63,7 +68,8 @@ class Game:
 
         self.clock = pygame.time.Clock()
         self.track_edge = []
-        self.game_instance = self.__gen_game_instance(10)
+        self.game_instance = []
+        self.game_instance_in_cache = []
 
     def run(self):
         running = True
@@ -168,5 +174,10 @@ def main():
 
 if __name__ == "__main__":
     game = Game()
-    print(game.game_instance)
-    game.run()
+    print(os.getcwd())
+    game.read_game_instance()
+    game_instance_path = game.game_instance_in_cache[2][-1]
+    for path in game_instance_path:
+        print(path)
+        print("------------------")
+
