@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import itertools
 import matplotlib.colors as mcolors
+import json
+import os
+import time
 
 Node = Tuple[int, int]
 Edge = Tuple[Node, Node]
@@ -128,3 +131,63 @@ def draw_result_edges(edges, grid_graph):
                            edge_color='none')  # hide other edges
 
     plt.show()
+
+
+"""
+def json_to_graph(json_str):
+    graph_data = json.loads(json_str)
+    # Extract the source and target information from each edge
+    points_data = graph_data['points']
+    points = [(point['x'], point['y']) for point in points_data]
+    edges_data = graph_data['edges']
+    edges = [(edge['source'], edge['target']) for edge in edges_data]
+    edges = tuple((tuple(coord1), tuple(coord2)) for coord1, coord2 in edges)
+    return points, edges
+"""
+
+
+def store_in_json(grid, start_points, edges, paths, instance_file_path):
+    """
+    store the result in json file
+    """
+    if not os.path.exists(instance_file_path):
+        project_dir = os.getcwd()  # Get the current working directory (project directory)
+
+        instance_file_name = "instances" + ".jsonl"
+        instance_file_path = os.path.join(project_dir, instance_file_name)
+
+    nodes = list(grid.nodes())
+    width = max([node[0] for node in nodes]) + 1
+    height = max([node[1] for node in nodes]) + 1
+
+    start_points = [{'x': x, 'y': y} for x, y in start_points]
+    edges = [{'source': v, 'target': w} for v, w in edges]
+    path = [[{'x': x, 'y': y} for x, y in p] for p in paths]
+    instance = {
+        "grid": [{'width': width, 'height': height}],
+        "start_points": start_points,
+        "edges": edges,
+        "paths": path
+    }
+
+    with open(instance_file_path, 'a') as f:
+        json.dump(instance, f)
+        f.write("\n")
+
+
+def read_json_lines(file_path):
+    """
+    Read and parse JSON Lines from a file.
+    Returns a list of parsed JSON objects.
+    """
+    data_list = []
+    with open(file_path, 'r') as f:
+        for line in f:
+            # Strip the newline character from the end of the line
+            line = line.strip()
+
+            # Parse the JSON object in the line
+            data = json.loads(line)
+            data_list.append(data)
+
+    return data_list

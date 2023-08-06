@@ -34,7 +34,8 @@ class MyTestCase(unittest.TestCase):
         # print(paths))
         # print(start[1])
         # draw_result_edges(edges, G)
-
+        project_dir = os.getcwd()
+        store_in_json(G, start[1], edges, paths, os.path.join(project_dir, "instances.jsonl"))
         draw_result_colorful(edges, paths, G, False)
 
     def test_solver_constarint(self):
@@ -42,6 +43,14 @@ class MyTestCase(unittest.TestCase):
         start = gen_start_points(6, G)
         solver = GameSolver(G, start[1])
         solver.constraints_test()
+
+    def test_read_jsonl(self):
+        data_list = read_json_lines("instances.jsonl")
+        for data in data_list:
+            print(data)
+            print(data['start_points'])
+            #print(data['edges'])
+            #print(data['paths'])
 
 
 if __name__ == '__main__':
