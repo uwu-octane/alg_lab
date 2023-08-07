@@ -34,11 +34,14 @@ class MyTestCase(unittest.TestCase):
         # print(paths))
         # print(start[1])
         # draw_result_edges(edges, G)
+        print(solver.get_bottleneck())
+        print("==============")
         project_dir = os.getcwd()
         store_in_json(G, start[1], edges, paths, os.path.join(project_dir, "instances.jsonl"))
         for path in paths:
-            print(path)
-            print("------------------")
+            print(len(path))
+            #print("------------------")
+            pass
         draw_result_colorful(edges, paths, G, False)
 
     def test_solver_constarint(self):

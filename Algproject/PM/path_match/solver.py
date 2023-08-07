@@ -18,6 +18,15 @@ class GameSolver:
                                       for i in range(self.num_paths)) for n in self.nodes}
 
         self.depth_vars = {v: self.model.NewIntVar(0, self.num_nodes - 1, f'd_{v}') for v in self.nodes}
+        self.bottleneck_var = self.model.NewIntVar(0, len(self.nodes) - 1, 'b')
+        self.model.Minimize(self.bottleneck_var)
+
+    def __add_bottleneck_constraints(self):
+        """
+        Add the constraints to ensure that only
+        """
+        for v in self.depth_vars.keys():
+            self.model.Add(self.bottleneck_var >= self.depth_vars[v])
 
     def constraints_test(self):
         # print(self.node_to_path)
@@ -132,12 +141,14 @@ class GameSolver:
         self.model = cp_model.CpModel()
         self.__make_vars()
         # self.constraints_test()
+        self.__add_bottleneck_constraints()
         self.__add_degree_constraints()
         self.__single_selection_constraint()
         self.__forbid_bidirectional_edges()
         self.__add_depth_constraints()
         self.__path_selection_constraint()
 
+        self.bottleneck_var_value = -1
         self.result = {}
 
     def get_start_points(self):
@@ -157,6 +168,15 @@ class GameSolver:
         if self.result is None:
             raise RuntimeError("No solution found yet!")
         return self.result['paths']
+
+    def get_bottleneck(self):
+        if self.bottleneck_var_value > 0:
+            return self.bottleneck_var_value
+        else:
+            print("no solution found yet")
+
+    def get_path_depth(self):
+        return self.depth_vars.values()
 
     def solve(self):
         """
@@ -197,6 +217,9 @@ class GameSolver:
                 path.append((sorted_node_path[i], sorted_node_path[i + 1]))
             paths.append(path)
         """
+        self.bottleneck_var_value = solver.Value(self.bottleneck_var)
+
         self.result['edges'] = edges
         self.result['paths'] = paths
+
         return edges, paths
