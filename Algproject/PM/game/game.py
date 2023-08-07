@@ -87,7 +87,7 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # left click
                         start_pos = self.convert_to_game_coordinates(event.pos)
-                if event.type == pygame.MOUSEBUTTONUP:
+                elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left unclick
                         end_pos = self.convert_to_game_coordinates(event.pos)
                         if start_pos and end_pos:
@@ -175,9 +175,11 @@ def main():
 if __name__ == "__main__":
     game = Game()
     print(os.getcwd())
+
     game.read_game_instance()
-    game_instance_path = game.game_instance_in_cache[2][-1]
+    game_instance_path = game.game_instance_in_cache[0][-1]
     for path in game_instance_path:
         print(path)
         print("------------------")
 
+    #game.run()

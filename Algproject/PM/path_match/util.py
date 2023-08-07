@@ -203,7 +203,7 @@ def handel_json_data():
 
         edges_data = data['edges']
         edges = [(edge['source'], edge['target']) for edge in edges_data]
-        edges = tuple((tuple(coord1), tuple(coord2)) for coord1, coord2 in edges)
+        edges = [(tuple(coord1), tuple(coord2)) for coord1, coord2 in edges]
 
         paths_data = data['paths']
         paths = []
@@ -213,3 +213,4 @@ def handel_json_data():
             paths.append(path_edges)
         instance = (grid_data, start_points, edges, paths)
         instances.append(instance)
+    return instances
