@@ -193,8 +193,8 @@ def read_json_lines(file_path):
     return data_list
 
 
-def handel_json_data():
-    data_list = read_json_lines("../instances.jsonl")
+def handel_json_data(data_list):
+    #data_list = read_json_lines("../instances.jsonl")
     instances = []
     for data in data_list:
         grid_data = data['grid']
@@ -211,6 +211,6 @@ def handel_json_data():
             path_edges = [(edge['source'], edge['target']) for edge in path]
             path_edges = [(tuple(coord1), tuple(coord2)) for coord1, coord2 in path_edges]
             paths.append(path_edges)
-        instance = (grid_data, start_points, edges, paths)
+        instance = (grid_data[0], start_points, edges, paths)
         instances.append(instance)
     return instances

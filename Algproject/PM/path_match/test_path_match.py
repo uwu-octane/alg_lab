@@ -40,7 +40,7 @@ class MyTestCase(unittest.TestCase):
         store_in_json(G, start[1], edges, paths, os.path.join(project_dir, "instances.jsonl"))
         for path in paths:
             print(len(path))
-            #print("------------------")
+            # print("------------------")
             pass
         draw_result_colorful(edges, paths, G, False)
 
@@ -53,11 +53,27 @@ class MyTestCase(unittest.TestCase):
     def test_read_jsonl(self):
         print(os.getcwd())
         data_list = read_json_lines("instances.jsonl")
-        for data in data_list:
-            print(data)
-            print(data['start_points'])
-            #print(data['edges'])
-            #print(data['paths'])
+        instances = handel_json_data(data_list)
+        print(instances[0])
+            # print(data['edges'])
+            # print(data['paths'])
+
+    def test_validate(self):
+        data_list = read_json_lines("instances.jsonl")
+        instances = handel_json_data(data_list)
+        instance = instances[0]
+        instance_edges = instance[2]
+        G = nx.Graph()
+        G.add_edges_from(instance_edges)
+        start_points = instance[1]
+        solver = GameSolver(G, start_points)
+        if solver.validate():
+            print(instance[0]['width'])
+            width = instance[0]['width']
+            height = instance[0]['height']
+            g = gen_grid(width, height)
+            draw_result_colorful(solver.get_result_edges(), solver.get_result_paths(), g, False)
+            draw_result_colorful(instance_edges, instance[3], g, True)
 
 
 if __name__ == '__main__':

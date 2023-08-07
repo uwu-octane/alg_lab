@@ -61,7 +61,7 @@ class GameSolver:
                 self.model.Add(
                     self.node_to_path[v][i] == self.node_to_path[w][i]).OnlyEnforceIf(x_vw)
 
-       # self.model.Add(self.node_to_path[self.start_points[0]][0] == 1)
+        # self.model.Add(self.node_to_path[self.start_points[0]][0] == 1)
         """
         for i in range(len(self.start_points)):
             index = 0
@@ -69,6 +69,7 @@ class GameSolver:
                 self.model.Add(self.node_to_path[self.start_points[i]][index] == 1)
                 index += 1
         """
+
     def __add_degree_constraints(self):
         """
         Add an upper limit to the degree of every node.
@@ -150,7 +151,7 @@ class GameSolver:
 
         self.bottleneck_var_value = -1
         self.result = {}
-
+        self.status = None
     def get_start_points(self):
         return self.start_points
 
@@ -178,16 +179,26 @@ class GameSolver:
     def get_path_depth(self):
         return self.depth_vars.values()
 
+    def validate(self):
+        if len(self.edges) != self.num_nodes - self.num_paths:
+            return False
+        self.solve()
+        if self.status == cp_model.INFEASIBLE:
+            return False
+        if self.status != cp_model.OPTIMAL:
+            return False
+        return True
+
     def solve(self):
         """
         Find the optimal solution to the initialized instance.
         Returns the DBST edges as a list of coordinate tuple tuples ((x1,y1),(x2,y2)).
         """
         solver = cp_model.CpSolver()
-        status = solver.Solve(self.model)
-        if status == cp_model.INFEASIBLE:
+        self.status = solver.Solve(self.model)
+        if self.status == cp_model.INFEASIBLE:
             raise RuntimeError("The model was classified infeasible by the solver!")
-        if status != cp_model.OPTIMAL:
+        if self.status != cp_model.OPTIMAL:
             raise RuntimeError("Unexpected status after running solver!")
 
         edges = [(v, w) for (v, w), x_vw in self.edge_vars.items() if solver.Value(x_vw) != 0]

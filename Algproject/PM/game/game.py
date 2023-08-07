@@ -3,6 +3,7 @@ import pygame
 import thorpy as tp
 
 from Algproject.PM.game.graph import Graph
+from Algproject.PM.game.play import Play
 from Algproject.PM.path_match.solver import GameSolver
 from Algproject.PM.path_match.util import *
 
@@ -42,7 +43,8 @@ class Game:
         self.game_instance = instance
 
     def read_game_instance(self):
-        self.game_instance_in_cache = handel_json_data()
+        data_list = read_json_lines("../instances.jsonl")
+        self.game_instance_in_cache = handel_json_data(data_list)
 
     def __init__(self):
         # initialize the pygame module
@@ -56,7 +58,7 @@ class Game:
         # Graph
         self.graph_surface = pygame.Surface((800, HEIGHT))
         self.graph_surface.fill((255, 255, 255))
-        self.g = Graph(self.graph_surface, (10, 10))
+        self.g = Graph(self.graph_surface, (5, 5))
         # UI
         self.ui_surface = pygame.Surface((400, HEIGHT))
         self.ui_surface.fill((100, 100, 100))
@@ -65,25 +67,29 @@ class Game:
         self.button = tp.Button("Test")
         self.button.center_on(self.ui_surface)
         self.updater = self.button.get_updater()
+        self.events = None
 
         self.clock = pygame.time.Clock()
+        self.running = False
         self.track_edge = []
         self.game_instance = []
         self.game_instance_in_cache = []
 
     def run(self):
-        running = True
+        self.running = True
         # main loop
         start_pos = None
         end_pos = None
-        while running:
+        while self.running:
             self.clock.tick(60)
-            events = pygame.event.get()
+            self.events = pygame.event.get()
             mouse_rel = pygame.mouse.get_rel()
-            for event in events:
+            for event in self.events:
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.running = False
                 # hold left click to draw a line
+                self.__handel_left_holding_click(start_pos, end_pos, event)
+                """
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # left click
                         start_pos = self.convert_to_game_coordinates(event.pos)
@@ -95,8 +101,8 @@ class Game:
                             self.track_edge.append((start_pos, end_pos))
                             self.g.add_edge(self.track_edge[len(self.track_edge) - 1][0],
                                             self.track_edge[len(self.track_edge) - 1][1])
-
-            self.updater.update(events=events, mouse_rel=mouse_rel)
+                """
+            self.updater.update(events=self.events, mouse_rel=mouse_rel)
 
             # Drawing
             self.screen.blit(self.ui_surface, (0, 0))
@@ -106,80 +112,6 @@ class Game:
             pygame.display.update()
 
 
-# define a main function
-"""
-def main():
-    # initialize the pygame module
-    pygame.init()
-    # load and set the logo
-    pygame.display.set_caption("minimal program")
-
-    # create a surface on screen that has the size of 240 x 180
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
-    # Graph
-    graph_surface = pygame.Surface((800, HEIGHT))
-    graph_surface.fill((255, 255, 255))
-    g = graph.Graph(graph_surface, (10, 10))
-    # UI
-    ui_surface = pygame.Surface((400, HEIGHT))
-    ui_surface.fill((100, 100, 100))
-    tp.init(ui_surface, tp.theme_human)
-    button = tp.Button("Test")
-    button.center_on(ui_surface)
-    updater = button.get_updater()
-
-    running = True
-    clock = pygame.time.Clock()
-    start_pos = None
-    end_pos = None
-    # main loop
-    while running:
-        clock.tick(60)
-        events = pygame.event.get()
-        mouse_rel = pygame.mouse.get_rel()
-
-        for event in events:
-            if event.type == pygame.QUIT:
-                running = False
-            
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                game_pos = convert_to_game_coordinates(event.pos, g.get_graph_size())
-                g.mouse_click(game_pos)
-            
-            # hold left click to draw a line
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # left click
-                    start_pos = convert_to_game_coordinates(event.pos, g.get_graph_size())
-                    g.mouse_click(start_pos)
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:  # left unclick
-                    end_pos = convert_to_game_coordinates(event.pos, g.get_graph_size())
-                    g.mouse_click(end_pos)
-                    if start_pos and end_pos:
-                        g.add_edge(start_pos, end_pos)
-                    start_pos = None
-                    end_pos = None
-
-        updater.update(events=events, mouse_rel=mouse_rel)
-
-        # Drawing
-        screen.blit(ui_surface, (0, 0))
-        screen.blit(graph_surface, (400, 0))
-        g.draw()
-        pygame.display.flip()
-        pygame.display.update()
-"""
-
 if __name__ == "__main__":
     game = Game()
-    print(os.getcwd())
-
-    game.read_game_instance()
-    game_instance_path = game.game_instance_in_cache[0][-1]
-    for path in game_instance_path:
-        print(path)
-        print("------------------")
-
-    #game.run()
+    game.run()
