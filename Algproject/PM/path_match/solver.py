@@ -138,8 +138,25 @@ class GameSolver:
         self.__add_depth_constraints()
         self.__path_selection_constraint()
 
+        self.result = {}
+
     def get_start_points(self):
         return self.start_points
+
+    def get_result(self):
+        if self.result is None:
+            raise RuntimeError("No solution found yet!")
+        return self.result
+
+    def get_result_edges(self):
+        if self.result is None:
+            raise RuntimeError("No solution found yet!")
+        return self.result['edges']
+
+    def get_result_paths(self):
+        if self.result is None:
+            raise RuntimeError("No solution found yet!")
+        return self.result['paths']
 
     def solve(self):
         """
@@ -180,4 +197,6 @@ class GameSolver:
                 path.append((sorted_node_path[i], sorted_node_path[i + 1]))
             paths.append(path)
         """
+        self.result['edges'] = edges
+        self.result['paths'] = paths
         return edges, paths
