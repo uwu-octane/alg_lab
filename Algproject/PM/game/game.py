@@ -58,7 +58,8 @@ class Game:
         # Graph
         self.graph_surface = pygame.Surface((800, HEIGHT))
         self.graph_surface.fill((255, 255, 255))
-        self.g = Graph(self.graph_surface, (5, 5))
+        # self.g = Graph(self.graph_surface, (5, 5))
+        self.g = Graph(self.graph_surface, (5, 10))
         # UI
         self.ui_surface = pygame.Surface((400, HEIGHT))
         self.ui_surface.fill((100, 100, 100))
@@ -74,9 +75,11 @@ class Game:
         self.track_edge = []
         self.game_instance = []
         self.game_instance_in_cache = []
+        self.read_game_instance()
 
     def run(self):
         self.running = True
+        self.g.draw_originalpath(self.game_instance_in_cache)
         # main loop
         start_pos = None
         end_pos = None
@@ -88,7 +91,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
                 # hold left click to draw a line
-                self.__handel_left_holding_click(start_pos, end_pos, event)
+                # self.__handel_left_holding_click(start_pos, end_pos, event)
                 """
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # left click

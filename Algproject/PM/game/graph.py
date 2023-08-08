@@ -1,5 +1,5 @@
 import pygame
-
+from Algproject.PM.path_match.util import generate_random_rgb_from_hex, hex_to_rgb
 
 class Graph:
 
@@ -66,3 +66,36 @@ class Graph:
         for cell in self.cells:
             for rect in cell:
                 print(rect.x, rect.y)
+
+
+    # this function is for presenting a original revolution
+    def draw_originalpath(self, game_instance_in_cache):
+        # when only one resolution in instance.jsonl, just using the "game_instance_in_cache[1]"
+        # temp_point = game_instance_in_cache[1].copy()
+        temp_point = game_instance_in_cache[0][1].copy()
+        for point in temp_point:
+            for path in game_instance_in_cache[0][3]:
+                color = generate_random_rgb_from_hex()
+                (r, g, b) = hex_to_rgb(color)
+                temp = path.copy()
+                for edge in temp:
+                    if point == edge[0] or point == edge[1]:
+                        pygame.draw.line(self.surface, (r, g, b), (self.get_cell_center(edge[0][0], edge[0][1])),
+                                         self.get_cell_center(edge[1][0], edge[1][1]), 3)
+
+                        temp_point.remove(point)
+                        if edge[0] in temp_point:
+                            temp_point.remove(edge[0])
+                        if edge[1] in temp_point:
+                            temp_point.remove(edge[0])
+                        temp.remove(edge)
+
+                    while len(temp) > 0:
+                        pygame.draw.line(self.surface, (r, g, b),
+                                         (self.get_cell_center(temp[0][0][0], temp[0][0][1])),
+                                         self.get_cell_center(temp[0][1][0], temp[0][1][1]), 3)
+                        if temp[0][0] in temp_point:
+                            temp_point.remove(temp[0][0])
+                        if temp[0][1] in temp_point:
+                            temp_point.remove(temp[0][1])
+                        temp.pop(0)

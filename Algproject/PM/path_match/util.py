@@ -79,6 +79,14 @@ def generate_random_rgb_from_hex():
         if is_clear_color(color):
             return color
 
+def hex_to_rgb(hex_color):
+    # remove the potential signal “#”
+    hex_color = hex_color.lstrip('#')
+    r = int(hex_color[0:2], 16)
+    g = int(hex_color[2:4], 16)
+    b = int(hex_color[4:6], 16)
+    return r, g, b
+
 
 def draw_result_colorful(edges, paths, grid_graph, with_laber=False):
     """
