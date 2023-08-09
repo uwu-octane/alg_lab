@@ -4,10 +4,11 @@ from Algproject.PM.path_match.util import generate_random_rgb_from_hex, hex_to_r
 
 class Graph:
 
-    def __init__(self, surface, nodes):
-        self.width = surface.get_width()
-        self.height = surface.get_height()
-        self.surface = surface
+    def __init__(self, width, height, nodes):
+        self.graph_surface = pygame.Surface((width, height))
+        self.graph_surface.fill((255, 255, 255))
+        self.width = width
+        self.height = height
         self.nodes = nodes
         self.__generate_graph()
 
@@ -19,19 +20,20 @@ class Graph:
                        for j in range(self.nodes[1])] for i in range(self.nodes[0])]
         self.edges = []
 
-    def draw(self):
-        self.surface.lock()
+    def draw(self, surface):
+        self.graph_surface.lock()
         for i in range(self.nodes[0]):
             for j in range(self.nodes[1]):
-                pygame.draw.rect(self.surface, (0, 0, 0), self.cells[i][j], 1)
-                pygame.draw.circle(self.surface, (0, 0, 0), (i * self.cell_width + self.cell_width / 2,
+                pygame.draw.rect(self.graph_surface, (0, 0, 0), self.cells[i][j], 1)
+                pygame.draw.circle(self.graph_surface, (0, 0, 0), (i * self.cell_width + self.cell_width / 2,
                                                              j * self.cell_height + self.cell_height / 2), 5)
         for e in self.edges:
             start = self.get_cell_coordination(e[0])
             end = self.get_cell_coordination(e[1])
-            pygame.draw.line(self.surface, (255, 0, 0), (self.get_cell_center(start[0], start[1])),
-                             self.get_cell_center(end[0], end[1]), 2)
-        self.surface.unlock()
+            pygame.draw.line(self.graph_surface, (255, 0, 0), (self.get_cell_center(start[0], start[1])),
+                              self.get_cell_center(end[0], end[1]), 2)
+        self.graph_surface.unlock()
+        surface.blit(self.graph_surface, (400, 0))
 
     def add_edge(self, start, end):
         self.edges.append((start, end))
@@ -80,7 +82,7 @@ class Graph:
                 temp = path.copy()
                 for edge in temp:
                     if point == edge[0] or point == edge[1]:
-                        pygame.draw.line(self.surface, (r, g, b), (self.get_cell_center(edge[0][0], edge[0][1])),
+                        pygame.draw.line(self.graph_surface, (r, g, b), (self.get_cell_center(edge[0][0], edge[0][1])),
                                          self.get_cell_center(edge[1][0], edge[1][1]), 3)
 
                         temp_point.remove(point)
@@ -91,7 +93,7 @@ class Graph:
                         temp.remove(edge)
 
                     while len(temp) > 0:
-                        pygame.draw.line(self.surface, (r, g, b),
+                        pygame.draw.line(self.graph_surface, (r, g, b),
                                          (self.get_cell_center(temp[0][0][0], temp[0][0][1])),
                                          self.get_cell_center(temp[0][1][0], temp[0][1][1]), 3)
                         if temp[0][0] in temp_point:
