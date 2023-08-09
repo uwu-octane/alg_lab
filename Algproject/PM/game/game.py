@@ -67,9 +67,9 @@ class Game:
             for event in self.events:
                 if event.type == pygame.QUIT:
                     self.running = False
-                self.ui.handle(event)
 
-            self.ui.update(mouse_rel)
+            # UI
+            self.ui.handle(self.events, mouse_rel)
 
             # Drawing
             self.ui.draw(self.screen)
