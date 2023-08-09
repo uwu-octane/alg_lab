@@ -157,13 +157,7 @@ def json_to_graph(json_str):
 """
 
 
-def get_src_dir():
-    game_path = os.path.dirname(os.path.abspath(__file__))
-    subdirectory = os.path.join(game_path, "instances.jsonl")
-    return subdirectory
-
-
-def store_in_json(grid, start_points, edges, paths):
+def store_in_json(grid, start_points, edges, paths, file_path=PATH):
     """
     store the result in json file
     """
@@ -181,18 +175,18 @@ def store_in_json(grid, start_points, edges, paths):
         "paths": path
     }
 
-    with open(PATH, 'a') as f:
+    with open(file_path, 'a') as f:
         json.dump(instance, f)
         f.write("\n")
 
 
-def read_json_lines():
+def read_json_lines(file_path=PATH):
     """
     Read and parse JSON Lines from a file.
     Returns a list of parsed JSON objects.
     """
     data_list = []
-    with open(PATH, 'r') as f:
+    with open(file_path, 'r') as f:
         for line in f:
             # Strip the newline character from the end of the line
             line = line.strip()

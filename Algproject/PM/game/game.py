@@ -116,12 +116,7 @@ class Game:
             pygame.display.flip()
             pygame.display.update()
 
-    def get_src_dir(self):
-        game_path = os.path.dirname(os.path.abspath(__file__))
-        subdirectory = os.path.join(game_path, "instances.jsonl")
-        return subdirectory
 
 if __name__ == "__main__":
     game = Game()
     game.run()
-    print(game.get_src_dir())

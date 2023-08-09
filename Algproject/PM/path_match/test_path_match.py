@@ -47,9 +47,6 @@ class MyTestCase(unittest.TestCase):
             pass
         draw_result_colorful(edges, paths, G, False)
 
-    def test_solver_constarint(self):
-        print(get_src_dir())
-
     def test_read_jsonl(self):
         print(os.getcwd())
         data_list = read_json_lines()
@@ -77,5 +74,5 @@ class MyTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    #unittest.main()
+    # unittest.main()
     print_dir()
