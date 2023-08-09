@@ -1,6 +1,7 @@
 import pygame
 from Algproject.PM.path_match.util import generate_random_rgb_from_hex, hex_to_rgb
 
+
 class Graph:
 
     def __init__(self, surface, nodes):
@@ -29,7 +30,7 @@ class Graph:
             start = self.get_cell_coordination(e[0])
             end = self.get_cell_coordination(e[1])
             pygame.draw.line(self.surface, (255, 0, 0), (self.get_cell_center(start[0], start[1])),
-                              self.get_cell_center(end[0], end[1]), 2)
+                             self.get_cell_center(end[0], end[1]), 2)
         self.surface.unlock()
 
     def add_edge(self, start, end):
@@ -67,14 +68,13 @@ class Graph:
             for rect in cell:
                 print(rect.x, rect.y)
 
-
     # this function is for presenting a original revolution
     def draw_originalpath(self, game_instance_in_cache):
         # when only one resolution in instance.jsonl, just using the "game_instance_in_cache[1]"
         # temp_point = game_instance_in_cache[1].copy()
-        temp_point = game_instance_in_cache[0][1].copy()
+        temp_point = game_instance_in_cache[0][0].copy()
         for point in temp_point:
-            for path in game_instance_in_cache[0][3]:
+            for path in game_instance_in_cache[0][1]:
                 color = generate_random_rgb_from_hex()
                 (r, g, b) = hex_to_rgb(color)
                 temp = path.copy()

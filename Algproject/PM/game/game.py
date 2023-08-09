@@ -10,7 +10,6 @@ from Algproject.PM.path_match.util import *
 WIDTH = 1200
 HEIGHT = 800
 
-PATH = "src/instances.jsonl"
 
 
 class Game:
@@ -31,21 +30,22 @@ class Game:
     def __gen_game_instance(self, instance_num):
         grid = gen_grid(self.g.get_graph_nodes()[0], self.g.get_graph_nodes()[1])
         start_points = gen_start_points(8, grid)
-        instance = []
+        instances = []
         while instance_num > 0:
             try:
-                solver = GameSolver(grid, start_points[1])
-                edges, paths = solver.solve()
-                instance.append((start_points[1], edges, paths))
+                solver = GameSolver(grid, start_points)
+                paths = solver.solve()
+                instance = solver.get_instance()
+                instances.append(instance)
                 instance_num -= 1
             except RuntimeError:
                 # print("RuntimeError")
                 start_points = gen_start_points(8, grid)
                 continue
-        self.game_instance = instance
+        self.game_instance = instances
 
     def read_game_instance(self):
-        data_list = read_json_lines(PATH)
+        data_list = read_json_lines()
         self.game_instance_in_cache = handel_json_data(data_list)
 
     def __init__(self):
@@ -119,4 +119,7 @@ class Game:
 
 if __name__ == "__main__":
     game = Game()
+
     game.run()
+    #print(get_src_dir())
+    #print(get_root_dir())

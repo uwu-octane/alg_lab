@@ -11,11 +11,6 @@ def print_dir():
 
 
 class MyTestCase(unittest.TestCase):
-    def test_gen_start_points(self):
-        G = gen_grid(4, 4)
-        start = gen_start_points(4, 4, 4)
-        print(list(start[0])[1])
-
     def test_solver(self):
         G = gen_grid(5, 10)
         start = gen_start_points(20, G)
@@ -27,8 +22,8 @@ class MyTestCase(unittest.TestCase):
         solver = None
         while True:
             try:
-                solver = GameSolver(G, start[1])
-                edges, paths = solver.solve()
+                solver = GameSolver(G, start)
+                paths = solver.solve()
                 break
             except RuntimeError:
                 print("RuntimeError")
@@ -40,15 +35,15 @@ class MyTestCase(unittest.TestCase):
         # draw_result_edges(edges, G)
         print(solver.get_bottleneck())
         print("==============")
-        store_in_json(G, start[1], edges, paths)
+        store_in_json(start, paths)
         for path in paths:
             print(len(path))
             # print("------------------")
             pass
-        draw_result_colorful(edges, paths, G, False)
+        draw_result_colorful(paths, False)
+        #draw_result_edges(edges)
 
     def test_read_jsonl(self):
-        print(os.getcwd())
         data_list = read_json_lines()
         instances = handel_json_data(data_list)
         print(instances[0])
@@ -64,13 +59,6 @@ class MyTestCase(unittest.TestCase):
         G.add_edges_from(instance_edges)
         start_points = instance[1]
         solver = GameSolver(G, start_points)
-        if solver.validate():
-            print(instance[0]['width'])
-            width = instance[0]['width']
-            height = instance[0]['height']
-            g = gen_grid(width, height)
-            draw_result_colorful(solver.get_result_edges(), solver.get_result_paths(), g, False)
-            draw_result_colorful(instance_edges, instance[3], g, True)
 
 
 if __name__ == '__main__':

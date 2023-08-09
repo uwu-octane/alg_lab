@@ -12,8 +12,6 @@ import time
 Node = Tuple[int, int]
 Edge = Tuple[Node, Node]
 
-PATH = "./game/src/instances.jsonl"
-
 
 def gen_start_points(points_num, graph):
     if points_num % 2 != 0:
@@ -30,36 +28,11 @@ def gen_start_points(points_num, graph):
         coordinates.add((x, y))
     coordinates = list(coordinates)
     start_points = {(coordinates[i], coordinates[i + 1]) for i in range(0, points_num, 2)}
-    return start_points, coordinates
+    return coordinates
 
 
 def gen_grid(grid_width, grid_height):
     return nx.grid_2d_graph(grid_width, grid_height, False)
-
-
-def generate_random_rgb():
-    # color = random.choice(list(mcolors.CSS4_COLORS.keys()))
-    # print(color)
-    # 获取所有颜色及其对应的RGB值
-    colors_with_rgb = mcolors.CSS4_COLORS
-    color = random.choice(list(mcolors.CSS4_COLORS.values()))
-    # 打印所有颜色及其对应的RGB值
-    # print(color)
-
-    return color
-
-
-def is_bright_color(hex_color, threshold=128):
-    hex_color = hex_color.lstrip("#")
-    red = int(hex_color[0:2], 16)
-    green = int(hex_color[2:4], 16)
-    blue = int(hex_color[4:6], 16)
-
-    # 计算亮度（Luminance）
-    luminance = (0.2126 * red) + (0.7152 * green) + (0.0722 * blue)
-
-    # 根据给定的阈值判断是否为亮色
-    return luminance >= threshold
 
 
 def is_clear_color(hex_color, brightness_threshold=0.4, saturation_threshold=0.3):
@@ -77,7 +50,7 @@ def is_clear_color(hex_color, brightness_threshold=0.4, saturation_threshold=0.3
 
 def generate_random_rgb_from_hex():
     while True:
-        color = generate_random_rgb()
+        color = random.choice(list(mcolors.CSS4_COLORS.values()))
         if is_clear_color(color):
             return color
 
@@ -91,10 +64,17 @@ def hex_to_rgb(hex_color):
     return r, g, b
 
 
-def draw_result_colorful(edges, paths, grid_graph, with_laber=False):
+def draw_result_colorful(paths, with_laber=False):
     """
     draw grid graph
     """
+    edges = []
+    for path in paths:
+        edges.extend(path)
+
+    grid_graph = nx.Graph()
+    grid_graph.add_edges_from(edges)
+
     pos = {(x, y): (y, -x) for (x, y) in grid_graph.nodes()}  # 计算节点的布局
     # color = [('red' if e in edges else 'none') for e in G.nodes()]
     plt.clf()
@@ -126,19 +106,21 @@ def draw_result_colorful(edges, paths, grid_graph, with_laber=False):
     plt.show()
 
 
-def draw_result_edges(edges, grid_graph):
+def draw_result_edges(edges):
     """
     draw grid graph
     """
-    pos = {(x, y): (y, -x) for (x, y) in grid_graph.nodes()}  # 计算节点的布局
+    g = nx.Graph()
+    g.add_edges_from(edges)
+    pos = {(x, y): (y, -x) for (x, y) in g.nodes()}  # 计算节点的布局
     # color = [('red' if e in edges else 'none') for e in G.nodes()]
     plt.clf()
 
-    nx.draw_networkx_nodes(grid_graph, pos, node_color='skyblue', node_size=100)  # draw nodes
-    nx.draw_networkx_labels(grid_graph, pos)
-    nx.draw_networkx_edges(grid_graph, pos, edgelist=edges, edge_color='red', width=2.0)  # draw edges we want to show
+    nx.draw_networkx_nodes(g, pos, node_color='skyblue', node_size=1)  # draw nodes
+    # nx.draw_networkx_labels(g, pos)
+    nx.draw_networkx_edges(g, pos, edgelist=edges, edge_color='red', width=2.0)  # draw edges we want to show
 
-    nx.draw_networkx_edges(grid_graph, pos, edgelist=list(set(grid_graph.edges()) - set(edges)),
+    nx.draw_networkx_edges(g, pos, edgelist=list(set(g.edges()) - set(edges)),
                            edge_color='none')  # hide other edges
 
     plt.show()
@@ -157,34 +139,36 @@ def json_to_graph(json_str):
 """
 
 
-def store_in_json(grid, start_points, edges, paths, file_path=PATH):
+def __get_jsonl_dir():
+    utils_dir = os.path.dirname(os.path.realpath(__file__))
+    src_dir = os.path.dirname(utils_dir) + "/src/instances.jsonl"
+    return src_dir
+
+
+def store_in_json(start_points, paths):
     """
     store the result in json file
     """
-    nodes = list(grid.nodes())
-    width = max([node[0] for node in nodes]) + 1
-    height = max([node[1] for node in nodes]) + 1
 
     start_points = [{'x': x, 'y': y} for x, y in start_points]
-    edges = [{'source': v, 'target': w} for v, w in edges]
+
     path = [[{'source': x, 'target': y} for x, y in p] for p in paths]
     instance = {
-        "grid": [{'width': width, 'height': height}],
         "start_points": start_points,
-        "edges": edges,
         "paths": path
     }
-
+    file_path = __get_jsonl_dir()
     with open(file_path, 'a') as f:
         json.dump(instance, f)
         f.write("\n")
 
 
-def read_json_lines(file_path=PATH):
+def read_json_lines():
     """
     Read and parse JSON Lines from a file.
     Returns a list of parsed JSON objects.
     """
+    file_path = __get_jsonl_dir()
     data_list = []
     with open(file_path, 'r') as f:
         for line in f:
@@ -201,13 +185,8 @@ def read_json_lines(file_path=PATH):
 def handel_json_data(data_list):
     instances = []
     for data in data_list:
-        grid_data = data['grid']
         points_data = data['start_points']
         start_points = [(point['x'], point['y']) for point in points_data]
-
-        edges_data = data['edges']
-        edges = [(edge['source'], edge['target']) for edge in edges_data]
-        edges = [(tuple(coord1), tuple(coord2)) for coord1, coord2 in edges]
 
         paths_data = data['paths']
         paths = []
@@ -215,6 +194,10 @@ def handel_json_data(data_list):
             path_edges = [(edge['source'], edge['target']) for edge in path]
             path_edges = [(tuple(coord1), tuple(coord2)) for coord1, coord2 in path_edges]
             paths.append(path_edges)
-        instance = (grid_data[0], start_points, edges, paths)
+        instance = (start_points, paths)
         instances.append(instance)
     return instances
+
+
+def get_root_dir():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

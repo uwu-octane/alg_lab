@@ -150,8 +150,9 @@ class GameSolver:
         self.__path_selection_constraint()
 
         self.bottleneck_var_value = -1
-        self.result = {}
+        self.result = None
         self.status = None
+
     def get_start_points(self):
         return self.start_points
 
@@ -160,15 +161,8 @@ class GameSolver:
             raise RuntimeError("No solution found yet!")
         return self.result
 
-    def get_result_edges(self):
-        if self.result is None:
-            raise RuntimeError("No solution found yet!")
-        return self.result['edges']
-
-    def get_result_paths(self):
-        if self.result is None:
-            raise RuntimeError("No solution found yet!")
-        return self.result['paths']
+    def get_instance(self):
+        return self.start_points, self.result
 
     def get_bottleneck(self):
         if self.bottleneck_var_value > 0:
@@ -212,25 +206,8 @@ class GameSolver:
                        nx.connected_components(nx.Graph(edges))]
         paths = [[(sorted_node_path[i], sorted_node_path[i + 1]) for i in range(len(sorted_node_path) - 1)] for
                  sorted_node_path in nodes_paths]
-        """
-        nodes_paths = list(nx.connected_components(nx.Graph(edges)))
-        sorted_node_paths = []
-        for nodes_path in nodes_paths:
-            nodes_path = list(nodes_path)
-            sorted_node_path = sorted(nodes_path, key=lambda x: solver.Value(self.depth_vars[x]))
-            sorted_node_paths.append(sorted_node_path)
-        
-        paths = []
-        for sorted_node_path in sorted_node_paths:
-            path = []
-            sorted_node_path = list(sorted_node_path)
-            for i in range(len(sorted_node_path) - 1):
-                path.append((sorted_node_path[i], sorted_node_path[i + 1]))
-            paths.append(path)
-        """
+
         self.bottleneck_var_value = solver.Value(self.bottleneck_var)
+        self.result = paths
 
-        self.result['edges'] = edges
-        self.result['paths'] = paths
-
-        return edges, paths
+        return paths
