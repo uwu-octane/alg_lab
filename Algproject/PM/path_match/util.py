@@ -12,6 +12,8 @@ import time
 Node = Tuple[int, int]
 Edge = Tuple[Node, Node]
 
+PATH = "./game/src/instances.jsonl"
+
 
 def gen_start_points(points_num, graph):
     if points_num % 2 != 0:
@@ -78,6 +80,7 @@ def generate_random_rgb_from_hex():
         color = generate_random_rgb()
         if is_clear_color(color):
             return color
+
 
 def hex_to_rgb(hex_color):
     # remove the potential signal “#”
@@ -154,16 +157,16 @@ def json_to_graph(json_str):
 """
 
 
-def store_in_json(grid, start_points, edges, paths, instance_file_path):
+def get_src_dir():
+    game_path = os.path.dirname(os.path.abspath(__file__))
+    subdirectory = os.path.join(game_path, "instances.jsonl")
+    return subdirectory
+
+
+def store_in_json(grid, start_points, edges, paths):
     """
     store the result in json file
     """
-    if not os.path.exists(instance_file_path):
-        project_dir = os.getcwd()  # Get the current working directory (project directory)
-
-        instance_file_name = "instances" + ".jsonl"
-        instance_file_path = os.path.join(project_dir, instance_file_name)
-
     nodes = list(grid.nodes())
     width = max([node[0] for node in nodes]) + 1
     height = max([node[1] for node in nodes]) + 1
@@ -178,18 +181,18 @@ def store_in_json(grid, start_points, edges, paths, instance_file_path):
         "paths": path
     }
 
-    with open(instance_file_path, 'a') as f:
+    with open(PATH, 'a') as f:
         json.dump(instance, f)
         f.write("\n")
 
 
-def read_json_lines(file_path):
+def read_json_lines():
     """
     Read and parse JSON Lines from a file.
     Returns a list of parsed JSON objects.
     """
     data_list = []
-    with open(file_path, 'r') as f:
+    with open(PATH, 'r') as f:
         for line in f:
             # Strip the newline character from the end of the line
             line = line.strip()
@@ -202,7 +205,6 @@ def read_json_lines(file_path):
 
 
 def handel_json_data(data_list):
-    #data_list = read_json_lines("../instances.jsonl")
     instances = []
     for data in data_list:
         grid_data = data['grid']

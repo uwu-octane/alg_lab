@@ -6,6 +6,10 @@ from .solver import GameSolver
 from .util import *
 
 
+def print_dir():
+    print(os.getcwd())
+
+
 class MyTestCase(unittest.TestCase):
     def test_gen_start_points(self):
         G = gen_grid(4, 4)
@@ -36,8 +40,7 @@ class MyTestCase(unittest.TestCase):
         # draw_result_edges(edges, G)
         print(solver.get_bottleneck())
         print("==============")
-        project_dir = os.getcwd()
-        store_in_json(G, start[1], edges, paths, os.path.join(project_dir, "instances.jsonl"))
+        store_in_json(G, start[1], edges, paths)
         for path in paths:
             print(len(path))
             # print("------------------")
@@ -45,21 +48,18 @@ class MyTestCase(unittest.TestCase):
         draw_result_colorful(edges, paths, G, False)
 
     def test_solver_constarint(self):
-        G = gen_grid(10, 10)
-        start = gen_start_points(6, G)
-        solver = GameSolver(G, start[1])
-        solver.constraints_test()
+        print(get_src_dir())
 
     def test_read_jsonl(self):
         print(os.getcwd())
-        data_list = read_json_lines("instances.jsonl")
+        data_list = read_json_lines()
         instances = handel_json_data(data_list)
         print(instances[0])
-            # print(data['edges'])
-            # print(data['paths'])
+        # print(data['edges'])
+        # print(data['paths'])
 
     def test_validate(self):
-        data_list = read_json_lines("instances.jsonl")
+        data_list = read_json_lines()
         instances = handel_json_data(data_list)
         instance = instances[0]
         instance_edges = instance[2]
@@ -77,4 +77,5 @@ class MyTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    #unittest.main()
+    print_dir()
