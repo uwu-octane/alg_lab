@@ -15,8 +15,8 @@ class Ui:
 
         self.tp_button_group = tp.Group([self.tp_button_solve, self.tp_button_play])
 
-        self.tp_width = tp.Labelled("Graph Width:", tp.TextInput("", "Type text here"))
-        self.tp_height = tp.Labelled("Graph Height:", tp.TextInput("", "Type text here"))
+        self.tp_width = tp.Labelled("Cells Width:", tp.TextInput("", "Type text here"))
+        self.tp_height = tp.Labelled("Cells Height:", tp.TextInput("", "Type text here"))
         self.tp_checkbox_random = tp.Labelled("Random Start Points?", tp.Checkbox())
         self.tp_button_apply = tp.Button("Apply")
 
