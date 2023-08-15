@@ -71,7 +71,9 @@ class Graph:
 
     def __shadow_edges(self):
         g = gen_grid(self.nodes[0], self.nodes[1])
-        edges = g.edges()
+        edges = list(g.edges())
+        bi_edges = [(edge[1], edge[0]) for edge in edges]
+        edges = edges + bi_edges
         # edges = [(self.get_cell_center(edge[0][0],edge[0][1]), self.get_cell_center(edge[1][0], edge[1][1])) for edge in edges]
         self.edges_shadow = {edge: False for edge in edges}
 
