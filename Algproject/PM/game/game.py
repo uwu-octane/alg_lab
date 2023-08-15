@@ -9,6 +9,7 @@ import Algproject.PM.game.constants as c
 from Algproject.PM.path_match.solver import GameSolver
 from Algproject.PM.path_match.util import *
 
+
 class Game:
     """
     create some game instances
@@ -21,7 +22,7 @@ class Game:
         while instance_num > 0:
             try:
                 solver = GameSolver(grid, start_points)
-                paths = solver.solve()
+                # paths = solver.solve()
                 instance = solver.get_instance()
                 instances.append(instance)
                 instance_num -= 1
@@ -51,16 +52,18 @@ class Game:
             random_points = self.ui.tp_checkbox_random.get_value()
             if random_points:
                 pairs = random.randint(1, (widht*height)//2)
-                colors = [random.sample(range(100, 255), 3) for i in range(pairs)]
 
-                # TODO: end_points must not interfere with start_points
-                start_points = (random.sample(range(0, widht-1), pairs), random.sample(range(0, height-1), pairs))
-                end_points = (random.sample(range(0, widht-1), pairs), random.sample(range(0, height-1), pairs))
+                colors = [random.sample(range(256*i//pairs, 256), 3) for i in range(pairs)]
+                population = [(x, y) for x in range(widht) for y in range(height)] 
+                start_points = random.sample(population, pairs)
+                end_points = random.sample(set(population)-set(start_points), pairs)
+
+                print(pairs, start_points, end_points)
 
                 for i in range(pairs):
                     color = colors[i]
-                    start = (start_points[0][i], start_points[1][i])
-                    end = (end_points[0][i], end_points[1][i])
+                    start = (start_points[i][0], start_points[i][1])
+                    end = (end_points[i][0], end_points[i][1])
                     self.g.add_start_point(start, end, color)
 
     def __init__(self):
@@ -75,7 +78,7 @@ class Game:
         # Graph
         self.g = Graph(800, c.HEIGHT, (5, 10))
 
-        # UI 
+        # UI
         self.ui = Ui(400, c.HEIGHT)
         self.ui.tp_button_apply._at_click = self.ui_apply_button_callback
 
@@ -103,7 +106,7 @@ class Game:
             self.ui.handle(self.events, mouse_rel)
 
             # Drawing
-            self.screen.fill((255,255,255))
+            self.screen.fill((255, 255, 255))
             self.ui.draw(self.screen)
             self.g.draw(self.screen)
             pygame.display.flip()
@@ -114,5 +117,5 @@ if __name__ == "__main__":
     game = Game()
 
     game.run()
-    #print(get_src_dir())
-    #print(get_root_dir())
+    # print(get_src_dir())
+    # print(get_root_dir())
