@@ -18,6 +18,10 @@ class Graph:
         self.width = width
         self.height = height
         self.nodes = nodes
+        """
+        we shadow every edge in this map, if the edge is shown, the value is 1, otherwise 0
+        as a final result we send the positive edges to a solver for validation 
+        """
         self.edges_shadow = {}
         self.__generate_graph()
         self.__shadow_edges()
@@ -28,8 +32,9 @@ class Graph:
 
         self.cells = [[pygame.Rect(i * self.cell_width, j * self.cell_height, self.cell_width, self.cell_height)
                        for j in range(self.nodes[1])] for i in range(self.nodes[0])]
-        self.circles = [[ Circle((255, 255, 255), (i * self.cell_width + self.cell_width / 2,
-                        j * self.cell_height + self.cell_height / 2), 5) for j in range(self.nodes[1])] 
+        self.circles = [[Circle((255, 255, 255), (i * self.cell_width + self.cell_width / 2,
+                                                  j * self.cell_height + self.cell_height / 2), 5) for j in
+                         range(self.nodes[1])]
                         for i in range(self.nodes[0])]
         self.lines = []
         self.start_points = []
@@ -66,6 +71,9 @@ class Graph:
 
         self.lines.append((start, end))
 
+    def remove_line(self, start, end):
+        self.lines.remove((start, end))
+
     def get_graph_size(self):
         return self.width, self.height
 
@@ -83,6 +91,7 @@ class Graph:
     """this function receives a simple coordination in format (0,1) and return the real coordination which is 
     adjusted with the surface size
     """
+
     def get_real_cell_coordination(self, i, j):
         center_x = i * self.cell_width + self.cell_width / 2
         center_y = j * self.cell_height + self.cell_height / 2
@@ -92,6 +101,7 @@ class Graph:
     this function receives a real coordination and return the simple coordination in format (0,1)
     used to work with the event position
     """
+
     def get_simple_cell_coordination(self, pos):
         x, y = pos[0], pos[1]
 
@@ -125,7 +135,8 @@ class Graph:
                 temp = path.copy()
                 for edge in temp:
                     if point == edge[0] or point == edge[1]:
-                        pygame.draw.line(self.graph_surface, (r, g, b), (self.get_real_cell_coordination(edge[0][0], edge[0][1])),
+                        pygame.draw.line(self.graph_surface, (r, g, b),
+                                         (self.get_real_cell_coordination(edge[0][0], edge[0][1])),
                                          self.get_real_cell_coordination(edge[1][0], edge[1][1]), 3)
 
                         temp_point.remove(point)

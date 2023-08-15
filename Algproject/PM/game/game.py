@@ -117,7 +117,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
+                    if event.button == 1 or event.button == 3:
                         click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                         click_pos = self.g.get_simple_cell_coordination(click_pos)
                         if check_is_in_cell(click_pos, self.g.cells_coor):
@@ -125,24 +125,31 @@ class Game:
                             print(start_node)
                         pygame.display.update()
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
-                        click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
-                        click_pos = self.g.get_simple_cell_coordination(click_pos)
-                        start_node = start_node
-                        if check_is_in_cell(click_pos, self.g.cells_coor):
-                            end_node = click_pos
-                            print(end_node)
-                            edge = (start_node, end_node)
-                            if safe_edge(edge, self.g.edges_shadow):
-                                print("safe")
-                                self.g.add_line(start_node, end_node)
-                                pygame.display.update()
-                            else:
-                                print("not safe")
+                    click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
+                    click_pos = self.g.get_simple_cell_coordination(click_pos)
+
+                    if check_is_in_cell(click_pos, self.g.cells_coor):
+                        end_node = click_pos
+                        print(end_node)
+                        edge = (start_node, end_node)
+                        if safe_edge(edge, self.g.edges_shadow):
+                            if event.button == 1:
+                                self.g.edges_shadow[edge] = 1
+                                """
+                                right mouse click to cancel the edge
+                                """
+                            if event.button == 3:
+                                self.g.edges_shadow[edge] = 0
+
             for edge, is_shown in self.g.edges_shadow.items():
                 if is_shown == 1:
                     self.g.add_line(edge[0], edge[1])
-                    # pygame.display.update()
+                    pygame.display.update()
+                if is_shown == 0:
+                    if edge in self.g.edges:
+                        # not working
+                        self.g.remove_line(edge[0], edge[1])
+                        pygame.display.update()
             # UI
             self.ui.handle(self.events, self.mouse_rel)
 
