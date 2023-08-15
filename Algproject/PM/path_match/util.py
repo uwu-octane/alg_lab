@@ -197,7 +197,3 @@ def handel_json_data(data_list):
         instance = (start_points, paths)
         instances.append(instance)
     return instances
-
-
-def get_root_dir():
-    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

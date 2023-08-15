@@ -2,6 +2,7 @@
 import pygame
 import random
 
+from Algproject.PM.game.tools import *
 from Algproject.PM.game.graph import Graph
 from Algproject.PM.game.ui import Ui
 import Algproject.PM.game.constants as c
@@ -67,7 +68,7 @@ class Game:
                 colors = [random.sample(range(200*i//pairs, 200), 3) for i in range(pairs)]
                 population = [(x, y) for x in range(widht) for y in range(height)] 
                 start_points = random.sample(population, pairs)
-                end_points = random.sample(set(population)-set(start_points), pairs)
+                end_points = random.sample(set(population) - set(start_points), pairs)
 
                 for i in range(pairs):
                     color = colors[i]
@@ -98,33 +99,42 @@ class Game:
         self.game_instance_in_cache = []
         self.read_game_instance()
 
+        self.events = None
+        self.mouse_rel = None
+
     def run(self):
         clock = pygame.time.Clock()
         self.running = True
         # self.g.draw_originalpath(self.game_instance_in_cache)
         # main loop
+        start_node = None
+        end_node = None
         while self.running:
             self.clock.tick(60)
             self.events = pygame.event.get()
-            mouse_rel = pygame.mouse.get_rel()
+            self.mouse_rel = pygame.mouse.get_rel()
             for event in self.events:
                 if event.type == pygame.QUIT:
                     self.running = False
-
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        start_node = (0,0)
+                        end_node = (0,1)
+                        print(start_node, end_node)
+                        self.g.add_line(start_node, end_node)
+                        pygame.display.update()
             # UI
-            self.ui.handle(self.events, mouse_rel)
+            self.ui.handle(self.events, self.mouse_rel)
 
             # Drawing
             self.screen.fill((255, 255, 255))
             self.ui.draw(self.screen)
             self.g.draw(self.screen)
+
             pygame.display.flip()
             clock.tick(60)
 
 
 if __name__ == "__main__":
     game = Game()
-
     game.run()
-    # print(get_src_dir())
-    # print(get_root_dir())
