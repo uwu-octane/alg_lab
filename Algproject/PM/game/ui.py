@@ -17,16 +17,27 @@ class Ui:
 
         self.tp_width = tp.Labelled("Cells Width:", tp.TextInput("", "Type text here"))
         self.tp_height = tp.Labelled("Cells Height:", tp.TextInput("", "Type text here"))
-        self.tp_checkbox_random = tp.Labelled("Random Start Points?", tp.Checkbox())
+        self.tp_checkbox_random = tp.Labelled("Random pairs?", tp.Checkbox())
+        self.tp_checkbox_random.element._at_click = self.__checkbox_random_callback
+        self.tp_amount_pairs = tp.Labelled("Amount of pairs:", tp.TextInput("", "Type text here"))
+        self.tp_amount_pairs.set_locked(True)
         self.tp_button_apply = tp.Button("Apply")
 
-        self.tp_size_box = tp.TitleBox("Instance Settings", [self.tp_width, self.tp_height, self.tp_checkbox_random, self.tp_button_apply], sort_immediately=True)
+        self.tp_size_box = tp.TitleBox("Instance Settings", [self.tp_width, self.tp_height, self.tp_checkbox_random, self.tp_amount_pairs, self.tp_button_apply], sort_immediately=True)
 
         self.tp_ui_box = tp.Box([self.tp_size_box, self.tp_button_group])
         self.tp_ui_box.center_on(self.ui_surface)
 
         self.updater = self.tp_ui_box.get_updater()
         self.events = None
+
+    def __checkbox_random_callback(self):
+        print("bla")
+        if self.tp_checkbox_random.get_value():
+            self.tp_amount_pairs.set_locked(True)
+        else:
+            self.tp_amount_pairs.set_locked(False)
+
 
     def handle(self, events, mouse_rel):
         self.updater.update(events=events, mouse_rel=mouse_rel)

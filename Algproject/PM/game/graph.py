@@ -24,7 +24,7 @@ class Graph:
 
         self.cells = [[pygame.Rect(i * self.cell_width, j * self.cell_height, self.cell_width, self.cell_height)
                        for j in range(self.nodes[1])] for i in range(self.nodes[0])]
-        self.circles = [[ Circle((0, 0, 0), (i * self.cell_width + self.cell_width / 2,
+        self.circles = [[ Circle((255, 255, 255), (i * self.cell_width + self.cell_width / 2,
                         j * self.cell_height + self.cell_height / 2), 5) for j in range(self.nodes[1])] 
                         for i in range(self.nodes[0])]
         self.lines = []

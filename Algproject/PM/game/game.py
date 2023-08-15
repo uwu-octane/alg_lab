@@ -51,14 +51,23 @@ class Game:
             # Generate random start points if desired
             random_points = self.ui.tp_checkbox_random.get_value()
             if random_points:
-                pairs = random.randint(1, (widht*height)//2)
 
-                colors = [random.sample(range(256*i//pairs, 256), 3) for i in range(pairs)]
+                # Check if pair textbox was set
+                pairs = self.ui.tp_amount_pairs.element.get_value()
+                max_pairs = (widht*height)//2
+                if pairs == "":
+                    pairs = random.randint(1, (widht*height)//2)
+                else:
+                    if int(pairs) > max_pairs:
+                        pairs = max_pairs
+                    else:
+                        pairs = int(pairs)
+
+                # Generate pairs with color, start_points and end_points
+                colors = [random.sample(range(200*i//pairs, 200), 3) for i in range(pairs)]
                 population = [(x, y) for x in range(widht) for y in range(height)] 
                 start_points = random.sample(population, pairs)
                 end_points = random.sample(set(population)-set(start_points), pairs)
-
-                print(pairs, start_points, end_points)
 
                 for i in range(pairs):
                     color = colors[i]
