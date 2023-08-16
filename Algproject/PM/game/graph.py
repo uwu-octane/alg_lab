@@ -32,12 +32,11 @@ class Graph:
 
         self.cells = [[pygame.Rect(i * self.cell_width, j * self.cell_height, self.cell_width, self.cell_height)
                        for j in range(self.nodes[1])] for i in range(self.nodes[0])]
-        self.circles = [[Circle((255, 255, 255), (i * self.cell_width + self.cell_width / 2,
+        self.circles = [[Circle((0, 0, 0), (i * self.cell_width + self.cell_width / 2,
                                                   j * self.cell_height + self.cell_height / 2), 5) for j in
                          range(self.nodes[1])]
                         for i in range(self.nodes[0])]
         self.lines = []
-        self.start_points = []
         self.edges = []
         self.cells_coor = [(i, j) for j in range(self.nodes[1]) for i in range(self.nodes[0])]
 
@@ -111,11 +110,6 @@ class Graph:
             y = pos[1] // self.cell_height
 
         return x, y
-
-    def add_start_point(self, start, end, color):
-        self.start_points.append((start, end))
-        self.circles[start[0]][start[1]].color = color
-        self.circles[end[0]][end[1]].color = color
 
     def mouse_click(self, pos):
         for cell in self.cells:

@@ -16,20 +16,20 @@ class Game:
     create some game instances
     """
 
-    def __gen_game_instance(self, instance_num):
+    def __gen_game_instance(self, instance_num, pairs):
         grid = gen_grid(self.g.get_graph_nodes()[0], self.g.get_graph_nodes()[1])
-        start_points = gen_start_points(8, grid)
+        start_points = gen_start_points(2*pairs, grid)
         instances = []
         while instance_num > 0:
             try:
                 solver = GameSolver(grid, start_points)
-                # paths = solver.solve()
+                paths = solver.solve()
                 instance = solver.get_instance()
                 instances.append(instance)
                 instance_num -= 1
             except RuntimeError:
                 # print("RuntimeError")
-                start_points = gen_start_points(8, grid)
+                start_points = gen_start_points(2*pairs, grid)
                 continue
         self.game_instance = instances
 
@@ -37,6 +37,16 @@ class Game:
         data_list = read_json_lines()
         self.game_instance_in_cache = handel_json_data(data_list)
 
+    """
+    Callback function for the Clear button. Clears all settings made so far
+    """
+    def ui_clear_button_callback(self):
+        # TODO: Clear UI element's content
+        self.g.graph_surface.fill((255,255,255))
+
+    """
+    Callback function for the Apply button. Generate Instance when button is clicked
+    """
     def ui_apply_button_callback(self):
         widht = self.ui.tp_width.get_value()
         height = self.ui.tp_height.get_value()
@@ -64,17 +74,9 @@ class Game:
                     else:
                         pairs = int(pairs)
 
-                # Generate pairs with color, start_points and end_points
-                colors = [random.sample(range(200*i//pairs, 200), 3) for i in range(pairs)]
-                population = [(x, y) for x in range(widht) for y in range(height)] 
-                start_points = random.sample(population, pairs)
-                end_points = random.sample(set(population) - set(start_points), pairs)
-
-                for i in range(pairs):
-                    color = colors[i]
-                    start = (start_points[i][0], start_points[i][1])
-                    end = (end_points[i][0], end_points[i][1])
-                    self.g.add_start_point(start, end, color)
+                # TODO: Sometimes an error occurs (probably when an instance is unsolvable, we need a solution to display such a case)
+                self.__gen_game_instance(1, pairs)
+                self.g.draw_originalpath(self.game_instance)
 
     def __init__(self):
         # initialize the pygame module
@@ -91,13 +93,14 @@ class Game:
         # UI
         self.ui = Ui(400, c.HEIGHT)
         self.ui.tp_button_apply._at_click = self.ui_apply_button_callback
+        self.ui.tp_button_clear._at_click = self.ui_clear_button_callback
 
         self.clock = pygame.time.Clock()
         self.running = False
         self.track_edge = []
         self.game_instance = []
         self.game_instance_in_cache = []
-        self.read_game_instance()
+        #self.read_game_instance()
 
         self.events = None
         self.mouse_rel = None
@@ -105,7 +108,6 @@ class Game:
     def run(self):
         clock = pygame.time.Clock()
         self.running = True
-        # self.g.draw_originalpath(self.game_instance_in_cache)
         # main loop
         start_node = None
         end_node = None
