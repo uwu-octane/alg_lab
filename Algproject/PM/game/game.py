@@ -52,7 +52,9 @@ class Game:
     def ui_clear_button_callback(self):
         # TODO: Clear UI element's content
         self.g.graph_surface.fill((255, 255, 255))
-
+        for edge in self.g.edges_shadow:
+            if self.g.edges_shadow[edge]:
+                self.g.edges_shadow[edge] = False
     """
     Callback function for the Apply button. Generate Instance when button is clicked
     """
