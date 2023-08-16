@@ -76,49 +76,30 @@ class Game:
             if random_points:
 
                 # Check if pair textbox was set
-                pairs = self.ui.tp_amount_pairs.element.get_value()
+                self.pairs = self.ui.tp_amount_pairs.element.get_value()
                 max_pairs = (widht * height) // 2
-                if pairs == "":
-                    pairs = random.randint(1, (widht * height) // 2)
+                if self.pairs == "":
+                    self.pairs = random.randint(1, (widht * height) // 2)
                 else:
-                    if int(pairs) > max_pairs:
-                        pairs = max_pairs
+                    if int(self.pairs) > max_pairs:
+                        self.pairs = max_pairs
                     else:
-                        pairs = int(pairs)
+                        self.pairs = int(self.pairs)
 
-                # TODO: Sometimes an error occurs (probably when an instance is unsolvable, we need a solution to display such a case)
-                self.__gen_game_instance(1, pairs)
-                self.g.draw_originalpath(self.game_instance)
-
-    def ui_play_button_callback(self):
-        widht = self.ui.tp_width.get_value()
-        height = self.ui.tp_height.get_value()
-
-        # Check if entered text is not none
-        if widht != "" and height != "":
-            widht = int(widht)
-            height = int(height)
-
-            # Adjust graph size
-            self.g = Graph(800, c.HEIGHT, (widht, height))
-
-            # Generate random start points if desired
-            random_points = self.ui.tp_checkbox_random.get_value()
-            if random_points:
-
-                # Check if pair textbox was set
-                pairs = self.ui.tp_amount_pairs.element.get_value()
-                max_pairs = (widht * height) // 2
-                if pairs == "":
-                    pairs = random.randint(1, (widht * height) // 2)
-                else:
-                    if int(pairs) > max_pairs:
-                        pairs = max_pairs
-                    else:
-                        pairs = int(pairs)
-                self.__gen_game_instance(1, pairs)
-                self.g.start_points = self.game_instance[0][0]
+                self.g.start_points = gen_start_points(self.pairs * 2, gen_grid(widht, height))
                 self.g.draw(self.screen)
+            else:
+                None # TODO: Implement input for pairs
+
+            self.bottleneck = self.ui.tp_bottleneck.element.get_value() # TODO: Implement bottleneck
+
+
+    def ui_solve_button_callback(self):
+        # TODO: Sometimes an error occurs (probably when an instance is unsolvable, we need a solution to display such a case)
+        # TODO: Remove printed lines from Graph
+        self.ui_clear_button_callback()
+        self.__gen_game_instance(1, self.pairs)
+        self.g.draw_originalpath(self.game_instance)
 
     def __init__(self):
         # initialize the pygame module
@@ -136,7 +117,7 @@ class Game:
         self.ui = Ui(400, c.HEIGHT)
         self.ui.tp_button_apply._at_click = self.ui_apply_button_callback
         self.ui.tp_button_clear._at_click = self.ui_clear_button_callback
-        self.ui.tp_button_play._at_click = self.ui_play_button_callback
+        self.ui.tp_button_solve._at_click = self.ui_solve_button_callback
 
         self.clock = pygame.time.Clock()
         self.running = False
