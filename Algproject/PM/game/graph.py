@@ -13,7 +13,7 @@ class Circle:
 class Graph:
 
     def __init__(self, width, height, nodes):
-        self.graph_surface = pygame.Surface((width, height))
+        self.graph_surface = pygame.Surface((width, height)).convert_alpha()
         self.graph_surface.fill((255, 255, 255))
         self.width = width
         self.height = height
@@ -39,26 +39,41 @@ class Graph:
         self.lines = []
         self.edges = []
         self.cells_coor = [(i, j) for j in range(self.nodes[1]) for i in range(self.nodes[0])]
+        self.start_points = []
 
     def draw(self, surface):
         self.graph_surface.lock()
+        """
         for i in range(self.nodes[0]):
             for j in range(self.nodes[1]):
                 pygame.draw.rect(self.graph_surface, (0, 0, 0), self.cells[i][j], 1)
+
                 pygame.draw.circle(self.graph_surface, self.circles[i][j].color, self.circles[i][j].pos,
                                    self.circles[i][j].radius)
+        """
+        for cell in self.cells:
+            for rect in cell:
+                pygame.draw.rect(self.graph_surface, (0, 0, 0), rect, 1)
 
-        for l in self.lines:
-            """
-            start = self.get_cell_coordination(l[0])
-            end = self.get_cell_coordination(l[1])
-            """
-            """
-            pygame.draw.line use coordination like (80, 0),(160, 0)
-            """
-            start = self.get_real_cell_coordination(l[0][0], l[0][1])
-            end = self.get_real_cell_coordination(l[1][0], l[1][1])
-            pygame.draw.line(self.graph_surface, (255, 0, 0), start, end, 2)
+        for circle in self.circles:
+            for c in circle:
+                if c not in self.start_points:
+                    pygame.draw.circle(self.graph_surface, c.color, c.pos, c.radius)
+
+        if self.start_points:
+            for point in self.start_points:
+                point_coor = self.get_real_cell_coordination(point[0], point[1])
+                pygame.draw.circle(self.graph_surface, 'skyblue', point_coor, 5)
+        """
+        for cell_coor in self.cells_coor:
+            cell_coordination = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
+            pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coordination, 5)
+        """
+        for edge in self.edges_shadow:
+            start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
+            end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
+            if self.edges_shadow[edge]:
+                pygame.draw.line(self.graph_surface, (255, 0, 0), start, end, 2)
         self.graph_surface.unlock()
         surface.blit(self.graph_surface, (400, 0))
 
@@ -70,8 +85,9 @@ class Graph:
 
         self.lines.append((start, end))
 
-    def remove_line(self, start, end):
-        self.lines.remove((start, end))
+    def remove_line(self, surface):
+        self.graph_surface.fill((255, 255, 255))
+        self.draw(surface)
 
     def get_graph_size(self):
         return self.width, self.height
@@ -111,19 +127,13 @@ class Graph:
 
         return x, y
 
-    def mouse_click(self, pos):
-        for cell in self.cells:
-            for rect in cell:
-                if rect.collidepoint(pos):
-                    print(self.get_real_cell_coordination(rect.x, rect.y))
-
     # this function is for presenting a original revolution
-    def draw_originalpath(self, game_instance_in_cache):
-        # when only one resolution in instance.jsonl, just using the "game_instance_in_cache[1]"
+    def draw_originalpath(self, game_instance):
+        # when only one solution in instance.jsonl, just using the "game_instance_in_cache[1]"
         # temp_point = game_instance_in_cache[1].copy()
-        temp_point = game_instance_in_cache[0][0].copy()
+        temp_point = game_instance[0][0].copy()
         for point in temp_point:
-            for path in game_instance_in_cache[0][1]:
+            for path in game_instance[0][1]:
                 color = generate_random_rgb_from_hex()
                 (r, g, b) = hex_to_rgb(color)
                 temp = path.copy()

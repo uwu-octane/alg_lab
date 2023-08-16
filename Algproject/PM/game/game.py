@@ -18,7 +18,7 @@ class Game:
 
     def __gen_game_instance(self, instance_num, pairs):
         grid = gen_grid(self.g.get_graph_nodes()[0], self.g.get_graph_nodes()[1])
-        start_points = gen_start_points(2*pairs, grid)
+        start_points = gen_start_points(2 * pairs, grid)
         instances = []
         while instance_num > 0:
             try:
@@ -29,9 +29,17 @@ class Game:
                 instance_num -= 1
             except RuntimeError:
                 # print("RuntimeError")
-                start_points = gen_start_points(2*pairs, grid)
+                start_points = gen_start_points(2 * pairs, grid)
                 continue
         self.game_instance = instances
+
+    def validate(self):
+        if self.g.edges_shadow:
+            g = nx.Graph()
+            for edge, is_shown in self.g.edges_shadow.items():
+                g.add_edges_from(edge)
+            solver = GameSolver(g, self.g.start_points)
+            return solver.validate()
 
     def read_game_instance(self):
         data_list = read_json_lines()
@@ -40,13 +48,15 @@ class Game:
     """
     Callback function for the Clear button. Clears all settings made so far
     """
+
     def ui_clear_button_callback(self):
         # TODO: Clear UI element's content
-        self.g.graph_surface.fill((255,255,255))
+        self.g.graph_surface.fill((255, 255, 255))
 
     """
     Callback function for the Apply button. Generate Instance when button is clicked
     """
+
     def ui_apply_button_callback(self):
         widht = self.ui.tp_width.get_value()
         height = self.ui.tp_height.get_value()
@@ -65,9 +75,9 @@ class Game:
 
                 # Check if pair textbox was set
                 pairs = self.ui.tp_amount_pairs.element.get_value()
-                max_pairs = (widht*height)//2
+                max_pairs = (widht * height) // 2
                 if pairs == "":
-                    pairs = random.randint(1, (widht*height)//2)
+                    pairs = random.randint(1, (widht * height) // 2)
                 else:
                     if int(pairs) > max_pairs:
                         pairs = max_pairs
@@ -77,6 +87,36 @@ class Game:
                 # TODO: Sometimes an error occurs (probably when an instance is unsolvable, we need a solution to display such a case)
                 self.__gen_game_instance(1, pairs)
                 self.g.draw_originalpath(self.game_instance)
+
+    def ui_play_button_callback(self):
+        widht = self.ui.tp_width.get_value()
+        height = self.ui.tp_height.get_value()
+
+        # Check if entered text is not none
+        if widht != "" and height != "":
+            widht = int(widht)
+            height = int(height)
+
+            # Adjust graph size
+            self.g = Graph(800, c.HEIGHT, (widht, height))
+
+            # Generate random start points if desired
+            random_points = self.ui.tp_checkbox_random.get_value()
+            if random_points:
+
+                # Check if pair textbox was set
+                pairs = self.ui.tp_amount_pairs.element.get_value()
+                max_pairs = (widht * height) // 2
+                if pairs == "":
+                    pairs = random.randint(1, (widht * height) // 2)
+                else:
+                    if int(pairs) > max_pairs:
+                        pairs = max_pairs
+                    else:
+                        pairs = int(pairs)
+                self.__gen_game_instance(1, pairs)
+                self.g.start_points = self.game_instance[0][0]
+                self.g.draw(self.screen)
 
     def __init__(self):
         # initialize the pygame module
@@ -94,13 +134,13 @@ class Game:
         self.ui = Ui(400, c.HEIGHT)
         self.ui.tp_button_apply._at_click = self.ui_apply_button_callback
         self.ui.tp_button_clear._at_click = self.ui_clear_button_callback
+        self.ui.tp_button_play._at_click = self.ui_play_button_callback
 
         self.clock = pygame.time.Clock()
         self.running = False
-        self.track_edge = []
         self.game_instance = []
         self.game_instance_in_cache = []
-        #self.read_game_instance()
+        # self.read_game_instance()
 
         self.events = None
         self.mouse_rel = None
@@ -137,21 +177,15 @@ class Game:
                         if safe_edge(edge, self.g.edges_shadow):
                             if event.button == 1:
                                 self.g.edges_shadow[edge] = 1
+                                pygame.display.update()
                                 """
                                 right mouse click to cancel the edge
                                 """
                             if event.button == 3:
                                 self.g.edges_shadow[edge] = 0
-
-            for edge, is_shown in self.g.edges_shadow.items():
-                if is_shown == 1:
-                    self.g.add_line(edge[0], edge[1])
-                    pygame.display.update()
-                if is_shown == 0:
-                    if edge in self.g.edges:
-                        # not working
-                        self.g.remove_line(edge[0], edge[1])
-                        pygame.display.update()
+                                self.g.edges_shadow[(end_node, start_node)] = 0
+                                self.g.remove_line(self.screen)
+                                pygame.display.update()
             # UI
             self.ui.handle(self.events, self.mouse_rel)
 
