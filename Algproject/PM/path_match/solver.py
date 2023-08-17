@@ -175,11 +175,14 @@ class GameSolver:
 
     def validate(self):
         if len(self.edges) != self.num_nodes - self.num_paths:
+            print("The number of edges is not correct!")
             return False
         self.solve()
         if self.status == cp_model.INFEASIBLE:
+            print("The model was classified infeasible by the solver!")
             return False
         if self.status != cp_model.OPTIMAL:
+            print("Unexpected status after running solver!")
             return False
         return True
 

@@ -69,10 +69,10 @@ class Graph:
             cell_coordination = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
             pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coordination, 5)
         """
-        for edge in self.edges_shadow:
+        for edge, is_shown in self.edges_shadow.items():
             start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
             end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
-            if self.edges_shadow[edge]:
+            if is_shown:
                 pygame.draw.line(self.graph_surface, (255, 0, 0), start, end, 2)
         self.graph_surface.unlock()
         surface.blit(self.graph_surface, (400, 0))

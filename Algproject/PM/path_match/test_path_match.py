@@ -16,7 +16,7 @@ class MyTestCase(unittest.TestCase):
         start = gen_start_points(20, G)
         # start = [(0, 1), (1, 1)]
         # start = [(0, 0), (3,0), (0,1),(3,1),(0,2),(3,2),(0,3),(3,3)]
-        # print(start[1])
+
         edges = []
         paths = []
         solver = None
@@ -35,11 +35,9 @@ class MyTestCase(unittest.TestCase):
         # draw_result_edges(edges, G)
         print(solver.get_bottleneck())
         print("==============")
+
         store_in_json(start, paths)
-        for path in paths:
-            print(len(path))
-            # print("------------------")
-            pass
+        print(solver.get_start_points())
         draw_result_colorful(paths, False)
         #draw_result_edges(edges)
 

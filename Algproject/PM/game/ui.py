@@ -19,10 +19,12 @@ class Ui:
         self.tp_checkbox_random.element._at_click = self.__checkbox_random_callback
         self.tp_checkbox_random.element.set_value(True)
         self.tp_amount_pairs = tp.Labelled("Amount of pairs:", tp.TextInput("", "Type text here"))
-        self.tp_bottleneck = tp.Labelled("Bottleneck:", tp.TextInput("", "Type text here"))
+        self.tp_bottleneck = tp.Labelled("Bottleneck:", tp.TextInput("      "))
+
         self.tp_button_apply = tp.Button("Apply")
         self.tp_button_clear = tp.Button("Clear")
-        self.tp_button_group = tp.Group([self.tp_button_apply, self.tp_button_clear, self.tp_button_solve], "h")
+        self.tp_button_check = tp.Button("Check")
+        self.tp_button_group = tp.Group([self.tp_button_apply, self.tp_button_clear, self.tp_button_solve, self.tp_button_check], "h")
 
         self.tp_instance_box = tp.TitleBox("Instance Settings", [self.tp_width, self.tp_height, self.tp_checkbox_random, self.tp_amount_pairs, self.tp_bottleneck], sort_immediately=True)
 
