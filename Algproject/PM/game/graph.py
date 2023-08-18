@@ -1,5 +1,6 @@
 import pygame
 from Algproject.PM.path_match.util import *
+from Algproject.PM.game.constants import color_list
 
 
 class Circle:
@@ -23,6 +24,7 @@ class Graph:
         as a final result we send the positive edges to a solver for validation 
         """
         self.edges_shadow = {}
+        self.solution_sign = False  # to decide present solution from user or Solver
         self.__generate_graph()
         self.__shadow_edges()
 
@@ -40,6 +42,7 @@ class Graph:
         self.edges = []
         self.cells_coor = [(i, j) for j in range(self.nodes[1]) for i in range(self.nodes[0])]
         self.start_points = []
+        self.solution_instance = []
 
     def draw(self, surface):
         self.graph_surface.lock()
@@ -69,11 +72,25 @@ class Graph:
             cell_coordination = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
             pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coordination, 5)
         """
-        for edge, is_shown in self.edges_shadow.items():
-            start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
-            end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
-            if is_shown:
-                pygame.draw.line(self.graph_surface, (255, 0, 0), start, end, 2)
+        if  not self.solution_sign:
+            for edge, is_shown in self.edges_shadow.items():
+                start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
+                end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
+                if is_shown:
+                    pygame.draw.line(self.graph_surface, (255, 0, 0), start, end, 2)
+        else:
+            i = 0
+            for path in self.solution_instance[0][1]:
+                if i < 30:
+                    color_for_path = color_list[i]
+                    i += 1
+                else:
+                    color_for_path = color_list[29]
+                for edge, is_shown in self.edges_shadow.items():
+                    if self.is_edge_in_path(edge, path):
+                        start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
+                        end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
+                        pygame.draw.line(self.graph_surface, color_for_path, start, end, 4)
         self.graph_surface.unlock()
         surface.blit(self.graph_surface, (400, 0))
 
@@ -131,6 +148,25 @@ class Graph:
     def draw_originalpath(self, game_instance):
         # when only one solution in instance.jsonl, just using the "game_instance_in_cache[1]"
         # temp_point = game_instance_in_cache[1].copy()
+        self.solution_sign = True
+        self.solution_instance = game_instance
         for path in game_instance[0][1]:
             for edge in path:
                 self.edges_shadow[edge] = True
+
+    def reset_solution_sign(self):
+        self.solution_sign = False
+
+    def is_edge_in_path(self, edge, path):
+        sub_segments = [(edge[i], edge[i + 1]) for i in range(len(edge) - 1)]
+
+        for sub_segment in sub_segments:
+            found = False
+            for segment in path:
+                if (sub_segment[0] == segment[0] and sub_segment[1] == segment[1]) or \
+                        (sub_segment[0] == segment[1] and sub_segment[1] == segment[0]):
+                    found = True
+                    break
+            if not found:
+                return False
+        return True
