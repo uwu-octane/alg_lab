@@ -34,7 +34,8 @@ class GameSolver:
         status = solver.Solve(self.model)
 
         for v in self.start_points:
-            print(v, solver.Value(self.depth_vars[v]))
+            for j in range(self.num_paths):
+                print(solver.Value(self.node_to_path[v][j]))
 
     def __single_selection_constraint(self):
         """
@@ -56,10 +57,17 @@ class GameSolver:
         for v in self.nodes:
             self.model.Add(sum(self.node_to_path[v][i] for i in range(self.num_paths)) == 1)
 
-        for i in range(self.num_paths):
-            for (v, w), x_vw in self.edge_vars.items():
-                self.model.Add(
-                    self.node_to_path[v][i] == self.node_to_path[w][i]).OnlyEnforceIf(x_vw)
+        count = 0
+        for i in range(len(self.start_points)):
+            if i % 2 == 0:
+                self.model.Add(self.node_to_path[self.start_points[i]][count] == 1)
+                count += 1
+                for j in range(self.num_paths):
+                    self.model.Add(self.node_to_path[self.start_points[i]][j] == self.node_to_path[self.start_points[i + 1]][j])
+
+        for (v, w), x_vw in self.edge_vars.items():
+            for i in range(self.num_paths):
+                self.model.Add(self.node_to_path[v][i] == self.node_to_path[w][i]).OnlyEnforceIf(x_vw)
 
         # self.model.Add(self.node_to_path[self.start_points[0]][0] == 1)
         """
