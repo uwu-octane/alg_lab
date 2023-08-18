@@ -58,7 +58,8 @@ class Game:
     """
 
     def ui_clear_button_callback(self):
-        # TODO: Clear UI element's content
+        # TODO: Clear UI element's content, only bottleneck cannot be cleared
+        self.ui.clear_all()
         self.g.graph_surface.fill((255, 255, 255))
         for edge in self.g.edges_shadow:
             if self.g.edges_shadow[edge]:

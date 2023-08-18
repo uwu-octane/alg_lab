@@ -12,17 +12,21 @@ class Ui:
         tp.init(self.ui_surface, tp.theme_human)
 
         self.tp_button_solve = tp.Button("Solve")
-
-        self.tp_width = tp.Labelled("Cells Width:", tp.TextInput("", "Type text here"))
-        self.tp_height = tp.Labelled("Cells Height:", tp.TextInput("", "Type text here"))
+        self.tp_width_input = tp.TextInput("", "Type text here")
+        self.tp_width = tp.Labelled("Cells Width:", self.tp_width_input)
+        self.tp_height_input = tp.TextInput("", "Type text here")
+        self.tp_height = tp.Labelled("Cells Height:", self.tp_height_input)
+        # self.tp_height = tp.Labelled("Cells Height:", tp.TextInput("", "Type text here"))
         self.tp_checkbox_random = tp.Labelled("Random pairs?", tp.Checkbox())
         self.tp_checkbox_random.element._at_click = self.__checkbox_random_callback
         self.tp_checkbox_random.element.set_value(True)
-        self.tp_amount_pairs = tp.Labelled("Amount of pairs:", tp.TextInput("", "Type text here"))
+        self.tp_amount_pairs_input = tp.TextInput("", "Type text here")
+        self.tp_amount_pairs = tp.Labelled("Amount of pairs:", self.tp_amount_pairs_input)
         self.tp_checkbox_bottleneck = tp.Labelled("Bottleneck?", tp.Checkbox())
         self.tp_checkbox_bottleneck.element._at_click = self.__checkbox_bottleneck_callback
         self.tp_checkbox_bottleneck.element.set_value(True)
-        self.tp_bottleneck = tp.Labelled("Bottleneck:", tp.TextInput("      "))
+        self.tp_bottleneck_input = tp.TextInput("      ")
+        self.tp_bottleneck = tp.Labelled("Bottleneck:", self.tp_bottleneck_input)
 
         self.tp_button_apply = tp.Button("Apply")
         self.tp_button_clear = tp.Button("Clear")
@@ -54,3 +58,12 @@ class Ui:
 
     def draw(self, surface):
         surface.blit(self.ui_surface, (0, 0))
+
+    def clear_all(self):
+        # self.tp_width.set_value("")
+        self.tp_width_input.value = ""
+        self.tp_height_input.value = ""
+        self.tp_amount_pairs_input.value = ""
+        # bottleneck still doesnt work
+        # self.tp_bottleneck_input.value = ""
+
