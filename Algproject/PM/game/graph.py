@@ -64,9 +64,19 @@ class Graph:
                     pygame.draw.circle(self.graph_surface, c.color, c.pos, c.radius)
 
         if self.start_points:
+            i = 1
+            j = 0
             for point in self.start_points:
+                if j < 15:
+                    color = color_list[j]
+                else:
+                    color = color_list[14]
+                if i % 2 == 0:
+                    j += 1
+                i += 1
                 point_coor = self.get_real_cell_coordination(point[0], point[1])
-                pygame.draw.circle(self.graph_surface, 'skyblue', point_coor, 5)
+                pygame.draw.circle(self.graph_surface, color, point_coor, 10)
+
         """
         for cell_coor in self.cells_coor:
             cell_coordination = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
@@ -81,11 +91,11 @@ class Graph:
         else:
             i = 0
             for path in self.solution_instance[0][1]:
-                if i < 30:
+                if i < 15:
                     color_for_path = color_list[i]
                     i += 1
                 else:
-                    color_for_path = color_list[29]
+                    color_for_path = color_list[14]
                 for edge, is_shown in self.edges_shadow.items():
                     if self.is_edge_in_path(edge, path):
                         self.edges_shadow[edge] = True
