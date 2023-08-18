@@ -64,6 +64,4 @@ class Ui:
         self.tp_width_input.value = ""
         self.tp_height_input.value = ""
         self.tp_amount_pairs_input.value = ""
-        # bottleneck still doesnt work
-        # self.tp_bottleneck_input.value = ""
-
+        self.tp_bottleneck.set_value("")
