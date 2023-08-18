@@ -42,6 +42,7 @@ class Game:
                 if is_shown:
                     edge_copy.add(edge)
             g.add_edges_from(list(edge_copy))
+            print(len(g.edges))
             cells = self.g.cells_coor
             for cell in cells:
                 g.add_node(cell)
@@ -59,7 +60,7 @@ class Game:
 
     def ui_clear_button_callback(self):
         # TODO: Clear UI element's content， finished
-        self.ui.clear_all()
+       # self.ui.clear_all()
         self.g.reset_solution_sign()
         self.g.graph_surface.fill((255, 255, 255))
         for edge in self.g.edges_shadow:
@@ -113,6 +114,7 @@ class Game:
             self.ui_apply_button_callback()
 
         self.g.draw_originalpath(self.game_instance)
+        self.g.draw(self.screen)
         bottleneck = str(self.bottleneck)
         self.ui.tp_bottleneck.set_value(bottleneck)
 
@@ -136,6 +138,11 @@ class Game:
         self.ui.tp_button_solve._at_click = self.ui_solve_button_callback
         self.clock = pygame.time.Clock()
         self.running = False
+        """
+        any instance is always in form (start_points, path)
+        where start_points is a list of points (x, y) and path is a list of paths [path1, path2, ...]
+        every path is a list of edges [((x1, y1), (x2, y2)), ...]
+        """
         self.game_instance = None
         self.game_instance_in_cache = []
         # self.read_game_instance()
@@ -156,15 +163,22 @@ class Game:
             for event in self.events:
                 if event.type == pygame.QUIT:
                     self.running = False
-                elif event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN: # mouse click
+                    """
+                    event.button == 1 -> left mouse button
+                    event.button == 3 -> right mouse button
+                    """
                     if event.button == 1 or event.button == 3:
                         click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                         click_pos = self.g.get_simple_cell_coordination(click_pos)
+                        """
+                        check the click position is in the cell or not 
+                        """
                         if check_is_in_cell(click_pos, self.g.cells_coor):
                             start_node = click_pos
                             print(start_node)
                         pygame.display.update()
-                elif event.type == pygame.MOUSEBUTTONUP:
+                elif event.type == pygame.MOUSEBUTTONUP: # mouse click release
                     click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                     click_pos = self.g.get_simple_cell_coordination(click_pos)
 
@@ -172,7 +186,13 @@ class Game:
                         end_node = click_pos
                         print(end_node)
                         edge = (start_node, end_node)
+                        """
+                        consider edge in a grid, e.g. edge extends to top left should not be valid
+                        """
                         if safe_edge(edge, self.g.edges_shadow):
+                            """
+                            left mouse click to show the edge
+                            """
                             if event.button == 1:
                                 self.g.edges_shadow[edge] = 1
                                 pygame.display.update()

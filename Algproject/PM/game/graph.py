@@ -35,7 +35,7 @@ class Graph:
         self.cells = [[pygame.Rect(i * self.cell_width, j * self.cell_height, self.cell_width, self.cell_height)
                        for j in range(self.nodes[1])] for i in range(self.nodes[0])]
         self.circles = [[Circle((0, 0, 0), (i * self.cell_width + self.cell_width / 2,
-                                                  j * self.cell_height + self.cell_height / 2), 5) for j in
+                                            j * self.cell_height + self.cell_height / 2), 5) for j in
                          range(self.nodes[1])]
                         for i in range(self.nodes[0])]
         self.lines = []
@@ -72,7 +72,7 @@ class Graph:
             cell_coordination = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
             pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coordination, 5)
         """
-        if  not self.solution_sign:
+        if not self.solution_sign:
             for edge, is_shown in self.edges_shadow.items():
                 start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
                 end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
@@ -88,6 +88,7 @@ class Graph:
                     color_for_path = color_list[29]
                 for edge, is_shown in self.edges_shadow.items():
                     if self.is_edge_in_path(edge, path):
+                        self.edges_shadow[edge] = True
                         start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
                         end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
                         pygame.draw.line(self.graph_surface, color_for_path, start, end, 4)
@@ -114,7 +115,6 @@ class Graph:
         edges = list(g.edges())
         bi_edges = [(edge[1], edge[0]) for edge in edges]
         edges = edges + bi_edges
-        # edges = [(self.get_cell_center(edge[0][0],edge[0][1]), self.get_cell_center(edge[1][0], edge[1][1])) for edge in edges]
         self.edges_shadow = {edge: False for edge in edges}
 
     def get_graph_nodes(self):
@@ -150,9 +150,6 @@ class Graph:
         # temp_point = game_instance_in_cache[1].copy()
         self.solution_sign = True
         self.solution_instance = game_instance
-        for path in game_instance[0][1]:
-            for edge in path:
-                self.edges_shadow[edge] = True
 
     def reset_solution_sign(self):
         self.solution_sign = False
