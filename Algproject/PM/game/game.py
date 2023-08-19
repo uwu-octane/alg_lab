@@ -60,6 +60,8 @@ class Game:
 
     def ui_clear_button_callback(self):
         # TODO: Clear UI element's content， finished
+        self.move_points = []
+        self.remove_move_points = []
         self.ui.clear_all()
         self.g.reset_solution_sign()
         self.g.graph_surface.fill((255, 255, 255))
@@ -194,6 +196,8 @@ class Game:
                         pygame.display.update()
                 elif event.type == pygame.MOUSEBUTTONUP: # mouse click release
                     self.drawing_curve = False
+                    self.move_points = []
+                    self.remove_move_points = []
                     click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                     click_pos = self.g.get_simple_cell_coordination(click_pos)
 
