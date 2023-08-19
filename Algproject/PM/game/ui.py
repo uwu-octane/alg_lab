@@ -70,3 +70,13 @@ class Ui:
         self.tp_amount_pairs_input.value = ""
         self.tp_bottleneck.set_value("")
         self.tp_valid_input.set_value("")
+
+    # to make an alert(pop-up windows)
+    def show_alert(self, valid = 0):
+        if valid == 0:
+            self.alert = tp.Alert("RESULT", "Invalid")
+        else:
+            self.alert = tp.Alert("RESULT", "Valid")
+        self.alert.set_size((200, 200))
+        self.alert.set_bck_color((150, 150, 150))
+        self.alert.launch_nonblocking()

@@ -105,8 +105,12 @@ class Game:
     def ui_check_button_callback(self):
         if self.game_instance:
             if self.validate():
+                # when don't use a alert(pop-up windows) just comment the function "show_alert"
+                self.ui.show_alert(1)
                 self.ui.tp_valid_input.set_value("Yes")
             else:
+                # when don't use a alert(pop-up windows) just comment the function "show_alert"
+                self.ui.show_alert(0)
                 self.ui.tp_valid_input.set_value("No")
 
     def ui_solve_button_callback(self):
