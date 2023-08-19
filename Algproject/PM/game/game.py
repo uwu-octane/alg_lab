@@ -91,7 +91,7 @@ class Game:
                 self.pairs = self.ui.tp_amount_pairs.element.get_value()
                 max_pairs = (widht * height) // 2
                 if self.pairs == "":
-                    self.pairs = random.randint(1, (widht * height) // 2)
+                    self.pairs = random.randint(1, max_pairs)
                 else:
                     if int(self.pairs) > max_pairs:
                         self.pairs = max_pairs
@@ -105,9 +105,9 @@ class Game:
     def ui_check_button_callback(self):
         if self.game_instance:
             if self.validate():
-                print("Valid")
+                self.ui.tp_valid_input.set_value("Yes")
             else:
-                print("Invalid")
+                self.ui.tp_valid_input.set_value("No")
 
     def ui_solve_button_callback(self):
         if self.game_instance is None:

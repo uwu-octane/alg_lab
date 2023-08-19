@@ -27,15 +27,19 @@ class Ui:
         self.tp_checkbox_bottleneck.element.set_value(True)
         self.tp_bottleneck_input = tp.TextInput("      ")
         self.tp_bottleneck = tp.Labelled("Bottleneck:", self.tp_bottleneck_input)
+        self.tp_valid_input = tp.TextInput("      ")
+        self.tp_valid = tp.Labelled("Valid:", self.tp_valid_input)
 
         self.tp_button_apply = tp.Button("Apply")
         self.tp_button_clear = tp.Button("Clear")
         self.tp_button_check = tp.Button("Check")
         self.tp_button_group = tp.Group([self.tp_button_apply, self.tp_button_clear, self.tp_button_solve, self.tp_button_check], "h")
 
-        self.tp_instance_box = tp.TitleBox("Instance Settings", [self.tp_width, self.tp_height, self.tp_checkbox_random, self.tp_amount_pairs, self.tp_checkbox_bottleneck, self.tp_bottleneck], sort_immediately=True)
+        self.tp_instance_box = tp.TitleBox("Instance Settings", [self.tp_width, self.tp_height, self.tp_checkbox_random, self.tp_amount_pairs, self.tp_checkbox_bottleneck], sort_immediately=True)
 
-        self.tp_ui_box = tp.Box([self.tp_instance_box, self.tp_button_group])
+        self.tp_solution_box = tp.TitleBox("Solution", [self.tp_bottleneck, self.tp_valid], sort_immediately=True)
+
+        self.tp_ui_box = tp.Box([self.tp_instance_box, self.tp_solution_box, self.tp_button_group])
         self.tp_ui_box.center_on(self.ui_surface)
 
         self.updater = self.tp_ui_box.get_updater()
@@ -65,3 +69,4 @@ class Ui:
         self.tp_height_input.value = ""
         self.tp_amount_pairs_input.value = ""
         self.tp_bottleneck.set_value("")
+        self.tp_valid_input.set_value("")
