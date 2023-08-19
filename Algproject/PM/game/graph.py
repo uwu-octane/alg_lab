@@ -177,3 +177,19 @@ class Graph:
             if not found:
                 return False
         return True
+
+    def are_adjacent(self, point1, point2):
+        x1, y1 = point1
+        x2, y2 = point2
+
+        # 判断两个点是否在横向或纵向上相邻
+        if abs(x1 - x2) + abs(y1 - y2) == 1:
+            return True
+        else:
+            return False
+
+    def change_move_edge_in_shadow(self, point_list):
+        for i in range(len(point_list) - 1):
+            if self.are_adjacent(point_list[i], point_list[i + 1]):
+                edge = (point_list[i], point_list[i + 1])
+                self.edges_shadow[edge] = True

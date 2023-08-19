@@ -142,6 +142,8 @@ class Game:
         self.ui.tp_button_solve._at_click = self.ui_solve_button_callback
         self.clock = pygame.time.Clock()
         self.running = False
+        self.drawing_curve = False  # to estimate whether we draw many edge in one time
+        self.move_points = []
         """
         any instance is always in form (start_points, path)
         where start_points is a list of points (x, y) and path is a list of paths [path1, path2, ...]
@@ -172,6 +174,7 @@ class Game:
                     event.button == 1 -> left mouse button
                     event.button == 3 -> right mouse button
                     """
+                    self.drawing_curve = True
                     if event.button == 1 or event.button == 3:
                         click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                         click_pos = self.g.get_simple_cell_coordination(click_pos)
@@ -183,6 +186,7 @@ class Game:
                             print(start_node)
                         pygame.display.update()
                 elif event.type == pygame.MOUSEBUTTONUP: # mouse click release
+                    self.drawing_curve = False
                     click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                     click_pos = self.g.get_simple_cell_coordination(click_pos)
 
@@ -208,6 +212,14 @@ class Game:
                                 self.g.edges_shadow[(end_node, start_node)] = 0
                                 self.g.remove_line(self.screen)
                                 pygame.display.update()
+                elif event.type == pygame.MOUSEMOTION:
+                    if self.drawing_curve:
+                        move_point = convert_to_game_coordinates(event.pos, self.g.graph_surface)
+                        move_point = self.g.get_simple_cell_coordination(move_point)
+                        if move_point not in self.move_points:
+                            self.move_points.append(move_point)
+                        self.g.change_move_edge_in_shadow(self.move_points)
+
             # UI
             self.ui.handle(self.events, self.mouse_rel)
 
