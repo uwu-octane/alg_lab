@@ -143,7 +143,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = False
         self.drawing_curve = False  # to estimate whether we draw many edge in one time
+        self.left_or_right_click = False
         self.move_points = []
+        self.remove_move_points = []
         """
         any instance is always in form (start_points, path)
         where start_points is a list of points (x, y) and path is a list of paths [path1, path2, ...]
@@ -175,6 +177,11 @@ class Game:
                     event.button == 3 -> right mouse button
                     """
                     self.drawing_curve = True
+                    if event.button == 1:
+                        self.left_or_right_click = True
+                    if event.button == 3:
+                        self.left_or_right_click = False
+
                     if event.button == 1 or event.button == 3:
                         click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                         click_pos = self.g.get_simple_cell_coordination(click_pos)
@@ -202,7 +209,7 @@ class Game:
                             left mouse click to show the edge
                             """
                             if event.button == 1:
-                                self.g.edges_shadow[edge] = 1
+                                # self.g.edges_shadow[edge] = 1
                                 pygame.display.update()
                                 """
                                 right mouse click to cancel the edge
@@ -214,11 +221,22 @@ class Game:
                                 pygame.display.update()
                 elif event.type == pygame.MOUSEMOTION:
                     if self.drawing_curve:
-                        move_point = convert_to_game_coordinates(event.pos, self.g.graph_surface)
-                        move_point = self.g.get_simple_cell_coordination(move_point)
-                        if move_point not in self.move_points:
-                            self.move_points.append(move_point)
-                        self.g.change_move_edge_in_shadow(self.move_points)
+                        if self.left_or_right_click:
+                            move_point = convert_to_game_coordinates(event.pos, self.g.graph_surface)
+                            move_point = self.g.get_simple_cell_coordination(move_point)
+                            if move_point not in self.move_points:
+                                self.move_points.append(move_point)
+                            self.g.change_move_edge_in_shadow(self.move_points)
+                        else:
+                            move_point = convert_to_game_coordinates(event.pos, self.g.graph_surface)
+                            move_point = self.g.get_simple_cell_coordination(move_point)
+                            if move_point not in self.remove_move_points:
+                                self.remove_move_points.append(move_point)
+                            if move_point in self.move_points:
+                                self.move_points.remove(move_point)
+                            self.g.change_move_edge_not_in_shadow(self.remove_move_points)
+                            self.g.remove_line(self.screen)
+
 
             # UI
             self.ui.handle(self.events, self.mouse_rel)

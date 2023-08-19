@@ -193,3 +193,11 @@ class Graph:
             if self.are_adjacent(point_list[i], point_list[i + 1]):
                 edge = (point_list[i], point_list[i + 1])
                 self.edges_shadow[edge] = True
+
+    def change_move_edge_not_in_shadow(self, point_list):
+        for i in range(len(point_list) - 1):
+            if self.are_adjacent(point_list[i], point_list[i + 1]):
+                edge1 = (point_list[i], point_list[i + 1])
+                edge2 = (point_list[i + 1], point_list[i])
+                self.edges_shadow[edge1] = False
+                self.edges_shadow[edge2] = False
