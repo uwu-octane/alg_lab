@@ -64,6 +64,7 @@ class Game:
         self.remove_move_points = []
         self.ui.clear_all()
         self.g.reset_solution_sign()
+        self.g.start_points = []
         self.g.graph_surface.fill((255, 255, 255))
         for edge in self.g.edges_shadow:
             if self.g.edges_shadow[edge]:
@@ -110,6 +111,7 @@ class Game:
                 # when don't use a alert(pop-up windows) just comment the function "show_alert"
                 self.ui.show_alert(1)
                 self.ui.tp_valid_input.set_value("Yes")
+                self.ui.tp_bottleneck.set_value(str(self.bottleneck))
             else:
                 # when don't use a alert(pop-up windows) just comment the function "show_alert"
                 self.ui.show_alert(0)
