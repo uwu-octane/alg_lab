@@ -66,6 +66,7 @@ class Game:
         self.g.reset_solution_sign()
         self.g.start_points = []
         self.g.graph_surface.fill((255, 255, 255))
+        self.game_instance_enterd = False
         for edge in self.g.edges_shadow:
             if self.g.edges_shadow[edge]:
                 self.g.edges_shadow[edge] = False
@@ -100,13 +101,13 @@ class Game:
                         self.pairs = max_pairs
                     else:
                         self.pairs = int(self.pairs)
-                        # TODO: Sometimes an error occurs (probably when an instance is unsolvable, we need a solution to display such a case)
                         self.__gen_game_instance(1, self.pairs)
                         self.g.start_points = self.game_instance[0][0]
                         self.g.draw(self.screen)
+                        self.game_instance_enterd = True
 
     def ui_check_button_callback(self):
-        if self.game_instance:
+        if self.game_instance and self.game_instance_enterd:
             if self.validate():
                 # when don't use a alert(pop-up windows) just comment the function "show_alert"
                 self.ui.show_alert(1)
@@ -118,13 +119,11 @@ class Game:
                 self.ui.tp_valid_input.set_value("No")
 
     def ui_solve_button_callback(self):
-        if self.game_instance is None:
-            self.ui_apply_button_callback()
-
-        self.g.draw_originalpath(self.game_instance)
-        self.g.draw(self.screen)
-        bottleneck = str(self.bottleneck)
-        self.ui.tp_bottleneck.set_value(bottleneck)
+        if self.game_instance_enterd:
+            self.g.draw_originalpath(self.game_instance)
+            self.g.draw(self.screen)
+            bottleneck = str(self.bottleneck)
+            self.ui.tp_bottleneck.set_value(bottleneck)
 
     def __init__(self):
         # initialize the pygame module
@@ -157,6 +156,7 @@ class Game:
         """
         self.game_instance = None
         self.game_instance_in_cache = []
+        self.game_instance_enterd = False # Has the use enterend instance settings?
         # self.read_game_instance()
 
         self.events = None
