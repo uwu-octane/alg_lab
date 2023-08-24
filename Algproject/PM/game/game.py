@@ -47,7 +47,7 @@ class Game:
             for cell in cells:
                 g.add_node(cell)
             print(self.g.start_points)
-            solver = GameSolver(g, self.g.start_points)
+            solver = GameSolver(g, self.g.start_points, self.ui.tp_checkbox_bottleneck.get_value())
             return solver.validate()
 
     def read_game_instance(self):
