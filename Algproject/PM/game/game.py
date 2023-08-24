@@ -74,20 +74,20 @@ class Game:
     """
 
     def ui_apply_button_callback(self):
-        widht = self.ui.tp_width.get_value()
+        width = self.ui.tp_width.get_value()
         height = self.ui.tp_height.get_value()
 
         # Check if entered text is not none
-        if widht != "" and height != "":
-            widht = int(widht)
+        if width != "" and height != "":
+            width = int(width)
             height = int(height)
 
             # Adjust graph size
-            self.g = Graph(800, c.HEIGHT, (widht, height))
+            self.g = Graph(800, c.HEIGHT, (width, height))
 
             # Check if pair textbox was set
             self.pairs = self.ui.tp_amount_pairs.element.get_value()
-            max_pairs = (widht * height) // 2
+            max_pairs = (width * height) // 2
             if self.pairs == "":
                 self.pairs = random.randint(1, max_pairs)
             else:
