@@ -1,5 +1,4 @@
 import Algproject.PM.game.constants as c
-from Algproject.PM.game import graph
 
 """
 this function is to adjust the click positions, because the graph is not in the left top corner of the window,

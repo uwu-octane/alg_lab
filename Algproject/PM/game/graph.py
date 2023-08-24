@@ -1,6 +1,7 @@
 import pygame
-from Algproject.PM.path_match.util import *
+
 from Algproject.PM.game.constants import color_list
+from Algproject.PM.path_match.util import *
 
 
 class Circle:

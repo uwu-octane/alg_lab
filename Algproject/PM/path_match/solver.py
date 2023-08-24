@@ -1,8 +1,6 @@
 import networkx as nx
-from matplotlib import pyplot as plt
 
 from ortools.sat.python import cp_model
-import itertools
 
 
 class GameSolver:
@@ -63,7 +61,8 @@ class GameSolver:
                 self.model.Add(self.node_to_path[self.start_points[i]][count] == 1)
                 count += 1
                 for j in range(self.num_paths):
-                    self.model.Add(self.node_to_path[self.start_points[i]][j] == self.node_to_path[self.start_points[i + 1]][j])
+                    self.model.Add(
+                        self.node_to_path[self.start_points[i]][j] == self.node_to_path[self.start_points[i + 1]][j])
 
         for (v, w), x_vw in self.edge_vars.items():
             for i in range(self.num_paths):

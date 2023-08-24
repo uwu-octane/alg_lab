@@ -1,7 +1,5 @@
 import unittest
 
-import networkx as nx
-
 from .solver import GameSolver
 from .util import *
 

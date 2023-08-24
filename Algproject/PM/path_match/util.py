@@ -1,13 +1,12 @@
 import colorsys
-import random
-from typing import List, Set, Tuple, Iterable, Optional
-import matplotlib.pyplot as plt
-import networkx as nx
-import itertools
-import matplotlib.colors as mcolors
 import json
 import os
-import time
+import random
+from typing import Tuple
+
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
+import networkx as nx
 
 Node = Tuple[int, int]
 Edge = Tuple[Node, Node]

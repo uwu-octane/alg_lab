@@ -1,2 +1,2 @@
-from .util import *
 from .solver import GameSolver
+from .util import *

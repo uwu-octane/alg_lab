@@ -1,12 +1,10 @@
 # import the pygame module, so you can use it
 import pygame
-import random
 
-from Algproject.PM.game.tools import *
-from Algproject.PM.game.graph import Graph
-from Algproject.PM.game.ui import Ui
 import Algproject.PM.game.constants as c
-
+from Algproject.PM.game.graph import Graph
+from Algproject.PM.game.tools import *
+from Algproject.PM.game.ui import Ui
 from Algproject.PM.path_match.solver import GameSolver
 from Algproject.PM.path_match.util import *
 

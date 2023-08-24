@@ -1,8 +1,6 @@
 import pygame
 import thorpy as tp
 
-from Algproject.PM.game.tools import *
-
 
 class Ui:
     def __init__(self, width, height):
