@@ -87,24 +87,20 @@ class Game:
             # Adjust graph size
             self.g = Graph(800, c.HEIGHT, (widht, height))
 
-            # Generate random start points if desired
-            random_points = self.ui.tp_checkbox_random.get_value()
-            if random_points:
-
-                # Check if pair textbox was set
-                self.pairs = self.ui.tp_amount_pairs.element.get_value()
-                max_pairs = (widht * height) // 2
-                if self.pairs == "":
-                    self.pairs = random.randint(1, max_pairs)
+            # Check if pair textbox was set
+            self.pairs = self.ui.tp_amount_pairs.element.get_value()
+            max_pairs = (widht * height) // 2
+            if self.pairs == "":
+                self.pairs = random.randint(1, max_pairs)
+            else:
+                if int(self.pairs) > max_pairs:
+                    self.pairs = max_pairs
                 else:
-                    if int(self.pairs) > max_pairs:
-                        self.pairs = max_pairs
-                    else:
-                        self.pairs = int(self.pairs)
-                        self.__gen_game_instance(1, self.pairs, self.ui.tp_checkbox_bottleneck.get_value())
-                        self.g.start_points = self.game_instance[0][0]
-                        self.g.draw(self.screen)
-                        self.game_instance_enterd = True
+                    self.pairs = int(self.pairs)
+                    self.__gen_game_instance(1, self.pairs, self.ui.tp_checkbox_bottleneck.get_value())
+                    self.g.start_points = self.game_instance[0][0]
+                    self.g.draw(self.screen)
+                    self.game_instance_enterd = True
 
     def ui_check_button_callback(self):
         if self.game_instance and self.game_instance_enterd:
