@@ -23,6 +23,8 @@ class Play:
                         game.track_edge.append((start_pos, end_pos))
                         game.g.add_edge(game.track_edge[len(game.track_edge) - 1][0],
                                         game.track_edge[len(game.track_edge) - 1][1])
+
+
 """
   for event in self.events:
                 if event.type == pygame.QUIT:

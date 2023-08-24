@@ -1,7 +1,6 @@
 # import the pygame module, so you can use it
 import pygame
 
-import Algproject.PM.game.constants as c
 from Algproject.PM.game.graph import Graph
 from Algproject.PM.game.tools import *
 from Algproject.PM.game.ui import Ui
@@ -150,7 +149,7 @@ class Game:
         """
         self.game_instance = None
         self.game_instance_in_cache = []
-        self.game_instance_enterd = False # Has the use enterend instance settings?
+        self.game_instance_enterd = False  # Has the use enterend instance settings?
         # self.read_game_instance()
 
         self.events = None
@@ -169,7 +168,7 @@ class Game:
             for event in self.events:
                 if event.type == pygame.QUIT:
                     self.running = False
-                elif event.type == pygame.MOUSEBUTTONDOWN: # mouse click
+                elif event.type == pygame.MOUSEBUTTONDOWN:  # mouse click
                     """
                     event.button == 1 -> left mouse button
                     event.button == 3 -> right mouse button
@@ -190,7 +189,7 @@ class Game:
                             start_node = click_pos
                             print(start_node)
                         pygame.display.update()
-                elif event.type == pygame.MOUSEBUTTONUP: # mouse click release
+                elif event.type == pygame.MOUSEBUTTONUP:  # mouse click release
                     self.drawing_curve = False
                     self.move_points = []
                     self.remove_move_points = []
@@ -236,7 +235,6 @@ class Game:
                                 self.move_points.remove(move_point)
                             self.g.change_move_edge_not_in_shadow(self.remove_move_points)
                             self.g.remove_line(self.screen)
-
 
             # UI
             self.ui.handle(self.events, self.mouse_rel)

@@ -27,9 +27,11 @@ class Ui:
         self.tp_button_apply = tp.Button("Apply")
         self.tp_button_clear = tp.Button("Clear")
         self.tp_button_check = tp.Button("Check")
-        self.tp_button_group = tp.Group([self.tp_button_apply, self.tp_button_clear, self.tp_button_solve, self.tp_button_check], "h")
+        self.tp_button_group = tp.Group(
+            [self.tp_button_apply, self.tp_button_clear, self.tp_button_solve, self.tp_button_check], "h")
 
-        self.tp_instance_box = tp.TitleBox("Instance Settings", [self.tp_width, self.tp_height, self.tp_amount_pairs, self.tp_checkbox_bottleneck], sort_immediately=True)
+        self.tp_instance_box = tp.TitleBox("Instance Settings", [self.tp_width, self.tp_height, self.tp_amount_pairs,
+                                                                 self.tp_checkbox_bottleneck], sort_immediately=True)
 
         self.tp_solution_box = tp.TitleBox("Solution", [self.tp_bottleneck, self.tp_valid], sort_immediately=True)
 
@@ -60,7 +62,7 @@ class Ui:
         self.tp_valid_input.set_value("")
 
     # to make an alert(pop-up windows)
-    def show_alert(self, valid = 0):
+    def show_alert(self, valid=0):
         if valid == 0:
             self.alert = tp.Alert("RESULT", "Invalid")
         else:
