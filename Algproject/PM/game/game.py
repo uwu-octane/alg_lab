@@ -16,13 +16,13 @@ class Game:
     create some game instances
     """
 
-    def __gen_game_instance(self, instance_num, pairs):
+    def __gen_game_instance(self, instance_num, pairs, bottleneck):
         grid = gen_grid(self.g.get_graph_nodes()[0], self.g.get_graph_nodes()[1])
         start_points = gen_start_points(2 * pairs, grid)
         instances = []
         while instance_num > 0:
             try:
-                solver = GameSolver(grid, start_points)
+                solver = GameSolver(grid, start_points, bottleneck)
                 solver.solve()
                 instance = solver.get_instance()
                 self.bottleneck = solver.get_bottleneck()
@@ -101,7 +101,7 @@ class Game:
                         self.pairs = max_pairs
                     else:
                         self.pairs = int(self.pairs)
-                        self.__gen_game_instance(1, self.pairs)
+                        self.__gen_game_instance(1, self.pairs, self.ui.tp_checkbox_bottleneck.get_value())
                         self.g.start_points = self.game_instance[0][0]
                         self.g.draw(self.screen)
                         self.game_instance_enterd = True

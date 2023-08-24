@@ -136,7 +136,7 @@ class GameSolver:
             """
             self.model.Add(self.depth_vars[w] == self.depth_vars[v] + 1).OnlyEnforceIf(x_vw)
 
-    def __init__(self, graph, start_points):
+    def __init__(self, graph, start_points, bottleneck):
         self.graph = graph
         self.nodes = list(self.graph.nodes)
         self.edges = list(self.graph.edges)
@@ -149,8 +149,8 @@ class GameSolver:
 
         self.model = cp_model.CpModel()
         self.__make_vars()
-        # self.constraints_test()
-        self.__add_bottleneck_constraints()
+        if bottleneck:
+            self.__add_bottleneck_constraints()
         self.__add_degree_constraints()
         self.__single_selection_constraint()
         self.__forbid_bidirectional_edges()
