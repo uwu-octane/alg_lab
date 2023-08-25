@@ -56,6 +56,7 @@ class GameSolver:
         """
         count = 0
         for i in range(len(self.start_points)):
+            # Only use every second node to select one of the start and end points to be on the path
             if i % 2 == 0:
                 self.model.Add(self.node_to_path[self.start_points[i]][count] == 1)
                 self.model.Add(self.node_to_path[self.start_points[i]][count] == self.node_to_path[self.start_points[i + 1]][count])
