@@ -38,10 +38,6 @@ class GameSolver:
 
     def __single_selection_constraint(self):
         """
-        Enforce that each node has be used once
-        """
-        #self.model.Add(sum(self.node_vars.values()) == self.num_nodes)
-        """
         Cause every node has to be used once, and the path num is known, so we can get the number of edges in graph
         let |path| be the number of nodes in a path, then |path| - 1 = |edges| in this case
         |path_1| -1 + |path_2| -1 + ... + |path_n| -1 = num_nodes - num_paths
