@@ -32,8 +32,8 @@ class MyTestCase(unittest.TestCase):
         # print(paths))
         # print(start[1])
         # draw_result_edges(edges, G)
-        print(solver.get_start_points())
-        store_in_json(solver.get_start_points(), paths)
+        print(solver.get_path_var((solver.get_start_points()[0])))
+        #store_in_json(solver.get_start_points(), paths)
         draw_result_colorful(paths, False)
         # draw_result_edges(edges)
 

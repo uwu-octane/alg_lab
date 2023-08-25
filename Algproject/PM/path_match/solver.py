@@ -146,7 +146,7 @@ class GameSolver:
         self.bottleneck_var_value = -1
         self.result = None
         self.status = None
-
+        self.solver = None
     def get_start_points(self):
         return self.start_points
 
@@ -166,6 +166,13 @@ class GameSolver:
 
     def get_path_depth(self):
         return self.depth_vars.values()
+
+    def get_path_var(self, v):
+        for j in range(self.num_paths):
+            if self.solver.Value(self.node_to_path[v][j]) == 1:
+                #print(v, j)
+                return j
+        return -1
 
     def validate(self):
         if len(self.edges) != self.num_nodes - self.num_paths:
@@ -188,26 +195,26 @@ class GameSolver:
         Find the optimal solution to the initialized instance.
         Returns the DBST edges as a list of coordinate tuple tuples ((x1,y1),(x2,y2)).
         """
-        solver = cp_model.CpSolver()
-        self.status = solver.Solve(self.model)
+        self.solver = cp_model.CpSolver()
+        self.status = self.solver.Solve(self.model)
         if self.status == cp_model.INFEASIBLE:
             raise RuntimeError("The model was classified infeasible by the solver!")
         if self.status != cp_model.OPTIMAL:
             raise RuntimeError("Unexpected status after running solver!")
 
-        edges = [(v, w) for (v, w), x_vw in self.edge_vars.items() if solver.Value(x_vw) != 0]
+        edges = [(v, w) for (v, w), x_vw in self.edge_vars.items() if self.solver.Value(x_vw) != 0]
 
         """
         use nx.connected_components to find the connected components of the graph, which are the paths we want
         it returns a set of nodes, cause it is a set, so we have to resort the nodes according to the depth
         """
 
-        nodes_paths = [sorted(nodes_path, key=lambda x: solver.Value(self.depth_vars[x])) for nodes_path in
+        nodes_paths = [sorted(nodes_path, key=lambda x: self.solver.Value(self.depth_vars[x])) for nodes_path in
                        nx.connected_components(nx.Graph(edges))]
         paths = [[(sorted_node_path[i], sorted_node_path[i + 1]) for i in range(len(sorted_node_path) - 1)] for
                  sorted_node_path in nodes_paths]
 
-        self.bottleneck_var_value = solver.Value(self.bottleneck_var)
+        self.bottleneck_var_value = self.solver.Value(self.bottleneck_var)
         self.result = paths
 
         return paths

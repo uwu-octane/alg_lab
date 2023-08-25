@@ -19,10 +19,10 @@ class Game:
         instances = []
         while instance_num > 0:
             try:
-                solver = GameSolver(grid, start_points, bottleneck)
-                solver.solve()
-                instance = solver.get_instance()
-                self.bottleneck = solver.get_bottleneck()
+                self.solver = GameSolver(grid, start_points, bottleneck)
+                self.solver.solve()
+                instance = self.solver.get_instance()
+                self.bottleneck = self.solver.get_bottleneck()
                 instances.append(instance)
                 instance_num -= 1
             except RuntimeError:
@@ -62,6 +62,7 @@ class Game:
         self.ui.clear_all()
         self.g.reset_solution_sign()
         self.g.start_points = []
+        self.g.solver = None
         self.g.graph_surface.fill((255, 255, 255))
         self.game_instance_enterd = False
         for edge in self.g.edges_shadow:
@@ -95,7 +96,7 @@ class Game:
                 else:
                     self.pairs = int(self.pairs)
                     self.__gen_game_instance(1, self.pairs, self.ui.tp_checkbox_bottleneck.get_value())
-                    self.g.start_points = self.game_instance[0][0]
+                    self.g.set_solver(self.solver)
                     self.g.draw(self.screen)
                     self.game_instance_enterd = True
 
@@ -121,8 +122,6 @@ class Game:
 
     def __init__(self):
         # initialize the pygame module
-        self.track_mouse = set()
-        self.grid = None
         pygame.init()
         # load and set the logo
         pygame.display.set_caption("minimal program")
@@ -153,6 +152,7 @@ class Game:
         self.game_instance = None
         self.game_instance_in_cache = []
         self.game_instance_enterd = False  # Has the use enterend instance settings?
+        self.solver = None
         # self.read_game_instance()
 
         self.events = None

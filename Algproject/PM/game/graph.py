@@ -20,11 +20,13 @@ class Graph:
         self.width = width
         self.height = height
         self.nodes = nodes
+        self.solver = None
         """
         we shadow every edge in this map, if the edge is shown, the value is 1, otherwise 0
         as a final result we send the positive edges to a solver for validation 
         """
         self.edges_shadow = {}
+        self.edges_color = {}
         self.solution_sign = False  # to decide present solution from user or Solver
         self.__generate_graph()
         self.__shadow_edges()
@@ -39,7 +41,6 @@ class Graph:
                                             j * self.cell_height + self.cell_height / 2), 5) for j in
                          range(self.nodes[1])]
                         for i in range(self.nodes[0])]
-        self.lines = []
         self.edges = []
         self.cells_coor = [(i, j) for j in range(self.nodes[1]) for i in range(self.nodes[0])]
         self.start_points = []
@@ -59,11 +60,39 @@ class Graph:
             for rect in cell:
                 pygame.draw.rect(self.graph_surface, (0, 0, 0, 0), rect, 1)
 
-        for circle in self.circles:
-            for c in circle:
-                if c not in self.start_points:
-                    pygame.draw.circle(self.graph_surface, c.color, c.pos, c.radius)
+        for cell_coor in self.cells_coor:
+            if self.start_points:
+                if cell_coor not in self.start_points:
+                    cell_coor = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
+                    pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coor, 5)
+            else:
+                cell_coor = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
+                pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coor, 5)
 
+        if self.solver:
+            self.start_points = self.solver.get_start_points()
+            self.solution_instance = self.solver.get_instance()
+            for point in self.start_points:
+                point_coor = self.get_real_cell_coordination(point[0], point[1])
+                point_path_num = self.solver.get_path_var(point)
+                pygame.draw.circle(self.graph_surface, color_list[point_path_num], point_coor, 10)
+            if self.solution_sign:
+                for path in self.solver.get_result():
+                    for edge in path:
+                        self.edges_shadow[edge] = True
+                        start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
+                        end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
+                        edge_path_num = self.solver.get_path_var(edge[0])
+                        pygame.draw.line(self.graph_surface,color_list[edge_path_num], start, end, 4)
+
+        if not self.solution_sign:
+            for edge, is_shown in self.edges_shadow.items():
+                start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
+                end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
+                if is_shown:
+                    pygame.draw.line(self.graph_surface, (255, 0, 0), start, end, 2)
+
+        """
         if self.start_points:
             i = 1
             j = 0
@@ -77,18 +106,8 @@ class Graph:
                 i += 1
                 point_coor = self.get_real_cell_coordination(point[0], point[1])
                 pygame.draw.circle(self.graph_surface, color, point_coor, 10)
-
         """
-        for cell_coor in self.cells_coor:
-            cell_coordination = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
-            pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coordination, 5)
         """
-        if not self.solution_sign:
-            for edge, is_shown in self.edges_shadow.items():
-                start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
-                end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
-                if is_shown:
-                    pygame.draw.line(self.graph_surface, (255, 0, 0), start, end, 2)
         else:
             i = 0
             for path in self.solution_instance[0][1]:
@@ -103,16 +122,9 @@ class Graph:
                         start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
                         end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
                         pygame.draw.line(self.graph_surface, color_for_path, start, end, 4)
+        """
         self.graph_surface.unlock()
         surface.blit(self.graph_surface, (400, 0))
-
-    def add_line(self, start, end):
-        """
-        self.lines.append((self.get_cell_center(start[0], start[1]),
-                           self.get_cell_center(end[0], end[1])))
-        """
-
-        self.lines.append((start, end))
 
     def remove_line(self, surface):
         self.graph_surface.fill((255, 255, 255))
@@ -202,3 +214,6 @@ class Graph:
                 edge2 = (point_list[i + 1], point_list[i])
                 self.edges_shadow[edge1] = False
                 self.edges_shadow[edge2] = False
+
+    def set_solver(self, solver):
+        self.solver = solver
