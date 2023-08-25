@@ -4,6 +4,7 @@ from Algproject.PM.game.constants import color_list
 from Algproject.PM.path_match.util import *
 from Algproject.PM.game.tools import *
 
+
 class Circle:
 
     def __init__(self, color, pos, radius):
@@ -67,8 +68,6 @@ class Graph:
                 pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coor, 5)
 
         if solver:
-            #self.start_points = self.solver.get_start_points()
-            # self.solution_instance = self.solver.get_instance()
             for point in solver.get_start_points():
                 point_coor = self.get_real_cell_coordination(point)
                 point_path_num = solver.get_path_var(point)
@@ -89,37 +88,6 @@ class Graph:
                 if is_shown:
                     pygame.draw.line(self.graph_surface, (255, 0, 0), start, end, 2)
 
-        """
-        if self.start_points:
-            i = 1
-            j = 0
-            for point in self.start_points:
-                if j < 15:
-                    color = color_list[j]
-                else:
-                    color = color_list[14]
-                if i % 2 == 0:
-                    j += 1
-                i += 1
-                point_coor = self.get_real_cell_coordination(point[0], point[1])
-                pygame.draw.circle(self.graph_surface, color, point_coor, 10)
-        """
-        """
-        else:
-            i = 0
-            for path in self.solution_instance[0][1]:
-                if i < 15:
-                    color_for_path = color_list[i]
-                    i += 1
-                else:
-                    color_for_path = color_list[14]
-                for edge, is_shown in self.edges_shadow.items():
-                    if self.is_edge_in_path(edge, path):
-                        self.edges_shadow[edge] = True
-                        start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
-                        end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
-                        pygame.draw.line(self.graph_surface, color_for_path, start, end, 4)
-        """
         self.graph_surface.unlock()
         surface.blit(self.graph_surface, (400, 0))
 

@@ -55,6 +55,7 @@ class MyTestCase(unittest.TestCase):
                 G.add_edge(edge[0], edge[1])
         start_points = instance[0]
         solver = GameSolver(G, start_points)
+        solver.solve()
         solver.constraints_test()
 
     def test_simple(self):

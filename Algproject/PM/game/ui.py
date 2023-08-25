@@ -23,7 +23,6 @@ class Ui:
         self.tp_bottleneck = tp.Labelled("Bottleneck:", self.tp_bottleneck_input)
         self.tp_valid_input = tp.TextInput("      ")
         self.tp_valid = tp.Labelled("Valid:", self.tp_valid_input)
-
         self.tp_button_apply = tp.Button("Apply")
         self.tp_button_clear = tp.Button("Clear")
         self.tp_button_check = tp.Button("Check")
@@ -70,3 +69,4 @@ class Ui:
         self.alert.set_size((200, 200))
         self.alert.set_bck_color((150, 150, 150))
         self.alert.launch_nonblocking()
+

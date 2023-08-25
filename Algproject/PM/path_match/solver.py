@@ -9,8 +9,6 @@ class GameSolver:
         self.edge_vars = {(v, w): self.model.NewBoolVar(f'x_{v},{w}')
                           for v in self.nodes for w in list(self.graph.neighbors(v))}
 
-        #self.node_vars = {v: self.model.NewBoolVar(f'x_{v}') for v in self.nodes}
-
         self.node_to_path = {n: tuple(self.model.NewBoolVar(f'{n}_{i}')
                                       for i in range(self.num_paths)) for n in self.nodes}
 
@@ -27,12 +25,10 @@ class GameSolver:
 
     def constraints_test(self):
         # print(self.node_to_path)
-        solver = cp_model.CpSolver()
-        status = solver.Solve(self.model)
 
         for v in self.start_points:
             for j in range(self.num_paths):
-                if solver.Value(self.node_to_path[v][j]) == 1:
+                if self.solver.Value(self.node_to_path[v][j]) == 1:
                     print(v, j)
                     continue
 
@@ -59,9 +55,7 @@ class GameSolver:
             # Only use every second node to select one of the start and end points to be on the path
             if i % 2 == 0:
                 self.model.Add(self.node_to_path[self.start_points[i]][count] == 1)
-                self.model.Add(
-                    self.node_to_path[self.start_points[i]][count] == self.node_to_path[self.start_points[i + 1]][
-                        count])
+                self.model.Add(self.node_to_path[self.start_points[i + 1]][count] == 1)
                 count += 1
 
         """

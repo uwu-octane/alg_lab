@@ -13,24 +13,23 @@ class Game:
     create some game instances
     """
 
-    def __gen_game_instance(self, instance_num, pairs, bottleneck):
+    def __gen_game_instance(self, pairs, bottleneck):
         grid = gen_grid(self.g.get_graph_nodes()[0], self.g.get_graph_nodes()[1])
         start_points = gen_start_points(2 * pairs, grid)
-        instances = []
-        while instance_num > 0:
+        #instances = []
+        while True:
             try:
                 self.solver = GameSolver(grid, start_points, bottleneck)
                 self.solver.solve()
-                instance = self.solver.get_instance()
                 self.bottleneck = self.solver.get_bottleneck()
-                instances.append(instance)
-                instance_num -= 1
-
+                break
+                #instances.append(instance)
+                #instance_num -= 1
             except RuntimeError:
                 # print("RuntimeError")
                 start_points = gen_start_points(2 * pairs, grid)
                 continue
-        self.game_instance = instances
+        self.game_instance = self.solver.get_instance()
 
     def validate(self):
         if self.g.edges_shadow:
@@ -44,7 +43,7 @@ class Game:
             cells = self.g.cells_coor
             for cell in cells:
                 g.add_node(cell)
-            #print(self.g.start_points)
+            # print(self.g.start_points)
             solver = GameSolver(g, self.solver.get_start_points(), self.ui.tp_checkbox_bottleneck.get_value())
             return solver.validate()
 
@@ -94,8 +93,8 @@ class Game:
                     self.pairs = max_pairs
                 else:
                     self.pairs = int(self.pairs)
-                    self.__gen_game_instance(1, self.pairs, self.ui.tp_checkbox_bottleneck.get_value())
-                    #self.g.set_solver(self.solver)
+                    self.__gen_game_instance(self.pairs, self.ui.tp_checkbox_bottleneck.get_value())
+                    # self.g.set_solver(self.solver)
                     self.g.draw(self.screen, self.solver)
                     self.game_instance_enterd = True
 
@@ -216,7 +215,7 @@ class Game:
             self.screen.fill((255, 255, 255))
             self.ui.draw(self.screen)
             if self.solver:
-                self.g.draw(self.screen,self.solver)
+                self.g.draw(self.screen, self.solver)
             else:
                 self.g.draw(self.screen)
 
