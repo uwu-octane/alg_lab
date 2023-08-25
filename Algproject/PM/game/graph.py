@@ -4,7 +4,6 @@ from Algproject.PM.game.constants import color_list
 from Algproject.PM.path_match.util import *
 from Algproject.PM.game.tools import *
 
-
 class Circle:
 
     def __init__(self, color, pos, radius):
@@ -23,7 +22,6 @@ class Graph:
         self.height = height
         self.nodes = nodes
 
-        self.solver = None
         """
         we shadow every edge in this map, if the edge is shown, the value is 1, otherwise 0
         as a final result we send the positive edges to a solver for validation 
@@ -44,10 +42,8 @@ class Graph:
                          range(self.nodes[1])]
                         for i in range(self.nodes[0])]
         self.cells_coor = [(i, j) for j in range(self.nodes[1]) for i in range(self.nodes[0])]
-        self.start_points = []
-        self.solution_instance = []
 
-    def draw(self, surface):
+    def draw(self, surface, solver=None):
         self.graph_surface.lock()
         """
         for i in range(self.nodes[0]):
@@ -62,28 +58,28 @@ class Graph:
                 pygame.draw.rect(self.graph_surface, (0, 0, 0, 0), rect, 1)
 
         for cell_coor in self.cells_coor:
-            if self.start_points:
-                if cell_coor not in self.start_points:
+            if solver:
+                if cell_coor not in solver.get_start_points():
                     cell_coor = self.get_real_cell_coordination(cell_coor)
                     pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coor, 5)
             else:
                 cell_coor = self.get_real_cell_coordination(cell_coor)
                 pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coor, 5)
 
-        if self.solver:
-            self.start_points = self.solver.get_start_points()
+        if solver:
+            #self.start_points = self.solver.get_start_points()
             # self.solution_instance = self.solver.get_instance()
-            for point in self.start_points:
+            for point in solver.get_start_points():
                 point_coor = self.get_real_cell_coordination(point)
-                point_path_num = self.solver.get_path_var(point)
+                point_path_num = solver.get_path_var(point)
                 pygame.draw.circle(self.graph_surface, color_list[point_path_num], point_coor, 10)
             if self.solution_sign:
-                for path in self.solver.get_result():
+                for path in solver.get_result():
                     for edge in path:
                         self.edges_shadow[edge] = True
                         start = self.get_real_cell_coordination(edge[0])
                         end = self.get_real_cell_coordination(edge[1])
-                        edge_path_num = self.solver.get_path_var(edge[0])
+                        edge_path_num = solver.get_path_var(edge[0])
                         pygame.draw.line(self.graph_surface, color_list[edge_path_num], start, end, 4)
 
         if not self.solution_sign:
@@ -169,11 +165,8 @@ class Graph:
         return x, y
 
     # this function is for presenting a original revolution
-    def draw_originalpath(self, game_instance):
-        # when only one solution in instance.jsonl, just using the "game_instance_in_cache[1]"
-        # temp_point = game_instance_in_cache[1].copy()
+    def set_solution_sign(self):
         self.solution_sign = True
-        self.solution_instance = game_instance
 
     def reset_solution_sign(self):
         self.solution_sign = False

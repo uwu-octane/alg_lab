@@ -7,8 +7,6 @@ from Algproject.PM.game.ui import Ui
 from Algproject.PM.path_match.solver import GameSolver
 from Algproject.PM.path_match.util import *
 
-game_solver = None
-
 
 class Game:
     """
@@ -27,6 +25,7 @@ class Game:
                 self.bottleneck = self.solver.get_bottleneck()
                 instances.append(instance)
                 instance_num -= 1
+
             except RuntimeError:
                 # print("RuntimeError")
                 start_points = gen_start_points(2 * pairs, grid)
@@ -45,8 +44,8 @@ class Game:
             cells = self.g.cells_coor
             for cell in cells:
                 g.add_node(cell)
-            print(self.g.start_points)
-            solver = GameSolver(g, self.g.start_points, self.ui.tp_checkbox_bottleneck.get_value())
+            #print(self.g.start_points)
+            solver = GameSolver(g, self.solver.get_start_points(), self.ui.tp_checkbox_bottleneck.get_value())
             return solver.validate()
 
     def read_game_instance(self):
@@ -96,8 +95,8 @@ class Game:
                 else:
                     self.pairs = int(self.pairs)
                     self.__gen_game_instance(1, self.pairs, self.ui.tp_checkbox_bottleneck.get_value())
-                    self.g.set_solver(self.solver)
-                    self.g.draw(self.screen)
+                    #self.g.set_solver(self.solver)
+                    self.g.draw(self.screen, self.solver)
                     self.game_instance_enterd = True
 
     def ui_check_button_callback(self):
@@ -114,8 +113,8 @@ class Game:
 
     def ui_solve_button_callback(self):
         if self.game_instance_enterd:
-            self.g.draw_originalpath(self.game_instance)
-            self.g.draw(self.screen)
+            self.g.set_solution_sign()
+            self.g.draw(self.screen, self.solver)
             bottleneck = str(self.bottleneck)
             self.ui.tp_bottleneck.set_value(bottleneck)
 
@@ -216,7 +215,10 @@ class Game:
             # Drawing
             self.screen.fill((255, 255, 255))
             self.ui.draw(self.screen)
-            self.g.draw(self.screen)
+            if self.solver:
+                self.g.draw(self.screen,self.solver)
+            else:
+                self.g.draw(self.screen)
 
             pygame.display.flip()
             clock.tick(60)
