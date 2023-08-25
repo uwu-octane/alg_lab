@@ -15,18 +15,19 @@ class Circle:
 class Graph:
 
     def __init__(self, width, height, nodes):
+        # graph_surface
         self.graph_surface = pygame.Surface((width, height)).convert_alpha()
         self.graph_surface.fill((255, 255, 255))
         self.width = width
         self.height = height
         self.nodes = nodes
+
         self.solver = None
         """
         we shadow every edge in this map, if the edge is shown, the value is 1, otherwise 0
         as a final result we send the positive edges to a solver for validation 
         """
         self.edges_shadow = {}
-        self.edges_color = {}
         self.solution_sign = False  # to decide present solution from user or Solver
         self.__generate_graph()
         self.__shadow_edges()
@@ -71,7 +72,7 @@ class Graph:
 
         if self.solver:
             self.start_points = self.solver.get_start_points()
-            self.solution_instance = self.solver.get_instance()
+            # self.solution_instance = self.solver.get_instance()
             for point in self.start_points:
                 point_coor = self.get_real_cell_coordination(point[0], point[1])
                 point_path_num = self.solver.get_path_var(point)
@@ -83,7 +84,7 @@ class Graph:
                         start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
                         end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
                         edge_path_num = self.solver.get_path_var(edge[0])
-                        pygame.draw.line(self.graph_surface,color_list[edge_path_num], start, end, 4)
+                        pygame.draw.line(self.graph_surface, color_list[edge_path_num], start, end, 4)
 
         if not self.solution_sign:
             for edge, is_shown in self.edges_shadow.items():

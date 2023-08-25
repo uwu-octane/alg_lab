@@ -36,7 +36,7 @@ class GameSolver:
                     print(v, j)
                     continue
 
-    def __single_selection_constraint(self):
+    def __edge_number_constraint(self):
         """
         Cause every node has to be used once, and the path num is known, so we can get the number of edges in graph
         let |path| be the number of nodes in a path, then |path| - 1 = |edges| in this case
@@ -59,7 +59,9 @@ class GameSolver:
             # Only use every second node to select one of the start and end points to be on the path
             if i % 2 == 0:
                 self.model.Add(self.node_to_path[self.start_points[i]][count] == 1)
-                self.model.Add(self.node_to_path[self.start_points[i]][count] == self.node_to_path[self.start_points[i + 1]][count])
+                self.model.Add(
+                    self.node_to_path[self.start_points[i]][count] == self.node_to_path[self.start_points[i + 1]][
+                        count])
                 count += 1
 
         """
@@ -138,7 +140,7 @@ class GameSolver:
         if bottleneck:
             self.__add_bottleneck_constraints()
         self.__add_degree_constraints()
-        self.__single_selection_constraint()
+        self.__edge_number_constraint()
         self.__forbid_bidirectional_edges()
         self.__add_depth_constraints()
         self.__path_selection_constraint()
@@ -147,6 +149,7 @@ class GameSolver:
         self.result = None
         self.status = None
         self.solver = None
+
     def get_start_points(self):
         return self.start_points
 
@@ -170,7 +173,7 @@ class GameSolver:
     def get_path_var(self, v):
         for j in range(self.num_paths):
             if self.solver.Value(self.node_to_path[v][j]) == 1:
-                #print(v, j)
+                # print(v, j)
                 return j
         return -1
 

@@ -114,7 +114,6 @@ class Game:
 
     def ui_solve_button_callback(self):
         if self.game_instance_enterd:
-            self.ui_clear_button_callback()
             self.g.draw_originalpath(self.game_instance)
             self.g.draw(self.screen)
             bottleneck = str(self.bottleneck)
