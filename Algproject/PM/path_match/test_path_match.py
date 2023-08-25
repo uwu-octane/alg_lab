@@ -1,3 +1,4 @@
+import math
 import unittest
 
 from .solver import GameSolver
@@ -20,7 +21,7 @@ class MyTestCase(unittest.TestCase):
         solver = None
         while True:
             try:
-                solver = GameSolver(G, start)
+                solver = GameSolver(G, start, True)
                 paths = solver.solve()
                 break
             except RuntimeError:
@@ -32,7 +33,8 @@ class MyTestCase(unittest.TestCase):
         # print(start[1])
         # draw_result_edges(edges, G)
         print(solver.get_start_points())
-        draw_result_colorful(paths, True)
+        store_in_json(solver.get_start_points(), paths)
+        draw_result_colorful(paths, False)
         # draw_result_edges(edges)
 
     def test_read_jsonl(self):
@@ -54,6 +56,14 @@ class MyTestCase(unittest.TestCase):
         start_points = instance[0]
         solver = GameSolver(G, start_points)
         solver.constraints_test()
+
+    def test_simple(self):
+        p = 11
+        g = 2
+        for i in range(1, 15):
+            if math.pow(g,i) % p == 1:
+                print(i)
+        print(math.log(10, 2))
 
 
 if __name__ == '__main__':

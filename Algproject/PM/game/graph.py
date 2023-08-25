@@ -57,7 +57,7 @@ class Graph:
         """
         for cell in self.cells:
             for rect in cell:
-                pygame.draw.rect(self.graph_surface, (0, 0, 0), rect, 1)
+                pygame.draw.rect(self.graph_surface, (0, 0, 0, 0), rect, 1)
 
         for circle in self.circles:
             for c in circle:

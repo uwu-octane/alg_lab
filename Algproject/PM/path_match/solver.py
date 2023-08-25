@@ -11,7 +11,6 @@ class GameSolver:
 
         self.node_vars = {v: self.model.NewBoolVar(f'x_{v}') for v in self.nodes}
 
-        # not working
         self.node_to_path = {n: tuple(self.model.NewBoolVar(f'{n}_{i}')
                                       for i in range(self.num_paths)) for n in self.nodes}
 
@@ -33,14 +32,15 @@ class GameSolver:
 
         for v in self.start_points:
             for j in range(self.num_paths):
-                print(solver.Value(self.node_to_path[v][j]))
+                if solver.Value(self.node_to_path[v][j]) == 1:
+                    print(v, j)
+                    continue
 
     def __single_selection_constraint(self):
         """
         Enforce that each node has be used once
         """
-        self.model.Add(sum(self.node_vars.values()) == self.num_nodes)
-
+        #self.model.Add(sum(self.node_vars.values()) == self.num_nodes)
         """
         Cause every node has to be used once, and the path num is known, so we can get the number of edges in graph
         let |path| be the number of nodes in a path, then |path| - 1 = |edges| in this case
@@ -55,27 +55,22 @@ class GameSolver:
         for v in self.nodes:
             self.model.Add(sum(self.node_to_path[v][i] for i in range(self.num_paths)) == 1)
 
+        """
+        give every start_points a path var and ensure the start, end of a path share the same var
+        """
         count = 0
         for i in range(len(self.start_points)):
             if i % 2 == 0:
                 self.model.Add(self.node_to_path[self.start_points[i]][count] == 1)
+                self.model.Add(self.node_to_path[self.start_points[i]][count] == self.node_to_path[self.start_points[i + 1]][count])
                 count += 1
-                for j in range(self.num_paths):
-                    self.model.Add(
-                        self.node_to_path[self.start_points[i]][j] == self.node_to_path[self.start_points[i + 1]][j])
 
+        """
+        for connected nodes we set the same path var
+        """
         for (v, w), x_vw in self.edge_vars.items():
             for i in range(self.num_paths):
                 self.model.Add(self.node_to_path[v][i] == self.node_to_path[w][i]).OnlyEnforceIf(x_vw)
-
-        # self.model.Add(self.node_to_path[self.start_points[0]][0] == 1)
-        """
-        for i in range(len(self.start_points)):
-            index = 0
-            if i % 2 == 0:
-                self.model.Add(self.node_to_path[self.start_points[i]][index] == 1)
-                index += 1
-        """
 
     def __add_degree_constraints(self):
         """
@@ -104,10 +99,6 @@ class GameSolver:
     def __forbid_bidirectional_edges(self):
         """
         Add the (redundant) constraints x_{v,w} -> !x_{w, v}.
-
-        for v in self.nodes:
-            for w in list(self.graph.neighbors(v)):
-                self.model.AddBoolOr([self.edge_vars[v, w].Not(), self.edge_vars[w, v].Not()])
         """
         for v, w in self.edge_vars:
             self.model.AddBoolOr([self.edge_vars[v, w].Not(), self.edge_vars[w, v].Not()])
@@ -135,12 +126,11 @@ class GameSolver:
             """
             self.model.Add(self.depth_vars[w] == self.depth_vars[v] + 1).OnlyEnforceIf(x_vw)
 
-    def __init__(self, graph, start_points, bottleneck):
+    def __init__(self, graph, start_points, bottleneck=True):
         self.graph = graph
         self.nodes = list(self.graph.nodes)
         self.edges = list(self.graph.edges)
 
-        # self.start_points_paar = list({(start_points[i], start_points[i + 1]) for i in range(0, len(start_points), 2)})
         self.start_points = start_points
 
         self.num_nodes = len(self.graph.nodes)
@@ -184,7 +174,10 @@ class GameSolver:
         if len(self.edges) != self.num_nodes - self.num_paths:
             print("The number of edges is not correct!")
             return False
-        self.solve()
+        try:
+            self.solve()
+        except RuntimeError:
+            pass
         if self.status == cp_model.INFEASIBLE:
             print("The model was classified infeasible by the solver!")
             return False

@@ -39,7 +39,7 @@ class Game:
                 if is_shown:
                     edge_copy.add(edge)
             g.add_edges_from(list(edge_copy))
-            print(len(g.edges))
+            #print(len(g.edges))
             cells = self.g.cells_coor
             for cell in cells:
                 g.add_node(cell)
@@ -120,6 +120,8 @@ class Game:
 
     def __init__(self):
         # initialize the pygame module
+        self.track_mouse = set()
+        self.grid = None
         pygame.init()
         # load and set the logo
         pygame.display.set_caption("minimal program")
@@ -165,6 +167,7 @@ class Game:
             self.clock.tick(60)
             self.events = pygame.event.get()
             self.mouse_rel = pygame.mouse.get_rel()
+
             for event in self.events:
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -195,7 +198,6 @@ class Game:
                     self.remove_move_points = []
                     click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                     click_pos = self.g.get_simple_cell_coordination(click_pos)
-
                     if check_is_in_cell(click_pos, self.g.cells_coor):
                         end_node = click_pos
                         print(end_node)
