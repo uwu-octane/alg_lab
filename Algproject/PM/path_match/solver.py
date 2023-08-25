@@ -9,7 +9,7 @@ class GameSolver:
         self.edge_vars = {(v, w): self.model.NewBoolVar(f'x_{v},{w}')
                           for v in self.nodes for w in list(self.graph.neighbors(v))}
 
-        self.node_vars = {v: self.model.NewBoolVar(f'x_{v}') for v in self.nodes}
+        #self.node_vars = {v: self.model.NewBoolVar(f'x_{v}') for v in self.nodes}
 
         self.node_to_path = {n: tuple(self.model.NewBoolVar(f'{n}_{i}')
                                       for i in range(self.num_paths)) for n in self.nodes}

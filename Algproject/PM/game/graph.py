@@ -2,6 +2,7 @@ import pygame
 
 from Algproject.PM.game.constants import color_list
 from Algproject.PM.path_match.util import *
+from Algproject.PM.game.tools import *
 
 
 class Circle:
@@ -42,7 +43,6 @@ class Graph:
                                             j * self.cell_height + self.cell_height / 2), 5) for j in
                          range(self.nodes[1])]
                         for i in range(self.nodes[0])]
-        self.edges = []
         self.cells_coor = [(i, j) for j in range(self.nodes[1]) for i in range(self.nodes[0])]
         self.start_points = []
         self.solution_instance = []
@@ -64,32 +64,32 @@ class Graph:
         for cell_coor in self.cells_coor:
             if self.start_points:
                 if cell_coor not in self.start_points:
-                    cell_coor = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
+                    cell_coor = self.get_real_cell_coordination(cell_coor)
                     pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coor, 5)
             else:
-                cell_coor = self.get_real_cell_coordination(cell_coor[0], cell_coor[1])
+                cell_coor = self.get_real_cell_coordination(cell_coor)
                 pygame.draw.circle(self.graph_surface, (0, 0, 0), cell_coor, 5)
 
         if self.solver:
             self.start_points = self.solver.get_start_points()
             # self.solution_instance = self.solver.get_instance()
             for point in self.start_points:
-                point_coor = self.get_real_cell_coordination(point[0], point[1])
+                point_coor = self.get_real_cell_coordination(point)
                 point_path_num = self.solver.get_path_var(point)
                 pygame.draw.circle(self.graph_surface, color_list[point_path_num], point_coor, 10)
             if self.solution_sign:
                 for path in self.solver.get_result():
                     for edge in path:
                         self.edges_shadow[edge] = True
-                        start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
-                        end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
+                        start = self.get_real_cell_coordination(edge[0])
+                        end = self.get_real_cell_coordination(edge[1])
                         edge_path_num = self.solver.get_path_var(edge[0])
                         pygame.draw.line(self.graph_surface, color_list[edge_path_num], start, end, 4)
 
         if not self.solution_sign:
             for edge, is_shown in self.edges_shadow.items():
-                start = self.get_real_cell_coordination(edge[0][0], edge[0][1])
-                end = self.get_real_cell_coordination(edge[1][0], edge[1][1])
+                start = self.get_real_cell_coordination(edge[0])
+                end = self.get_real_cell_coordination(edge[1])
                 if is_shown:
                     pygame.draw.line(self.graph_surface, (255, 0, 0), start, end, 2)
 
@@ -148,9 +148,9 @@ class Graph:
     adjusted with the surface size
     """
 
-    def get_real_cell_coordination(self, i, j):
-        center_x = i * self.cell_width + self.cell_width / 2
-        center_y = j * self.cell_height + self.cell_height / 2
+    def get_real_cell_coordination(self, coor):
+        center_x = coor[0] * self.cell_width + self.cell_width / 2
+        center_y = coor[1] * self.cell_height + self.cell_height / 2
         return center_x, center_y
 
     """
@@ -178,43 +178,34 @@ class Graph:
     def reset_solution_sign(self):
         self.solution_sign = False
 
-    def is_edge_in_path(self, edge, path):
-        sub_segments = [(edge[i], edge[i + 1]) for i in range(len(edge) - 1)]
-
-        for sub_segment in sub_segments:
-            found = False
-            for segment in path:
-                if (sub_segment[0] == segment[0] and sub_segment[1] == segment[1]) or \
-                        (sub_segment[0] == segment[1] and sub_segment[1] == segment[0]):
-                    found = True
-                    break
-            if not found:
-                return False
-        return True
-
-    def are_adjacent(self, point1, point2):
+    def __are_adjacent(self, point1, point2):
         x1, y1 = point1
         x2, y2 = point2
 
-        # 判断两个点是否在横向或纵向上相邻
+        # check if the two points are adjacent
         if abs(x1 - x2) + abs(y1 - y2) == 1:
             return True
         else:
             return False
 
-    def change_move_edge_in_shadow(self, point_list):
-        for i in range(len(point_list) - 1):
-            if self.are_adjacent(point_list[i], point_list[i + 1]):
-                edge = (point_list[i], point_list[i + 1])
-                self.edges_shadow[edge] = True
+    def connect_edges(self, point_list):
+        edges = self.__points_to_edges(point_list)
+        for edge in edges:
+            self.edges_shadow[edge] = True
 
-    def change_move_edge_not_in_shadow(self, point_list):
-        for i in range(len(point_list) - 1):
-            if self.are_adjacent(point_list[i], point_list[i + 1]):
-                edge1 = (point_list[i], point_list[i + 1])
-                edge2 = (point_list[i + 1], point_list[i])
-                self.edges_shadow[edge1] = False
-                self.edges_shadow[edge2] = False
+    def cancel_edges(self, point_list):
+        edges = self.__points_to_edges(point_list)
+        for edge in edges:
+            self.edges_shadow[edge] = False
+            self.edges_shadow[(edge[1], edge[0])] = False
 
     def set_solver(self, solver):
         self.solver = solver
+
+    def __points_to_edges(self, points):
+        edges = []
+        for i in range(len(points) - 1):
+            if self.__are_adjacent(points[i], points[i + 1]):
+                edge = (points[i], points[i + 1])
+                edges.append(edge)
+        return edges

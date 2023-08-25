@@ -7,6 +7,8 @@ from Algproject.PM.game.ui import Ui
 from Algproject.PM.path_match.solver import GameSolver
 from Algproject.PM.path_match.util import *
 
+game_solver = None
+
 
 class Game:
     """
@@ -39,7 +41,7 @@ class Game:
                 if is_shown:
                     edge_copy.add(edge)
             g.add_edges_from(list(edge_copy))
-            #print(len(g.edges))
+            # print(len(g.edges))
             cells = self.g.cells_coor
             for cell in cells:
                 g.add_node(cell)
@@ -57,8 +59,6 @@ class Game:
 
     def ui_clear_button_callback(self):
         # TODO: Clear UI element's content， finished
-        self.move_points = []
-        self.remove_move_points = []
         self.ui.clear_all()
         self.g.reset_solution_sign()
         self.g.start_points = []
@@ -139,10 +139,12 @@ class Game:
         self.ui.tp_button_solve._at_click = self.ui_solve_button_callback
         self.clock = pygame.time.Clock()
         self.running = False
-        self.drawing_curve = False  # to estimate whether we draw many edge in one time
+        self.mouse_clicked = False
         self.left_or_right_click = False
-        self.move_points = []
-        self.remove_move_points = []
+        """
+        this array is to maintain the mouse motion when the user is drawing a path
+        """
+        self.tracking_mouse_motion = []
         """
         any instance is always in form (start_points, path)
         where start_points is a list of points (x, y) and path is a list of paths [path1, path2, ...]
@@ -161,8 +163,6 @@ class Game:
         clock = pygame.time.Clock()
         self.running = True
         # main loop
-        start_node = None
-        end_node = None
         while self.running:
             self.clock.tick(60)
             self.events = pygame.event.get()
@@ -171,71 +171,43 @@ class Game:
             for event in self.events:
                 if event.type == pygame.QUIT:
                     self.running = False
+                    """
+                    hold left mouse button to draw edges
+                    hold right mouse button to cancel edges
+                    """
                 elif event.type == pygame.MOUSEBUTTONDOWN:  # mouse click
-                    """
-                    event.button == 1 -> left mouse button
-                    event.button == 3 -> right mouse button
-                    """
-                    self.drawing_curve = True
+                    # event.button == 1 -> left mouse button
+                    # event.button == 3 -> right mouse button
+                    # during mouse motion the event.type is not stored, so we use mouse_click to enable a flag
+                    self.mouse_clicked = True
                     if event.button == 1:
                         self.left_or_right_click = True
                     if event.button == 3:
                         self.left_or_right_click = False
 
-                    if event.button == 1 or event.button == 3:
-                        click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
-                        click_pos = self.g.get_simple_cell_coordination(click_pos)
-                        """
-                        check the click position is in the cell or not 
-                        """
-                        if check_is_in_cell(click_pos, self.g.cells_coor):
-                            start_node = click_pos
-                            print(start_node)
-                        pygame.display.update()
                 elif event.type == pygame.MOUSEBUTTONUP:  # mouse click release
-                    self.drawing_curve = False
-                    self.move_points = []
-                    self.remove_move_points = []
-                    click_pos = convert_to_game_coordinates(event.pos, self.g.graph_surface)
-                    click_pos = self.g.get_simple_cell_coordination(click_pos)
-                    if check_is_in_cell(click_pos, self.g.cells_coor):
-                        end_node = click_pos
-                        print(end_node)
-                        edge = (start_node, end_node)
-                        """
-                        consider edge in a grid, e.g. edge extends to top left should not be valid
-                        """
-                        if safe_edge(edge, self.g.edges_shadow):
-                            """
-                            left mouse click to show the edge
-                            """
-                            if event.button == 1:
-                                # self.g.edges_shadow[edge] = 1
-                                pygame.display.update()
-                                """
-                                right mouse click to cancel the edge
-                                """
-                            if event.button == 3:
-                                self.g.edges_shadow[edge] = 0
-                                self.g.edges_shadow[(end_node, start_node)] = 0
-                                self.g.remove_line(self.screen)
-                                pygame.display.update()
+                    """
+                    when button up is caught, we reset the tacking information and mouse_clicked flag
+                    """
+                    self.mouse_clicked = False
+                    self.tracking_mouse_motion = []
+
                 elif event.type == pygame.MOUSEMOTION:
-                    if self.drawing_curve:
+                    if self.mouse_clicked:
                         if self.left_or_right_click:
                             move_point = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                             move_point = self.g.get_simple_cell_coordination(move_point)
-                            if move_point not in self.move_points:
-                                self.move_points.append(move_point)
-                            self.g.change_move_edge_in_shadow(self.move_points)
+
+                            if move_point not in self.tracking_mouse_motion:
+                                self.tracking_mouse_motion.append(move_point)
+                            self.g.connect_edges(self.tracking_mouse_motion)
                         else:
                             move_point = convert_to_game_coordinates(event.pos, self.g.graph_surface)
                             move_point = self.g.get_simple_cell_coordination(move_point)
-                            if move_point not in self.remove_move_points:
-                                self.remove_move_points.append(move_point)
-                            if move_point in self.move_points:
-                                self.move_points.remove(move_point)
-                            self.g.change_move_edge_not_in_shadow(self.remove_move_points)
+
+                            if move_point not in self.tracking_mouse_motion:
+                                self.tracking_mouse_motion.append(move_point)
+                            self.g.cancel_edges(self.tracking_mouse_motion)
                             self.g.remove_line(self.screen)
 
             # UI
