@@ -26,8 +26,9 @@ class Ui:
         self.tp_button_apply = tp.Button("Apply")
         self.tp_button_clear = tp.Button("Clear")
         self.tp_button_check = tp.Button("Check")
+        self.tp_button_read = tp.Button("Read")
         self.tp_button_group = tp.Group(
-            [self.tp_button_apply, self.tp_button_clear, self.tp_button_solve, self.tp_button_check], "h")
+            [self.tp_button_apply, self.tp_button_clear, self.tp_button_solve, self.tp_button_check, self.tp_button_read], "h")
 
         self.tp_instance_box = tp.TitleBox("Instance Settings", [self.tp_width, self.tp_height, self.tp_amount_pairs,
                                                                  self.tp_checkbox_bottleneck], sort_immediately=True)

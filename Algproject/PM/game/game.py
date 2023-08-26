@@ -16,15 +16,15 @@ class Game:
     def __gen_game_instance(self, pairs, bottleneck):
         grid = gen_grid(self.g.get_graph_nodes()[0], self.g.get_graph_nodes()[1])
         start_points = gen_start_points(2 * pairs, grid)
-        #instances = []
+        # instances = []
         while True:
             try:
                 self.solver = GameSolver(grid, start_points, bottleneck)
                 self.solver.solve()
                 self.bottleneck = self.solver.get_bottleneck()
                 break
-                #instances.append(instance)
-                #instance_num -= 1
+                # instances.append(instance)
+                # instance_num -= 1
             except RuntimeError:
                 # print("RuntimeError")
                 start_points = gen_start_points(2 * pairs, grid)
@@ -47,9 +47,11 @@ class Game:
             solver = GameSolver(g, self.solver.get_start_points(), self.ui.tp_checkbox_bottleneck.get_value())
             return solver.validate()
 
-    def read_game_instance(self):
+    def __read_game_instance(self):
         data_list = read_json_lines()
-        self.game_instance_in_cache = handel_json_data(data_list)
+        if data_list:
+            game_instance_in_cache = handel_json_data(data_list)
+            self.game_instance_in_cache = self.__instance_iterator(game_instance_in_cache)
 
     """
     Callback function for the Clear button. Clears all settings made so far
@@ -94,6 +96,8 @@ class Game:
                 else:
                     self.pairs = int(self.pairs)
                     self.__gen_game_instance(self.pairs, self.ui.tp_checkbox_bottleneck.get_value())
+                    store_in_json(self.game_instance[0], self.game_instance[1])
+                    self.__read_game_instance()
                     # self.g.set_solver(self.solver)
                     self.g.draw(self.screen, self.solver)
                     self.game_instance_enterd = True
@@ -117,6 +121,31 @@ class Game:
             bottleneck = str(self.bottleneck)
             self.ui.tp_bottleneck.set_value(bottleneck)
 
+    def ui_read_button_callback(self):
+        try:
+            current_instance = next(self.game_instance_in_cache)
+            g = nx.Graph()
+            edges = []
+            for path in current_instance[1]:
+                edges.extend(path)
+            g.add_edges_from(edges)
+            nodes = list(g.nodes())
+            width = max([node[0] for node in nodes]) + 1
+            height = max([node[1] for node in nodes]) + 1
+            self.solver = GameSolver(g, current_instance[0], self.ui.tp_checkbox_bottleneck.get_value())
+            self.solver.solve()
+            self.bottleneck = self.solver.get_bottleneck()
+            self.g = Graph(800, c.HEIGHT, (width, height))
+            self.game_instance = self.solver.get_instance()
+            self.g.draw(self.screen, self.solver)
+            self.game_instance_enterd = True
+        except StopIteration:
+            pass
+
+    def __instance_iterator(self, game_instance_in_cache):
+        for item in game_instance_in_cache:
+            yield item
+
     def __init__(self):
         # initialize the pygame module
         pygame.init()
@@ -135,6 +164,7 @@ class Game:
         self.ui.tp_button_clear._at_click = self.ui_clear_button_callback
         self.ui.tp_button_check._at_click = self.ui_check_button_callback
         self.ui.tp_button_solve._at_click = self.ui_solve_button_callback
+        self.ui.tp_button_read._at_click = self.ui_read_button_callback
         self.clock = pygame.time.Clock()
         self.running = False
         self.mouse_clicked = False
@@ -152,7 +182,7 @@ class Game:
         self.game_instance_in_cache = []
         self.game_instance_enterd = False  # Has the use enterend instance settings?
         self.solver = None
-        # self.read_game_instance()
+        self.__read_game_instance()
 
         self.events = None
         self.mouse_rel = None
