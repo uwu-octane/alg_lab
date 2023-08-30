@@ -27,9 +27,12 @@ class GameSolver:
         # print(self.node_to_path)
 
         for v in self.start_points:
+            print(self.node_to_path[v])
+
             for j in range(self.num_paths):
+                #print(self.node_to_path[v][j])
                 if self.solver.Value(self.node_to_path[v][j]) == 1:
-                    print(v, j)
+                    #print(v, j)
                     continue
 
     def __edge_number_constraint(self):
@@ -123,6 +126,7 @@ class GameSolver:
         self.graph = graph
         self.nodes = list(self.graph.nodes)
         self.edges = list(self.graph.edges)
+        self.computer_bottleneck = bottleneck
 
         self.start_points = start_points
 
@@ -131,7 +135,7 @@ class GameSolver:
 
         self.model = cp_model.CpModel()
         self.__make_vars()
-        if bottleneck:
+        if self.computer_bottleneck:
             self.__add_bottleneck_constraints()
         self.__add_degree_constraints()
         self.__edge_number_constraint()
@@ -211,10 +215,10 @@ class GameSolver:
         # Combine the nodes sorted by depth to tuples to get edges for each path
         paths = [[(sorted_node_path[i], sorted_node_path[i + 1]) for i in range(len(sorted_node_path) - 1)] for
                  sorted_node_path in nodes_paths]
-        if self.solver.Value(self.bottleneck_var):
+        if self.computer_bottleneck:
             self.bottleneck_var_value = self.solver.Value(self.bottleneck_var)
         else:
-            self.bottleneck_var_value = max([len(path) for path in paths])
+            self.bottleneck_var_value = max(len(path) for path in paths)
         self.result = paths
 
         return paths
