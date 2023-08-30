@@ -63,6 +63,7 @@ class Game:
         self.g.reset_solution_sign()
         self.g.start_points = []
         self.g.solver = None
+        self.game_instance = None
         self.g.graph_surface.fill((255, 255, 255))
         self.game_instance_enterd = False
         for edge in self.g.edges_shadow:
@@ -138,6 +139,7 @@ class Game:
             self.g = Graph(800, c.HEIGHT, (width, height))
             self.game_instance = self.solver.get_instance()
             self.g.draw(self.screen, self.solver)
+            #self.ui.tp_amount_pairs.set_value(str(len(self.game_instance[0])))
             self.game_instance_enterd = True
         except StopIteration:
             pass
