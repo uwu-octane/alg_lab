@@ -120,7 +120,6 @@ class GameSolver:
             self.model.Add(self.depth_vars[w] == self.depth_vars[v] + 1).OnlyEnforceIf(x_vw)
 
     def __init__(self, graph, start_points, bottleneck=True):
-        self.calc_bottleneck = bottleneck
         self.graph = graph
         self.nodes = list(self.graph.nodes)
         self.edges = list(self.graph.edges)
