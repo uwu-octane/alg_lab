@@ -5,10 +5,10 @@ from ortools.sat.python import cp_model
 
 class GameSolver:
     def __make_vars(self):
-
+        # Create edge vars from nodes with its neighbors
         self.edge_vars = {(v, w): self.model.NewBoolVar(f'x_{v},{w}')
                           for v in self.nodes for w in list(self.graph.neighbors(v))}
-
+        # For each path and each node create a bool var that indicated if a node is on that path
         self.node_to_path = {n: tuple(self.model.NewBoolVar(f'{n}_{i}')
                                       for i in range(self.num_paths)) for n in self.nodes}
 
@@ -120,6 +120,7 @@ class GameSolver:
             self.model.Add(self.depth_vars[w] == self.depth_vars[v] + 1).OnlyEnforceIf(x_vw)
 
     def __init__(self, graph, start_points, bottleneck=True):
+        self.calc_bottleneck = bottleneck
         self.graph = graph
         self.nodes = list(self.graph.nodes)
         self.edges = list(self.graph.edges)
@@ -190,7 +191,7 @@ class GameSolver:
     def solve(self):
         """
         Find the optimal solution to the initialized instance.
-        Returns the DBST edges as a list of coordinate tuple tuples ((x1,y1),(x2,y2)).
+        Returns the paths that connect the start and end points
         """
         self.solver = cp_model.CpSolver()
         self.status = self.solver.Solve(self.model)
@@ -198,20 +199,23 @@ class GameSolver:
             raise RuntimeError("The model was classified infeasible by the solver!")
         if self.status != cp_model.OPTIMAL:
             raise RuntimeError("Unexpected status after running solver!")
-
+        # Get selected edges
         edges = [(v, w) for (v, w), x_vw in self.edge_vars.items() if self.solver.Value(x_vw) != 0]
 
         """
         use nx.connected_components to find the connected components of the graph, which are the paths we want
-        it returns a set of nodes, cause it is a set, so we have to resort the nodes according to the depth
+        It returns a set of nodes, cause it is a set, so we have to resort the nodes according to the depth
         """
-
+        # Nodes of paths sorted by depth
         nodes_paths = [sorted(nodes_path, key=lambda x: self.solver.Value(self.depth_vars[x])) for nodes_path in
                        nx.connected_components(nx.Graph(edges))]
+        # Combine the nodes sorted by depth to tuples to get edges for each path
         paths = [[(sorted_node_path[i], sorted_node_path[i + 1]) for i in range(len(sorted_node_path) - 1)] for
                  sorted_node_path in nodes_paths]
-
-        self.bottleneck_var_value = self.solver.Value(self.bottleneck_var)
+        if self.solver.Value(self.bottleneck_var):
+            self.bottleneck_var_value = self.solver.Value(self.bottleneck_var)
+        else:
+            self.bottleneck_var_value = max([len(path) for path in paths])
         self.result = paths
 
         return paths
