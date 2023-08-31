@@ -139,7 +139,7 @@ class GameSolver:
         if self.computer_bottleneck:
             self.__add_bottleneck_constraints()
         self.__add_degree_constraints()
-        self.__edge_number_constraint()
+        # self.__edge_number_constraint()
         self.__forbid_bidirectional_edges()
         self.__add_depth_constraints()
         self.__path_selection_constraint()
