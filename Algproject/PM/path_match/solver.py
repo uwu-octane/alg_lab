@@ -18,7 +18,7 @@ class GameSolver:
 
     def __add_bottleneck_constraints(self):
         """
-        Add the constraint to ensure that the lenght of each path is at most as long as the bottleneck_var
+        Add the constraint to ensure that the length of each path is at most as long as the bottleneck_var
         """
         for v in self.depth_vars.keys():
             self.model.Add(self.bottleneck_var >= self.depth_vars[v])
@@ -70,25 +70,25 @@ class GameSolver:
 
     def __add_degree_constraints(self):
         """
-        Degree contstraint ensure that we have a path
+        Degree constraint ensures that we have a path
         """
-
         for v in self.nodes:
             # "Count" the number of incoming and outgoing edges.
             vin, vout = 0, 0
             """
-            its easier to only consider the neighbors of v, cause this is a grid graph
+            Its easier to only consider the neighbors of v, cause this is a grid graph
             """
             for w in list(self.graph.neighbors(v)):
                 vin += self.edge_vars[w, v]
                 vout += self.edge_vars[v, w]
 
             """
-            For start and end nodes the degree has to be 1. Otherwise the degress has to be 2
+            For start and end nodes the degree has to be 1. Otherwise the degree has to be 2
             """
             if v in self.start_points:
                 self.model.Add(vin + vout == 1)
             else:
+                # In total degree 2
                 self.model.Add(vin == 1)  # exactly one incoming edge
                 self.model.Add(vout == 1)  # exactly one outgoing edge
 
@@ -103,7 +103,7 @@ class GameSolver:
         """
         Add the depth constraints x_{v,w} -> d_w = d_v + 1 which guarantee the
         validity of the arborescence.
-        Here these constraints ensure that there are no subcycles in the solution
+        Here these constraints ensures that there are no subcycles in the solution
         """
 
         # without loss of generality, force one node to be the root.
