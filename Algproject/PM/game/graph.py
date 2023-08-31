@@ -46,14 +46,7 @@ class Graph:
 
     def draw(self, surface, solver=None):
         self.graph_surface.lock()
-        """
-        for i in range(self.nodes[0]):
-            for j in range(self.nodes[1]):
-                pygame.draw.rect(self.graph_surface, (0, 0, 0), self.cells[i][j], 1)
 
-                pygame.draw.circle(self.graph_surface, self.circles[i][j].color, self.circles[i][j].pos,
-                                   self.circles[i][j].radius)
-        """
         for cell in self.cells:
             for rect in cell:
                 pygame.draw.rect(self.graph_surface, (0, 0, 0, 0), rect, 1)
