@@ -10,9 +10,9 @@ def print_dir():
 
 
 class MyTestCase(unittest.TestCase):
-    def test_solver(self, ins_num=5):
+    def test_solver(self, ins_num=1):
         G = gen_grid(10, 10)
-        start = gen_start_points(20, G)
+        start = gen_start_points(2, G)
         # start = [(0, 1), (1, 1)]
         # start = [(0, 0), (3,0), (0,1),(3,1),(0,2),(3,2),(0,3),(3,3)]
 
@@ -22,23 +22,21 @@ class MyTestCase(unittest.TestCase):
         instances = []
         while ins_num > 0:
             try:
-                solver = GameSolver(G, start, True)
+                solver = GameSolver(G, start, False)
                 paths = solver.solve()
                 instances.append(solver.get_instance())
                 ins_num -= 1
             except RuntimeError:
                 print("RuntimeError")
 
-                start = gen_start_points(20, G)
+                start = gen_start_points(2, G)
                 continue
-        for ins in instances:
-            store_in_json(ins[0], ins[1])
         # print(paths))
         # print(start[1])
         # draw_result_edges(edges, G)
         #print(solver.get_path_var((solver.get_start_points()[0])))
         #store_in_json(solver.get_start_points(), paths)
-        #draw_result_colorful(paths, False)
+        draw_result_colorful(paths, False)
         # draw_result_edges(edges)
 
     def test_read_jsonl(self):
@@ -60,7 +58,7 @@ class MyTestCase(unittest.TestCase):
         start_points = instance[0]
         solver = GameSolver(G, start_points)
         solver.solve()
-        solver.constraints_test()
+        #solver.constraints_test()
 
     def test_simple(self):
         p = 11
